@@ -1,0 +1,17 @@
+asttokens==3.0.0
+cairocffi==1.7.1
+CairoSVG==2.7.1
+cffi==1.17.1
+click==8.1.8
+colorama==0.4.6
+cssselect2==0.8.0
+defusedxml==0.7.1
+executing==2.2.0
+icecream==2.1.4
+pillow==11.2.1
+pycparser==2.22
+Pygments==2.19.1
+PyYAML==6.0.2
+tinycss2==1.4.0
+webcolors==24.11.1
+webencodings==0.5.1
