@@ -20,6 +20,7 @@ class Piechart(Diagram):
     DEFAULT_STYLE = Style(
         stroke=Color("black"),
         stroke_width=1,
+        text=dict(size=14, anchor="middle", font="sans-serif"),
         palette=Palette("red", "green", "blue"),
     )
 
@@ -83,31 +84,47 @@ class Piechart(Diagram):
         self.style.setattrs(result, "stroke", "stroke-width", "fill")
         circle = Element("circle", r=N(self.radius))
         result += circle
+        try:
+            palette = self.style["palette"].cycle()
+        except KeyError:
+            palette = None
         if self.slices:
-            try:
-                palette = self.style["palette"].cycle()
-            except KeyError:
-                palette = None
             total = sum([s.value for s in self.slices])
             if self.total:
                 total = max(total, self.total)
-            stop = self.start - Degrees(90) if self.start else Degrees(-90)
-            for slice in self.slices:
-                fraction = slice.value / total
-                start = stop
-                stop = start + fraction * Degrees(360)
-                path = Path(Vector2(0, 0))
-                p0 = Vector2.from_polar(self.radius, float(start))
-                p1 = Vector2.from_polar(self.radius, float(stop))
-                lof = 1 if stop - start > Degrees(180) else 0
-                path.L(p0).A(self.radius, self.radius, 0, lof, 1, p1).Z()
-                path = Element("path", d=str(path))
-                try:
-                    path["fill"] = str(slice.style["fill"])
-                except (TypeError, KeyError):
-                    if palette:
-                        path["fill"] = str(next(palette))
-                result += path
+        else:
+            total = self.total
+        stop = self.start - Degrees(90) if self.start else Degrees(-90)
+        labels = []
+        for slice in self.slices:
+            fraction = slice.value / total
+            start = stop
+            stop = start + fraction * Degrees(360)
+            path = Path(Vector2(0, 0))
+            p0 = Vector2.from_polar(self.radius, float(start))
+            p1 = Vector2.from_polar(self.radius, float(stop))
+            lof = 1 if stop - start > Degrees(180) else 0
+            path.L(p0).A(self.radius, self.radius, 0, lof, 1, p1).Z()
+            path = Element("path", d=str(path))
+            try:
+                path["fill"] = str(slice.style["fill"])
+            except (TypeError, KeyError):
+                if palette:
+                    path["fill"] = str(next(palette))
+            result += path
+            if slice.label:
+                middle = start + 0.5 * fraction * Degrees(360)
+                pos = Vector2.from_polar(0.7 * self.radius, float(middle))
+                label = Element("text", x=pos.x, y=pos.y)
+                background = path.get("fill") or result["fill"]
+                self.style.setattrs_text(label, background=background)
+                if slice.style:  # Use slice styles, if given.
+                    slice.style.setattrs_text(label, background=background)
+                label += slice.label
+                labels.append(label)
+        # Allow labels to overwrite anything prior.
+        for label in labels:
+            result += label
         return result
 
     def as_dict_content(self):

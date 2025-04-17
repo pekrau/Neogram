@@ -97,6 +97,7 @@ class Gantt(Diagram):
         for xtick in xticks[1:]:
             path.M(Vector2(xtick, 0)).V(ymax)
         result += Element("path", d=path)
+        labels = []
         for pos, task in enumerate(self.tasks):
             rect = Element(
                 "rect",
@@ -121,7 +122,10 @@ class Gantt(Diagram):
                 if task.style:  # Use task styles, if given.
                     task.style.setattrs_text(label, background=background)
                 label += task.label
-                result += label
+                labels.append(label)
+        # Allow labels to overwrite anything prior.
+        for label in labels:
+            result += label
         return result
 
     def as_dict_content(self):
