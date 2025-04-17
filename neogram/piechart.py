@@ -1,4 +1,4 @@
-"Neogram pie chart."
+"Neogram: Pie chart."
 
 import collections
 
@@ -18,9 +18,8 @@ class Piechart(Diagram):
 
     DEFAULT_RADIUS = 100.0
     DEFAULT_STYLE = Style(
-        stroke=Color("gray"),
-        stroke_width=2,
-        fill=Color("white"),
+        stroke=Color("black"),
+        stroke_width=1,
         palette=Palette("red", "green", "blue"),
     )
 
@@ -28,10 +27,10 @@ class Piechart(Diagram):
         self,
         id=None,
         klass=None,
+        style=None,
         radius=None,
         start=None,
         total=None,
-        style=None,
         slices=None,
     ):
         assert radius is None or isinstance(radius, (int, float))
@@ -71,12 +70,12 @@ class Piechart(Diagram):
         self.append(other)
         return self
 
-    @property
-    def extent(self):
-        return Vector2(
+    def viewbox(self):
+        extent = Vector2(
             2 * self.radius + self.style["stroke-width"],
             2 * self.radius + self.style["stroke-width"],
         )
+        return (-0.5 * extent, extent)
 
     def svg_content(self):
         "Return the SVG content element in minixml representation."
@@ -102,13 +101,13 @@ class Piechart(Diagram):
                 p1 = Vector2.from_polar(self.radius, float(stop))
                 lof = 1 if stop - start > Degrees(180) else 0
                 path.L(p0).A(self.radius, self.radius, 0, lof, 1, p1).Z()
-                elem = Element("path", d=str(path))
+                path = Element("path", d=str(path))
                 try:
-                    elem["fill"] = str(slice.style["fill"])
+                    path["fill"] = str(slice.style["fill"])
                 except (TypeError, KeyError):
                     if palette:
-                        elem["fill"] = str(next(palette))
-                result += elem
+                        path["fill"] = str(next(palette))
+                result += path
         return result
 
     def as_dict_content(self):

@@ -47,6 +47,20 @@ class Color:
         "Return the name for the color. Raise ValueError if none."
         return webcolors.hex_to_name(self._hex)
 
+    @property
+    def luminance(self):
+        r, g, b = self.rgb
+        # From https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
+        return 0.2126*r + 0.7152*g + 0.0722*b
+
+    @property
+    def best_contrast(self):
+        "Return white or black that contrasts best with this color."
+        if self.luminance < 140:
+            return Color("white")
+        else:
+            return Color("black")
+
 
 class Palette:
     "Ordered set of colors."

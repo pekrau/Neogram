@@ -4,7 +4,8 @@ import pathlib
 
 import click
 
-from common import *
+from piechart import *
+from gantt import *
 
 
 @click.group()

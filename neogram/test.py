@@ -2,30 +2,46 @@
 
 from icecream import ic
 
-from common import *
+import io
+
+from diagram import *
+from piechart import *
+from gantt import *
 
 
-if __name__ == "__main__":
-    import io
+def test_gantt():
+    project = Gantt(id="project", date_based=False, style=Style(padding=4))
+    project += Task("startup", 100, 200)
+    project += Task("work", 200, 600)
+    project += Task("wrapup", 600, 700,
+                    style=Style(fill="purple", text=dict(italic=True)))
+    project.write("project.svg")
+    project.write_png("project.png", scale=2.0)
 
+
+def test_piechart():
     pyramid = Piechart(
         id="pyramid",
         klass="piechart",
         start=Degrees(132),
         style=Style(palette=Palette("#4c78a8", "#9ecae9", "#f58518")),
     )
-    pyramid += Slice(10, "Shady side")
-    pyramid += (15, "Sunny side")
+    pyramid += Slice(7, "Shady side")
+    pyramid += (18, "Sunny side")
     pyramid += Slice(70, "Sky")
     pyramid.write("pyramid.svg")
+    pyramid.write_png("pyramid.png", scale=2.0)
     contents1 = pyramid.as_dict()
     buffer = io.StringIO()
-    write(pyramid, buffer)
+    pyramid.save(buffer)
     buffer.seek(0)
-    with open("pyramid.yaml", "w") as outfile:
-        outfile.write(buffer.read())
-    buffer.seek(0)
-    pyramid = read(buffer)
-    contents2 = pyramid.as_dict()
-    assert contents1 == contents2
-    pyramid.write_png("pyramid.png")
+    pyramid.save("pyramid.yaml")
+    pyramid2 = retrieve(buffer)
+    assert pyramid == pyramid2
+    pyramid3 = retrieve("pyramid.yaml")
+    assert pyramid == pyramid3
+
+
+if __name__ == "__main__":
+    test_piechart()
+    test_gantt()
