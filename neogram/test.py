@@ -20,6 +20,7 @@ def test_gantt():
     )
     project.write("project.svg")
     project.write_png("project.png", scale=2.0)
+    project.save("project.yaml")
 
 
 def test_piechart():

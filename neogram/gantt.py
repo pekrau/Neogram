@@ -128,7 +128,7 @@ class Gantt(Diagram):
         "Return content as a dictionary of basic YAML values."
         data = super().as_dict_content()
         data["width"] = self.width
-        data["tasks"] = [t.as_dict() in self.tasks]
+        data["tasks"] = [task.as_dict() for task in self.tasks]
         return data
 
 

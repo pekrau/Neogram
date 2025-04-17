@@ -181,7 +181,7 @@ class Style:
         result = {}
         for key, value in data.items():
             if isinstance(value, dict):
-                result[key] = self.to_simple_values(value)
+                result[key] = self.as_simple_values(value)
             elif isinstance(value, Color):
                 result[key] = str(value)
             elif isinstance(value, Palette):
