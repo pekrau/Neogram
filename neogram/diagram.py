@@ -99,6 +99,12 @@ class Style:
             return False
         return self.as_dict() == other.as_dict()
 
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
     def set(self, key, value):
         if key == "palette" and isinstance(value, (tuple, list)):
             self.style["palette"] = Palette(*value)
@@ -214,7 +220,7 @@ class Diagram:
     def viewbox(self):
         "Return tuple of Vector2(x, y) and Vector2(width, height)."
         raise NotImplementedError
-        
+
     def svg(self, antialias=True):
         "Return the SVG root element including content in minixml representation."
         xy, extent = self.viewbox()
@@ -231,6 +237,17 @@ class Diagram:
             viewBox=f"{N(xy.x)} {N(xy.y)} {N(extent.x)} {N(extent.y)}",
             transform=transform,
         )
+        if background := self.style.get("background"):
+            origin, extent = self.viewbox()
+            svg += Element(
+                "rect",
+                x=origin.x - 1,
+                y=origin.y - 1,
+                width=extent.x + 2,
+                height=extent.y + 2,
+                fill=str(background),
+                stroke="none",
+            )
         svg += self.svg_content()
         return svg
 

@@ -18,7 +18,7 @@ class Gantt(Diagram):
     DEFAULT_STYLE = Style(
         stroke=Color("black"),
         stroke_width=1,
-        fill=Color("yellow"),
+        fill=Color("white"),
         width=16,
         padding=2,
         round=2,
@@ -50,10 +50,12 @@ class Gantt(Diagram):
         elif isinstance(task, (tuple, list)) and len(task) >= 3:
             item = Task(*task[:4])
         elif isinstance(task, dict) and len(task) >= 3:
-            item = Task(label=task["label"],
-                        start=task["start"],
-                        finish=task["finish"],
-                        style=task.get("style"))
+            item = Task(
+                label=task["label"],
+                start=task["start"],
+                finish=task["finish"],
+                style=task.get("style"),
+            )
         else:
             raise ValueError("invalid task specification")
         if self.date_based and not isinstance(task.start, datetime.date):
@@ -65,12 +67,13 @@ class Gantt(Diagram):
         return self
 
     def viewbox(self):
-        return (Vector2(0, 0),
-                Vector2(
-                    self.width,
-                    len(self.tasks) * (self.style["width"] + 2 * self.style["padding"])
-                )
-                )
+        return (
+            Vector2(0, 0),
+            Vector2(
+                self.width,
+                len(self.tasks) * (self.style["width"] + 2 * self.style["padding"]),
+            ),
+        )
 
     def svg_content(self):
         "Return the SVG content element in minixml representation."
@@ -86,28 +89,33 @@ class Gantt(Diagram):
             last = max(last, task.finish)
         scale_factor = self.width / (last - first)
         ymax = len(self.tasks) * (width + 2 * padding)
-        xticks = [scale_factor * (tick - first) for tick in utils.get_ticks(first, last)]
+        xticks = [
+            scale_factor * (tick - first) for tick in utils.get_ticks(first, last)
+        ]
         path = Path(Vector2(xticks[0], 0))
         path.V(ymax)
         for xtick in xticks[1:]:
             path.M(Vector2(xtick, 0)).V(ymax)
         result += Element("path", d=path)
         for pos, task in enumerate(self.tasks):
-            rect = Element("rect",
-                           x=scale_factor * (task.start - first),
-                           y=pos * (width + 2 * padding) + padding,
-                           width=scale_factor * (task.finish - task.start),
-                           height=width,
-                           rx=r,
-                           ry=r,
-                           )
+            rect = Element(
+                "rect",
+                x=scale_factor * (task.start - first),
+                y=pos * (width + 2 * padding) + padding,
+                width=scale_factor * (task.finish - task.start),
+                height=width,
+                rx=r,
+                ry=r,
+            )
             if task.style:
                 task.style.setattrs(rect, "stroke", "stroke-width", "fill")
             result += rect
             if task.label:
-                label = Element("text",
-                                x=scale_factor * ((task.start + task.finish) / 2 - first),
-                                y=(pos + 0.5) * (width + 2 * padding) + padding)
+                label = Element(
+                    "text",
+                    x=scale_factor * ((task.start + task.finish) / 2 - first),
+                    y=(pos + 0.5) * (width + 2 * padding) + padding,
+                )
                 background = rect.get("fill") or result["fill"]
                 self.style.setattrs_text(label, background=background)
                 if task.style:  # Use task styles, if given.

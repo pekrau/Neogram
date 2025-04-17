@@ -10,11 +10,14 @@ from gantt import *
 
 
 def test_gantt():
-    project = Gantt(id="project", date_based=False, style=Style(padding=4))
+    project = Gantt(
+        id="project", date_based=False, style=Style(background="grey", padding=4)
+    )
     project += Task("startup", 100, 200)
     project += Task("work", 200, 600)
-    project += Task("wrapup", 600, 700,
-                    style=Style(fill="purple", text=dict(italic=True)))
+    project += Task(
+        "wrapup", 600, 700, style=Style(fill="purple", text=dict(italic=True))
+    )
     project.write("project.svg")
     project.write_png("project.png", scale=2.0)
 

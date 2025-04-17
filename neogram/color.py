@@ -51,7 +51,7 @@ class Color:
     def luminance(self):
         r, g, b = self.rgb
         # From https://nemecek.be/blog/172/how-to-calculate-contrast-color-in-python
-        return 0.2126*r + 0.7152*g + 0.0722*b
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
     @property
     def best_contrast(self):
