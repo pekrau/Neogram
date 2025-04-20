@@ -108,6 +108,8 @@ class Style:
     def set(self, key, value):
         if key == "palette" and isinstance(value, (tuple, list)):
             self.style["palette"] = Palette(*value)
+        elif isinstance(value, dict):
+            self.style[key].update(value)
         else:
             self.style[key] = copy.deepcopy(value)
 
@@ -133,7 +135,10 @@ class Style:
         If 'background' is provided and no color has been set,
         then select the best of white or black.
         """
-        text = self["text"]
+        try:
+            text = self["text"]
+        except KeyError:
+            return
         try:
             elem["font-family"] = text["font"]
         except KeyError:
@@ -193,14 +198,18 @@ class Style:
         return result
 
 
+DEFAULT_STYLE = Style(
+    stroke=Color("black"),
+    fill=Color("white"),
+    stroke_width=1,
+    padding=2,
+    rounded=2,
+    palette=Palette("red", "green", "blue"),
+    text=dict(size=14, anchor="middle", font="sans-serif"),
+)
+
 class Diagram:
     "Abstract diagram."
-
-    DEFAULT_STYLE = Style(
-        stroke=Color("black"),
-        fill=Color("white"),
-        palette=Palette("red", "green", "blue"),
-    )
 
     def __init__(self, id=None, klass=None, style=None):
         assert id is None or isinstance(id, str)
@@ -208,7 +217,7 @@ class Diagram:
         assert style is None or isinstance(style, Style)
         self.id = id
         self.klass = klass
-        self.style = copy.deepcopy(self.DEFAULT_STYLE)
+        self.style = copy.deepcopy(DEFAULT_STYLE)
         if style is not None:
             self.style.update(style)
 

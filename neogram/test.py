@@ -14,9 +14,11 @@ def test_gantt():
         id="project", date_based=False, style=Style(background="grey", padding=4)
     )
     project += Task("startup", 100, 200)
-    project += Task("work", 200, 600)
+    project += Task("meeting", 200, 220, style=Style(fill="red"))
+    project += Task("work", 220, 600)
+    project += Task("party", 600, 620, style=Style(fill="red"), lane="meeting")
     project += Task(
-        "wrapup", 600, 700, style=Style(fill="purple", text=dict(italic=True))
+        "wrapup", 620, 700, style=Style(fill="purple", text=dict(italic=True))
     )
     project.write("project.svg")
     project.write_png("project.png", scale=2.0)

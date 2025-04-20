@@ -17,12 +17,6 @@ class Piechart(Diagram):
     "Pie chart."
 
     DEFAULT_RADIUS = 100.0
-    DEFAULT_STYLE = Style(
-        stroke=Color("black"),
-        stroke_width=1,
-        text=dict(size=14, anchor="middle", font="sans-serif"),
-        palette=Palette("red", "green", "blue"),
-    )
 
     def __init__(
         self,

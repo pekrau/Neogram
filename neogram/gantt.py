@@ -15,15 +15,6 @@ class Gantt(Diagram):
     "Gantt chart."
 
     DEFAULT_WIDTH = 500
-    DEFAULT_STYLE = Style(
-        stroke=Color("black"),
-        stroke_width=1,
-        fill=Color("white"),
-        width=16,
-        padding=2,
-        round=2,
-        text=dict(size=14, anchor="middle", font="sans-serif"),
-    )
 
     def __init__(
         self,
@@ -67,28 +58,38 @@ class Gantt(Diagram):
         return self
 
     def viewbox(self):
+        height = 0
+        lanes = set()
+        for task in self.tasks:
+            if task.lane in lanes:
+                continue
+            height += task.height + 2 * self.style["padding"]
+            lanes.add(task.lane)
         return (
             Vector2(0, 0),
-            Vector2(
-                self.width,
-                len(self.tasks) * (self.style["width"] + 2 * self.style["padding"]),
-            ),
+            Vector2(self.width, height)
         )
 
     def svg_content(self):
         "Return the SVG content element in minixml representation."
         result = super().svg_content()
         self.style.setattrs(result, "stroke", "stroke-width", "fill")
-        width = self.style["width"]
         padding = self.style["padding"]
-        r = self.style["round"]
+        rounded = self.style["rounded"]
         first = self.tasks[0].start
         last = self.tasks[0].finish
         for task in self.tasks[1:]:
             first = min(first, task.start)
             last = max(last, task.finish)
         scale_factor = self.width / (last - first)
-        ymax = len(self.tasks) * (width + 2 * padding)
+        ymax = 0
+        lanes = dict()
+        for task in self.tasks:
+            if task.lane in lanes:
+                continue
+            ymax += self.style["padding"]
+            lanes[task.lane] = ymax
+            ymax += task.height + self.style["padding"]
         xticks = [
             scale_factor * (tick - first) for tick in utils.get_ticks(first, last)
         ]
@@ -98,15 +99,15 @@ class Gantt(Diagram):
             path.M(Vector2(xtick, 0)).V(ymax)
         result += Element("path", d=path)
         labels = []
-        for pos, task in enumerate(self.tasks):
+        for task in self.tasks:
             rect = Element(
                 "rect",
                 x=scale_factor * (task.start - first),
-                y=pos * (width + 2 * padding) + padding,
+                y=lanes[task.lane],
                 width=scale_factor * (task.finish - task.start),
-                height=width,
-                rx=r,
-                ry=r,
+                height=task.height,
+                rx=rounded,
+                ry=rounded,
             )
             if task.style:
                 task.style.setattrs(rect, "stroke", "stroke-width", "fill")
@@ -115,7 +116,7 @@ class Gantt(Diagram):
                 label = Element(
                     "text",
                     x=scale_factor * ((task.start + task.finish) / 2 - first),
-                    y=(pos + 0.5) * (width + 2 * padding) + padding,
+                    y=lanes[task.lane] + task.height - padding,
                 )
                 background = rect.get("fill") or result["fill"]
                 self.style.setattrs_text(label, background=background)
@@ -131,7 +132,6 @@ class Gantt(Diagram):
     def as_dict_content(self):
         "Return content as a dictionary of basic YAML values."
         data = super().as_dict_content()
-        data["width"] = self.width
         data["tasks"] = [task.as_dict() for task in self.tasks]
         return data
 
@@ -142,20 +142,24 @@ add_diagram(Gantt)
 class Task:
     "Task to be part of a Gantt chart."
 
-    def __init__(self, label, start, finish, style=None):
-        self.label = str(label)
-        if type(start) != type(finish):
-            raise ValueError("task 'start' and 'finish' must be of same type")
+    DEFAULT_HEIGHT = 16
+
+    def __init__(self, label, start, finish, height=None, lane=None, style=None):
+        assert label and isinstance(label, str)
+        assert isinstance(start, (int, float, str, datetime.date))
+        assert type(start) == type(finish)
+        assert height is None or isinstance(height, (int, float))
+        assert lane is None or isinstance(lane, str)
+        self.label = label
         if isinstance(start, (int, float, datetime.date)):
             self.start = start
             self.finish = finish
         elif isinstance(start, str):
             self.start = datetime.date.fromisoformat(start)
             self.finish = datetime.date.fromisoformat(finish)
-        else:
-            raise ValueError("invalid task 'start' specification")
-        if self.start > self.finish:
-            raise ValueError("task 'start' must be less than 'finish'")
+        assert self.start <= self.finish
+        self.height = height if height is not None else self.DEFAULT_HEIGHT
+        self.lane = lane if lane is not None else self.label
         self.style = style
 
     def as_dict(self):
@@ -166,4 +170,5 @@ class Task:
         else:
             data["start"] = self.start
             data["finish"] = self.finish
+        data["height"] = self.height
         return {"task": data}
