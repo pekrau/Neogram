@@ -70,28 +70,44 @@ class Gantt(Diagram):
             Vector2(self.width, height)
         )
 
-    def svg_content(self):
-        "Return the SVG content element in minixml representation."
-        result = super().svg_content()
+    def svg(self):
+        "Return the SVG minixml element for the diagram content."
+        result = super().svg()
         self.style.setattrs(result, "stroke", "stroke-width", "fill")
         padding = self.style["padding"]
         rounded = self.style["rounded"]
-        first = self.tasks[0].start
-        last = self.tasks[0].finish
-        for task in self.tasks[1:]:
-            first = min(first, task.start)
-            last = max(last, task.finish)
-        scale_factor = self.width / (last - first)
+
+        offset = 0
         ymax = 0
         lanes = dict()
         for task in self.tasks:
+            if task.lane:
+                offset = max(offset, utils.get_text_length(task.lane, 14, "sans"))
             if task.lane in lanes:
                 continue
             ymax += self.style["padding"]
             lanes[task.lane] = ymax
             ymax += task.height + self.style["padding"]
+
+        first = self.tasks[0].start
+        last = self.tasks[0].finish
+        for task in self.tasks[1:]:
+            first = min(first, task.start)
+            last = max(last, task.finish)
+
+        scaling = (self.width - offset) / (last - first)
+        if background := self.style.get("background"):
+            result += Element(
+                "rect",
+                x=offset,
+                y=0,
+                width=scaling * (last - first),
+                height=ymax,
+                fill=str(background),
+                stroke="none",
+            )
         xticks = [
-            scale_factor * (tick - first) for tick in utils.get_ticks(first, last)
+            offset + scaling * (tick - first) for tick in utils.get_ticks(first, last)
         ]
         path = Path(Vector2(xticks[0], 0))
         path.V(ymax)
@@ -99,12 +115,14 @@ class Gantt(Diagram):
             path.M(Vector2(xtick, 0)).V(ymax)
         result += Element("path", d=path)
         labels = []
+        legends = []
+
         for task in self.tasks:
             rect = Element(
                 "rect",
-                x=scale_factor * (task.start - first),
+                x=offset + scaling * (task.start - first),
                 y=lanes[task.lane],
-                width=scale_factor * (task.finish - task.start),
+                width=scaling * (task.finish - task.start),
                 height=task.height,
                 rx=rounded,
                 ry=rounded,
@@ -112,21 +130,35 @@ class Gantt(Diagram):
             if task.style:
                 task.style.setattrs(rect, "stroke", "stroke-width", "fill")
             result += rect
+
             if task.label:
                 label = Element(
                     "text",
-                    x=scale_factor * ((task.start + task.finish) / 2 - first),
+                    x=offset + scaling * ((task.start + task.finish) / 2 - first),
                     y=lanes[task.lane] + task.height - padding,
                 )
                 background = rect.get("fill") or result["fill"]
                 self.style.setattrs_text(label, background=background)
-                if task.style:  # Use task styles, if given.
+                if task.style:  # Task styles override, if given.
                     task.style.setattrs_text(label, background=background)
                 label += task.label
                 labels.append(label)
-        # Allow labels to overwrite anything prior.
+
+            if task.lane:
+                legend = Element(
+                    "text",
+                    x=0,
+                    y=lanes[task.lane] + task.height - padding,
+                )
+                self.style.setattrs_text(legend, kind="legend")
+                legend += task.lane
+                legends.append(legend)
+
+        # Labels and legends overwrite anything drawn prior.
         for label in labels:
             result += label
+        for legend in legends:
+            result += legend
         return result
 
     def as_dict_content(self):

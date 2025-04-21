@@ -72,9 +72,9 @@ class Piechart(Diagram):
         )
         return (-0.5 * extent, extent)
 
-    def svg_content(self):
-        "Return the SVG content element in minixml representation."
-        result = super().svg_content()
+    def svg(self):
+        "Return the SVG minixml element for the diagram content."
+        result = super().svg()
         self.style.setattrs(result, "stroke", "stroke-width", "fill")
         circle = Element("circle", r=N(self.radius))
         result += circle

@@ -130,40 +130,40 @@ class Style:
             except KeyError:
                 pass
 
-    def setattrs_text(self, elem, background=None):
+    def setattrs_text(self, elem, kind="label", background=None):
         """Set the attributes for the text element.
         If 'background' is provided and no color has been set,
         then select the best of white or black.
         """
         try:
-            text = self["text"]
+            data = self[kind]
         except KeyError:
             return
         try:
-            elem["font-family"] = text["font"]
+            elem["font-family"] = data["font"]
         except KeyError:
             pass
         try:
-            elem["font-size"] = text["size"]
+            elem["font-size"] = data["size"]
         except KeyError:
             pass
         try:
-            elem["font-weight"] = text["bold"] and "bold" or "normal"
+            elem["font-weight"] = data["bold"] and "bold" or "normal"
         except KeyError:
             pass
         try:
-            elem["font-style"] = text["italic"] and "italic" or "normal"
+            elem["font-style"] = data["italic"] and "italic" or "normal"
         except KeyError:
             pass
         try:
-            elem["text-decoration"] = text["underline"] and "underline" or "none"
+            elem["text-decoration"] = data["underline"] and "underline" or "none"
         except KeyError:
             pass
         try:
-            elem["text-anchor"] = text["anchor"]
+            elem["text-anchor"] = data["anchor"]
         except KeyError:
             pass
-        color = text.get("color")
+        color = data.get("color")
         if color is None:
             if background is None:
                 elem["fill"] = "black"
@@ -205,7 +205,8 @@ DEFAULT_STYLE = Style(
     padding=2,
     rounded=2,
     palette=Palette("red", "green", "blue"),
-    text=dict(size=14, anchor="middle", font="sans-serif"),
+    label=dict(size=14, anchor="middle", font="sans-serif"),
+    legend=dict(size=14, anchor="left", font="sans-serif"),
 )
 
 class Diagram:
@@ -230,8 +231,8 @@ class Diagram:
         "Return tuple of Vector2(x, y) and Vector2(width, height)."
         raise NotImplementedError
 
-    def svg(self, antialias=True):
-        "Return the SVG root element including content in minixml representation."
+    def svg_document(self, antialias=True):
+        "Return the SVG minixml element for the entire document."
         xy, extent = self.viewbox()
         if antialias:
             extent = extent + Vector2(1, 1)
@@ -246,22 +247,11 @@ class Diagram:
             viewBox=f"{N(xy.x)} {N(xy.y)} {N(extent.x)} {N(extent.y)}",
             transform=transform,
         )
-        if background := self.style.get("background"):
-            origin, extent = self.viewbox()
-            svg += Element(
-                "rect",
-                x=origin.x - 1,
-                y=origin.y - 1,
-                width=extent.x + 2,
-                height=extent.y + 2,
-                fill=str(background),
-                stroke="none",
-            )
-        svg += self.svg_content()
+        svg += self.svg()
         return svg
 
-    def svg_content(self):
-        "Return the SVG content element in minixml representation."
+    def svg(self):
+        "Return the SVG minixml element for the diagram content."
         g = Element("g")
         if self.id:
             g["id"] = self.id
@@ -281,27 +271,19 @@ class Diagram:
         "Write the this diagram as SVG root to a new file or open stream."
         if isinstance(filepath_or_stream, (str, pathlib.Path)):
             with open(filepath_or_stream, "w") as outfile:
-                outfile.write(repr(self.svg()))
+                outfile.write(repr(self.svg_document()))
         else:
-            filepath_or_stream.write(repr(self.svg()))
-
-    def write_content(self, filepath_or_stream):
-        "Write the the SVG content of this diagram to a new file or open stream."
-        if isinstance(filepath_or_stream, (str, pathlib.Path)):
-            with open(filepath_or_stream, "w") as outfile:
-                outfile.write(repr(self.svg_content()))
-        else:
-            filepath_or_stream.write(repr(self.svg_content()))
+            filepath_or_stream.write(repr(self.svg_document()))
 
     def write_png(self, filepath_or_stream, scale=1.0, antialias=True):
         "Write this diagram as a PNG image to a new file or open stream."
         assert scale > 0.0
         if isinstance(filepath_or_stream, (str, pathlib.Path)):
             with open(filepath_or_stream, "wb") as outfile:
-                inputfile = io.StringIO(repr(self.svg(antialias=antialias)))
+                inputfile = io.StringIO(repr(self.svg_document(antialias=antialias)))
                 outfile.write(cairosvg.svg2png(file_obj=inputfile, scale=scale))
         else:
-            inputfile = io.StringIO(repr(self.svg(antialias=antialias)))
+            inputfile = io.StringIO(repr(self.svg_document(antialias=antialias)))
             filepath_or_stream.write(cairosvg.svg2png(file_obj=inputfile, scale=scale))
 
     def as_dict(self):
