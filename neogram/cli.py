@@ -1,11 +1,14 @@
 "Neogram: Command line tool to convert YAML file to SVG or PNG."
 
+import io
 import pathlib
 
+import cairosvg
 import click
 
+from diagram import retrieve
 from piechart import *
-from gantt import *
+# from gantt import *
 
 
 @click.group()
@@ -19,11 +22,11 @@ def cli():
 @click.argument("outfilepath", nargs=1, required=False)
 def svg(indent, infilepath, outfilepath=None):
     "Convert Neogram YAML to SVG file."
-    chart = read(infilepath)
+    diagram = retrieve(infilepath)
     if not outfilepath:
         outfilepath = pathlib.Path(infilepath).with_suffix(".svg")
     with open(outfilepath, "w") as outfile:
-        chart.svg().write(outfile, indent=max(0, indent))
+        diagram.svg_document().write(outfile, indent=max(0, indent))
 
 
 def validate_scale(ctx, param, value):
@@ -38,11 +41,12 @@ def validate_scale(ctx, param, value):
 @click.argument("outfilepath", nargs=1, required=False)
 def png(scale, infilepath, outfilepath=None):
     "Convert Neogram YAML to PNG file."
-    chart = read(infilepath)
+    diagram = retrieve(infilepath)
     if not outfilepath:
         outfilepath = pathlib.Path(infilepath).with_suffix(".png")
     with open(outfilepath, "wb") as outfile:
-        chart.write_png(outfilepath, scale=scale)
+        inputfile = io.StringIO(repr(diagram.svg_document()))
+        outfile.write(cairosvg.svg2png(file_obj=inputfile, scale=scale))
 
 
 if __name__ == "__main__":

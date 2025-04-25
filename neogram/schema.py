@@ -5,17 +5,19 @@ import webcolors
 import yaml
 
 
-style_content = {"$schema": "https://json-schema.org/draft/2020-12/schema",
-                 "type": "object",
-                 "properties": {
-                     "palette": {"type": "array"},
-                     "stroke-width": {"type": "number"},
-                     "stroke": {"type": "string", "format": "color"},
-                 }
-                 }
+style_content = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "palette": {"type": "array"},
+        "stroke-width": {"type": "number"},
+        "stroke": {"type": "string", "format": "color"},
+    },
+}
 
 if __name__ == "__main__":
-    data = yaml.safe_load("""
+    data = yaml.safe_load(
+        """
 style:
   palette:
   - '#4c78a8'
@@ -23,7 +25,8 @@ style:
   - '#f58518'
   stroke: black
   stroke-width: 1
-""")
+"""
+    )
     jsonschema.validate(instance=data["style"], schema=style_content)
     # validator = jsonschema.validators.extend(
     #     jsonschema.Draft202012Validator,

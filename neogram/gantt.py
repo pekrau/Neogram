@@ -22,18 +22,22 @@ class Gantt(Diagram):
         klass=None,
         style=None,
         width=None,
-        date_based=True,
         tasks=None,
     ):
         assert width is None or isinstance(width, (int, float))
         assert tasks is None or isinstance(tasks, (tuple, list))
+
         super().__init__(id=id, klass=klass, style=style)
+
         self.width = width if width is not None else self.DEFAULT_WIDTH
-        self.date_based = date_based
         self.tasks = []
         if tasks:
             for task in tasks:
                 self.append(task)
+
+    def __iadd__(self, other):
+        self.append(other)
+        return self
 
     def append(self, task):
         if isinstance(task, Task):
@@ -49,98 +53,91 @@ class Gantt(Diagram):
             )
         else:
             raise ValueError("invalid task specification")
-        if self.date_based and not isinstance(task.start, datetime.date):
-            raise ValueError("wrong type of 'start'/'finish' for this chart")
         self.tasks.append(item)
-
-    def __iadd__(self, other):
-        self.append(other)
-        return self
 
     def viewbox(self):
         height = 0
+        padding = self.style["padding"] or 0
         lanes = set()
         for task in self.tasks:
             if task.lane in lanes:
                 continue
-            height += task.height + 2 * self.style["padding"]
+            height += task.height + 2 * padding
             lanes.add(task.lane)
-        return (
-            Vector2(0, 0),
-            Vector2(self.width, height)
-        )
+        return (Vector2(0, 0), Vector2(self.width, height))
 
     def svg(self):
         "Return the SVG minixml element for the diagram content."
         result = super().svg()
-        self.style.setattrs(result, "stroke", "stroke-width", "fill")
-        padding = self.style["padding"]
-        rounded = self.style["rounded"]
 
         offset = 0
-        ymax = 0
+        height = 0
+        padding = self.style["padding"] or 0
         lanes = dict()
         for task in self.tasks:
             if task.lane:
                 offset = max(offset, utils.get_text_length(task.lane, 14, "sans"))
             if task.lane in lanes:
                 continue
-            ymax += self.style["padding"]
-            lanes[task.lane] = ymax
-            ymax += task.height + self.style["padding"]
+            height += padding
+            lanes[task.lane] = height
+            height += task.height + padding
 
-        first = self.tasks[0].start
-        last = self.tasks[0].finish
-        for task in self.tasks[1:]:
-            first = min(first, task.start)
-            last = max(last, task.finish)
+        lowest = None
+        highest = None
+        for task in self.tasks:
+            lowest = task.lowest(lowest)
+            highest = task.highest(highest)
 
-        scaling = (self.width - offset) / (last - first)
-        if background := self.style.get("background"):
+        scaling = (self.width - offset) / (highest - lowest)
+        background = self.style["background"]
+        if background:
             result += Element(
                 "rect",
-                x=offset,
-                y=0,
-                width=scaling * (last - first),
-                height=ymax,
+                x=N(offset),
+                y=N(0),
+                width=N(scaling * (highest - lowest)),
+                height=N(height),
                 fill=str(background),
                 stroke="none",
             )
         xticks = [
-            offset + scaling * (tick - first) for tick in utils.get_ticks(first, last)
+            offset + scaling * (tick - lowest)
+            for tick in utils.get_ticks(lowest, highest)
         ]
-        path = Path(Vector2(xticks[0], 0))
-        path.V(ymax)
+        path = Path(Vector2(xticks[0], 0)).V(height)
         for xtick in xticks[1:]:
-            path.M(Vector2(xtick, 0)).V(ymax)
+            path.M(Vector2(xtick, 0)).V(height)
         result += Element("path", d=path)
-        labels = []
-        legends = []
+        labels = Element("g")
+        self.style.set_text_attributes(labels, "label", diff=False)
+        legends = Element("g")
+        self.style.set_text_attributes(legends, "legend", diff=False)
 
         for task in self.tasks:
             rect = Element(
                 "rect",
-                x=offset + scaling * (task.start - first),
-                y=lanes[task.lane],
-                width=scaling * (task.finish - task.start),
-                height=task.height,
-                rx=rounded,
-                ry=rounded,
+                x=N(offset + scaling * (task.start - lowest)),
+                y=N(lanes[task.lane]),
+                width=N(scaling * (task.finish - task.start)),
+                height=N(task.height),
+                rx=self.style["rounded"],
+                ry=self.style["rounded"],
             )
             if task.style:
-                task.style.setattrs(rect, "stroke", "stroke-width", "fill")
+                task.style.set_attribute(rect, "stroke")
+                task.style.set_attribute(rect, "stroke-width")
+                task.style.set_attribute(rect, "fill")
             result += rect
 
             if task.label:
                 label = Element(
                     "text",
-                    x=offset + scaling * ((task.start + task.finish) / 2 - first),
-                    y=lanes[task.lane] + task.height - padding,
+                    x=N(offset + scaling * ((task.start + task.finish) / 2 - lowest)),
+                    y=N(lanes[task.lane] + task.height - self.style["padding"]),
                 )
-                background = rect.get("fill") or result["fill"]
-                self.style.setattrs_text(label, background=background)
                 if task.style:  # Task styles override, if given.
-                    task.style.setattrs_text(label, background=background)
+                    task.style.set_text_attributes(label, "label", diff=self.style)
                 label += task.label
                 labels.append(label)
 
@@ -148,17 +145,17 @@ class Gantt(Diagram):
                 legend = Element(
                     "text",
                     x=0,
-                    y=lanes[task.lane] + task.height - padding,
+                    y=N(lanes[task.lane] + task.height - self.style["padding"]),
                 )
-                self.style.setattrs_text(legend, kind="legend")
+                self.style.set_text_attributes(legend, "legend", diff=self.style)
                 legend += task.lane
                 legends.append(legend)
 
         # Labels and legends overwrite anything drawn prior.
-        for label in labels:
-            result += label
-        for legend in legends:
-            result += legend
+        if len(labels):
+            result += labels
+        if len(legends):
+            result += legends
         return result
 
     def as_dict_content(self):
@@ -182,6 +179,8 @@ class Task:
         assert type(start) == type(finish)
         assert height is None or isinstance(height, (int, float))
         assert lane is None or isinstance(lane, str)
+        assert style is None or isinstance(style, (dict, Style))
+
         self.label = label
         if isinstance(start, (int, float, datetime.date)):
             self.start = start
@@ -192,7 +191,21 @@ class Task:
         assert self.start <= self.finish
         self.height = height if height is not None else self.DEFAULT_HEIGHT
         self.lane = lane if lane is not None else self.label
+        if isinstance(style, dict):
+            style = Style(**style)
         self.style = style
+
+    def lowest(self, lowest=None):
+        if lowest is None:
+            return min(self.start, self.finish)
+        else:
+            return min(self.start, self.finish, lowest)
+
+    def highest(self, highest=None):
+        if highest is None:
+            return max(self.start, self.finish)
+        else:
+            return max(self.start, self.finish, highest)
 
     def as_dict(self):
         data = dict(label=self.label)
