@@ -1,4 +1,4 @@
-"Neogram: Pie chart."
+"Pie chart."
 
 __all__ = ["Piechart", "Slice", "Degrees"]
 

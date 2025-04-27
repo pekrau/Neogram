@@ -1,4 +1,4 @@
-"Neogram: Convert YAML file to PNG."
+"Convert Neogram YAML file to PNG."
 
 import io
 import pathlib
@@ -29,7 +29,7 @@ def topng(scale, infilepath, outfilepath):
     with open(outfilepath, "wb") as outfile:
         inputfile = io.StringIO(repr(diagram.svg_document()))
         outfile.write(cairosvg.svg2png(file_obj=inputfile, scale=scale))
-    
+
 
 if __name__ == "__main__":
     topng()

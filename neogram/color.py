@@ -1,6 +1,4 @@
-"Neogram: Color and Palette classes."
-
-from icecream import ic
+"Color and Palette classes."
 
 import itertools
 

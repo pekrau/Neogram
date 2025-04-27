@@ -1,8 +1,6 @@
-"Neogram: Dimension, Tick classes."
+"Dimension and Tick classes."
 
 __all__ = ["Dimension", "Tick"]
-
-from icecream import ic
 
 import math
 

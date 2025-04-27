@@ -1,6 +1,4 @@
-"Neogram: Various utility functions."
-
-from icecream import ic
+"Various utility functions."
 
 import constants
 

@@ -1,4 +1,4 @@
-"Neogram. Style class with push/pop."
+"Style class."
 
 __all__ = ["Style"]
 
@@ -23,11 +23,11 @@ STYLE_DEFAULTS = dict(
     stroke=Color("black"),
     stroke_width=1,
     fill=Color("white"),
-    radius=10,                  # Default depends on the diagram.
-    width=10,                   # Default depends on the diagram.
-    height=10,                  # Default depends on the diagram.
-    padding=None,               # int
-    rounded=None,               # int
+    radius=10,  # Default depends on the diagram.
+    width=10,  # Default depends on the diagram.
+    height=10,  # Default depends on the diagram.
+    padding=None,  # int
+    rounded=None,  # int
     palette=Palette("#4c78a8", "#9ecae9", "#f58518"),
     label=STYLE_LABEL_DEFAULTS,
     legend=STYLE_LEGEND_DEFAULTS,

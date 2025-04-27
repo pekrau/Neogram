@@ -1,4 +1,4 @@
-"Neogram: Two-dimensional vector (x, y). Immutable."
+"Two-dimensional vector (x, y). Immutable."
 
 import math
 

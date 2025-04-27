@@ -1,4 +1,4 @@
-"Neogram: Gantt chart."
+"Gantt chart."
 
 __all__ = ["Gantt", "Task"]
 

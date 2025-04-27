@@ -1,4 +1,4 @@
-"Neogram: Diagram base class."
+"Diagram base class."
 
 __all__ = ["Diagram", "Element"]
 

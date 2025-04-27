@@ -1,4 +1,4 @@
-"Neogram: Convert YAML file to SVG."
+"Convert Neogram YAML file to SVG."
 
 import pathlib
 
@@ -20,7 +20,7 @@ def tosvg(indent, infilepath, outfilepath):
         outfilepath = infilepath.with_suffix(".svg")
     with open(outfilepath, "w") as outfile:
         diagram.svg_document().write(outfile, indent=max(0, indent))
-    
+
 
 if __name__ == "__main__":
     tosvg()

@@ -1,4 +1,4 @@
-"Neogram: Timelines chart."
+"Timelines chart."
 
 __all__ = ["Timelines", "Event", "Period", "Epoch"]
 
@@ -21,8 +21,8 @@ class Epoch(enum.StrEnum):
 class Timelines(Diagram):
     "Timelines chart; set of timelines."
 
-    DEFAULT_WIDTH = 500         # Entire diagram.
-    DEFAULT_HEIGHT = 16         # Each timeline.
+    DEFAULT_WIDTH = 500  # Entire diagram.
+    DEFAULT_HEIGHT = 16  # Each timeline.
 
     def __init__(
         self,
@@ -52,6 +52,14 @@ class Timelines(Diagram):
         return self
 
     def append(self, entry):
+        if isinstance(entry, dict):
+            key, items = list(entry.items())[0] # Always only one entry in this dict.
+            if key == "event":
+                entry = Event(**items)
+            elif key == "period":
+                entry = Period(**items)
+            else:
+                raise ValueError(f"unknown entry '{key}'")
         assert isinstance(entry, (Event, Period))
         self.entries.append(entry)
 
@@ -121,9 +129,10 @@ class Timelines(Diagram):
 
     def as_dict_content(self):
         "Return content as a dictionary of basic YAML values."
-        data = super().as_dict_content()
-        data["entries"] = [e.as_dict() for e in self.entries]
-        return data
+        result = super().as_dict_content()
+        result["epoch"] = str(self.epoch)
+        result["entries"] = [e.as_dict() for e in self.entries]
+        return result
 
 
 class Entry:
@@ -190,7 +199,9 @@ class Event(Entry):
             elem = Element(
                 "text",
                 x=N(dimension.get_x(self.moment)),
-                y=N(timelines[self.timeline] + style["height"] - (style["padding"] or 0)),
+                y=N(
+                    timelines[self.timeline] + style["height"] - (style["padding"] or 0)
+                ),
             )
             elem += self.label
             style.set_svg_text_attributes(elem, "label")
@@ -246,7 +257,9 @@ class Period(Entry):
             elem = Element(
                 "text",
                 x=N(dimension.get_x((self.begin + self.end) / 2)),
-                y=N(timelines[self.timeline] + style["height"] - (style["padding"] or 0)),
+                y=N(
+                    timelines[self.timeline] + style["height"] - (style["padding"] or 0)
+                ),
             )
             elem += self.label
             style.set_svg_text_attributes(elem, "label")

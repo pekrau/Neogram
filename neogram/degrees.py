@@ -1,4 +1,4 @@
-"Neogram: Angle specified in degrees. Immutable."
+"Angle specified in degrees. Immutable."
 
 __all__ = ["Degrees"]
 

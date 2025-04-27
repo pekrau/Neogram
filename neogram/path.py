@@ -1,4 +1,4 @@
-"Neogram: SVG path synthesizer."
+"SVG path synthesizer."
 
 __all__ = ["Path", "Vector2"]
 

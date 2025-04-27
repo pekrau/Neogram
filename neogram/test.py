@@ -1,4 +1,4 @@
-"Neogram: Tests."
+"Tests."
 
 import io
 
@@ -29,16 +29,23 @@ def test_piechart():
     assert pyramid == pyramid3
     assert svg == repr(pyramid3.svg())
 
+
 def test_timelines():
-    universe = Timelines(id="universum", epoch=Epoch.ORDINAL,
-                         style=dict(width=800, padding=2))
+    universe = Timelines(
+        id="universum", epoch=Epoch.ORDINAL, style=dict(width=800, padding=2)
+    )
     universe += Event(
-        "Big Bang", -13787000000, timeline="Universum", style=dict(label=dict(anchor="start"))
+        "Big Bang",
+        -13787000000,
+        timeline="Universum",
+        style=dict(label=dict(anchor="start")),
     )
     universe += Period("Vintergatan", -8800000000, 0, timeline="Universum")
     universe += Period("Jorden", -4567000000, 0)
     universe.save("universe.yaml")
     universe.write("universe.svg")
+    universe2 = retrieve("universe.yaml")
+    assert universe == universe2
 
 
 # def test_gantt():
@@ -48,7 +55,6 @@ def test_timelines():
 #     project += Task("wrapup", 5, 7)
 #     project.save("project.yaml")
 #     project.write("project.svg")
-
 
 
 if __name__ == "__main__":

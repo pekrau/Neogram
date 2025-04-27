@@ -1,4 +1,4 @@
-"Neogram: Constants."
+"Constants."
 
 SOFTWARE = "Neogram"
 VERSION = (0, 5, 0)
