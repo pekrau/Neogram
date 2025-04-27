@@ -1,14 +1,10 @@
 "Neogram: Gantt chart."
 
-from icecream import ic
+__all__ = ["Gantt", "Task"]
 
-import datetime
 
 from diagram import *
 import utils
-
-
-__all__ = ["Gantt", "Task"]
 
 
 class Gantt(Diagram):
@@ -90,17 +86,6 @@ class Gantt(Diagram):
             highest = task.highest(highest)
 
         scaling = (self.width - offset) / (highest - lowest)
-        background = self.style["background"]
-        if background:
-            result += Element(
-                "rect",
-                x=N(offset),
-                y=N(0),
-                width=N(scaling * (highest - lowest)),
-                height=N(height),
-                fill=str(background),
-                stroke="none",
-            )
         xticks = [
             offset + scaling * (tick - lowest)
             for tick in utils.get_ticks(lowest, highest)
@@ -169,25 +154,22 @@ add_diagram(Gantt)
 
 
 class Task:
-    "Task to be part of a Gantt chart."
+    "Task in a Gantt chart."
 
     DEFAULT_HEIGHT = 16
 
     def __init__(self, label, start, finish, height=None, lane=None, style=None):
         assert label and isinstance(label, str)
-        assert isinstance(start, (int, float, str, datetime.date))
+        assert isinstance(start, (int, float, str))
         assert type(start) == type(finish)
         assert height is None or isinstance(height, (int, float))
         assert lane is None or isinstance(lane, str)
         assert style is None or isinstance(style, (dict, Style))
 
         self.label = label
-        if isinstance(start, (int, float, datetime.date)):
+        if isinstance(start, (int, float)):
             self.start = start
             self.finish = finish
-        elif isinstance(start, str):
-            self.start = datetime.date.fromisoformat(start)
-            self.finish = datetime.date.fromisoformat(finish)
         assert self.start <= self.finish
         self.height = height if height is not None else self.DEFAULT_HEIGHT
         self.lane = lane if lane is not None else self.label
@@ -209,11 +191,7 @@ class Task:
 
     def as_dict(self):
         data = dict(label=self.label)
-        if isinstance(self.start, datetime.date):
-            data["start"] = self.start.isoformat()
-            data["finish"] = self.finish.isoformat()
-        else:
-            data["start"] = self.start
-            data["finish"] = self.finish
+        data["start"] = self.start
+        data["finish"] = self.finish
         data["height"] = self.height
         return {"task": data}

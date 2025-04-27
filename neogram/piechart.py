@@ -1,13 +1,18 @@
 "Neogram: Pie chart."
 
+__all__ = ["Piechart", "Slice", "Degrees"]
+
+
+from color import Color, Palette
 from diagram import *
-
-
-__all__ = ["Piechart", "Slice"]
+from degrees import *
+from path import *
+from style import stylify, destylify
+from utils import N
 
 
 class Piechart(Diagram):
-    "Pie chart."
+    "Pie chart displaying slices."
 
     DEFAULT_RADIUS = 100.0
 
@@ -16,19 +21,19 @@ class Piechart(Diagram):
         id=None,
         klass=None,
         style=None,
-        radius=None,
         start=None,
         total=None,
         slices=None,
     ):
-        assert radius is None or isinstance(radius, (int, float))
         assert start is None or isinstance(start, (int, float, Degrees))
         assert total is None or isinstance(total, (int, float))
         assert slices is None or isinstance(slices, (tuple, list))
 
         super().__init__(id=id, klass=klass, style=style)
 
-        self.radius = radius if radius is not None else self.DEFAULT_RADIUS
+        if "radius" not in self.style:
+            self.style["radius"] = self.DEFAULT_RADIUS
+
         if isinstance(start, (int, float)):
             self.start = Degrees(start)
         else:
@@ -44,20 +49,13 @@ class Piechart(Diagram):
         return self
 
     def append(self, slice):
-        if isinstance(slice, Slice):
-            item = slice
-        elif isinstance(slice, (float, int)):
-            item = Slice(slice)
-        elif isinstance(slice, (tuple, list)) and len(slice) == 2:
-            item = Slice(*slice)
-        elif isinstance(slice, dict) and "value" in slice:
-            item = Slice(slice["value"], slice.get("label"), slice.get("style"))
-        else:
-            raise ValueError("invalid slice specification")
-        self.slices.append(item)
+        if isinstance(slice, dict):
+            slice = Slice(**slice)
+        assert isinstance(slice, Slice)
+        self.slices.append(slice)
 
     def viewbox(self):
-        diameter = 2 * self.radius
+        diameter = 2 * self.style["radius"]
         if self.style["stroke"] and self.style["stroke_width"]:
             diameter += self.style["stroke_width"]
         extent = Vector2(diameter, diameter)
@@ -67,7 +65,8 @@ class Piechart(Diagram):
         "Return the SVG minixml element for the diagram content."
         diagram = super().svg()
 
-        diagram += (circle := Element("circle", r=N(self.radius)))
+        radius = self.style["radius"]
+        diagram += (circle := Element("circle", r=N(radius)))
         self.style.set_svg_attribute(circle, "stroke")
         self.style.set_svg_attribute(circle, "stroke_width")
 
@@ -95,28 +94,26 @@ class Piechart(Diagram):
                 slice.fraction = slice.value / total
                 slice.start = stop
                 stop = slice.start + slice.fraction * Degrees(360)
-                p0 = Vector2.from_polar(self.radius, float(slice.start))
-                p1 = Vector2.from_polar(self.radius, float(stop))
+                p0 = Vector2.from_polar(radius, float(slice.start))
+                p1 = Vector2.from_polar(radius, float(stop))
                 lof = 1 if stop - slice.start > Degrees(180) else 0
                 wedges += (
                     path := Element(
                         "path",
                         d=Path(Vector2(0, 0))
                         .L(p0)
-                        .A(self.radius, self.radius, 0, lof, 1, p1)
+                        .A(radius, radius, 0, lof, 1, p1)
                         .Z(),
                     )
                 )
                 with self.style:
-                    if slice.style:
-                        self.style.update(slice.style)
+                    self.style.update(slice.style)
                     self.style.set_svg_attribute(path, "stroke")
                     self.style.set_svg_attribute(path, "stroke_width")
-                    if "fill" in self.style: # If defined at this level.
+                    if "fill" in self.style:  # If defined at this level.
                         self.style.set_svg_attribute(path, "fill")
                     elif colors:
                         path["fill"] = str(next(colors))
-                    slice.background = path["fill"]
 
         with self.style:
             labels = Element("g")
@@ -129,15 +126,11 @@ class Piechart(Diagram):
             for slice in self.slices:
                 if slice.label:
                     middle = slice.start + 0.5 * slice.fraction * Degrees(360)
-                    pos = Vector2.from_polar(0.7 * self.radius, float(middle))
+                    pos = Vector2.from_polar(0.7 * radius, float(middle))
                     labels += (label := Element("text", x=N(pos.x), y=N(pos.y)))
                     with self.style:
-                        if slice.style:
-                            self.style.update(slice.style)
+                        self.style.update(slice.style)
                         self.style.set_svg_text_attributes(label, "label")
-                        if self.style["label.contrast"]:
-                            background = Color(slice.background)
-                            self.style.set_svg_attribute(label, "label.fill", value=background.best_contrast())
                     label += slice.label
 
         return diagram
@@ -145,22 +138,23 @@ class Piechart(Diagram):
     def as_dict_content(self):
         "Return content as a dictionary of basic YAML values."
         data = super().as_dict_content()
-        data["radius"] = self.radius
         data["start"] = None if self.start is None else self.start.degrees
-        data["slices"] = []
-        for slice in self.slices:
-            d = dict(value=slice.value)
-            if slice.label:
-                d["label"] = slice.label
-            if slice.style:
-                d.update({"style": slice.style})
-            data["slices"].append(d)
+        data["slices"] = [s.as_dict_content() for s in self.slices]
         return data
 
 
 class Slice:
+    "A slice in a pie chart."
 
     def __init__(self, value, label=None, style=None):
         self.value = value
-        self.label = label 
-        self.style = style
+        self.label = label
+        self.style = stylify(style)
+
+    def as_dict_content(self):
+        result = dict(value=self.value)
+        if self.label:
+            result["label"] = self.label
+        if self.style:
+            result.update({"style": destylify(self.style)})
+        return result

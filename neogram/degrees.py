@@ -1,5 +1,7 @@
 "Neogram: Angle specified in degrees. Immutable."
 
+__all__ = ["Degrees"]
+
 import math
 import functools
 

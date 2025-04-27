@@ -12,6 +12,8 @@ SANS_SERIF_FONT_FAMILIES = "FreeSans Arial Helvetica sans-serif"
 SERIF_FONT_FAMILIES = "FreeSerif Times serif"
 MONO_FONT_FAMILIES = "FreeMono Courier monospace"
 
+PRECISION = 0.0005
+
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {
     "sans": {

@@ -1,7 +1,9 @@
 "Neogram: SVG path synthesizer."
 
-from vector2 import Vector2
+__all__ = ["Path", "Vector2"]
+
 from utils import N
+from vector2 import Vector2
 
 
 class Path:

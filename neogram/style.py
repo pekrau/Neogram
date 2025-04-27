@@ -1,16 +1,13 @@
 "Neogram. Style class with push/pop."
 
-from icecream import ic
-
-from color import Color, Palette
-
 __all__ = ["Style"]
 
+
+from color import Color, Palette
 
 STYLE_LABEL_DEFAULTS = dict(
     stroke="none",
     fill=Color("black"),
-    contrast=False,
     font="sans-serif",
     size=14,
     anchor="middle",
@@ -26,9 +23,11 @@ STYLE_DEFAULTS = dict(
     stroke=Color("black"),
     stroke_width=1,
     fill=Color("white"),
-    background=None,  # Color
-    padding=None,  # int
-    rounded=None,  # int
+    radius=10,                  # Default depends on the diagram.
+    width=10,                   # Default depends on the diagram.
+    height=10,                  # Default depends on the diagram.
+    padding=None,               # int
+    rounded=None,               # int
     palette=Palette("#4c78a8", "#9ecae9", "#f58518"),
     label=STYLE_LABEL_DEFAULTS,
     legend=STYLE_LEGEND_DEFAULTS,
@@ -70,31 +69,58 @@ SVG_STYLE_ATTRS = {
     "legend.underline": "text-decoration",
 }
 
-def to_style(key, value):
-    "Check and convert the value to proper style representation according to the key."
+
+def stylify(styles):
+    """Convert (and check) each value in the provided unflattened dictionary
+    to the proper representation according to the key.
+    """
+    result = {}
+    if styles is None:
+        return result
     try:
-        match key:
-            case "fill" | "stroke" | "background" | "label.fill" | "legend.fill":
-                if value is None or isinstance(value, Color):
-                    return value
-                elif isinstance(value, str):
-                    return Color(value)
-                raise ValueError
-            case "stroke_width" | "size" | "label.size" | "legend.size":
-                if isinstance(value, (int, float)) and value > 0:
-                    return value
-                raise ValueError
-            case "padding" | "rounded":
-                if value is None:
-                    return value
-                elif isinstance(value, (int, float)) and value > 0:
-                    return value
-                raise ValueError
-            # XXX implement the others
-            case _:
-                return value
+        for key, value in list(styles.items()):
+            if isinstance(value, dict):
+                result[key] = stylify(value)
+            elif value is not None:
+                result[key] = to_style_value(key, value)
     except ValueError:
-        raise ValueError(f"invalid value for '{key}'")
+        raise ValueError(f"invalid value for '{key}': {value}")
+    return result
+
+
+def to_style_value(key, value):
+    "Convert (and check) the value to the proper representation according to the key."
+    assert value is not None
+    match key:
+        case "fill" | "stroke":
+            if not isinstance(value, Color):
+                value = Color(value)
+        case "radius" | "stroke_width" | "size" | "padding" | "rounded":
+            if not isinstance(value, (int, float)):
+                raise ValueError
+            if value <= 0:
+                raise ValueError
+        case "bold" | "italic" | "underline":
+            value = bool(value)
+    return value
+
+
+def destylify(styles):
+    "Reverse of stylify; for YAML output."
+    result = {}
+    if styles is None:
+        return result
+    for key, value in styles.items():
+        match value:
+            case Color():
+                result[key] = str(value)
+            case Palette():
+                result[key] = [str(c) for c in value]
+            case dict():
+                result[key] = destylify(value)
+            case _:
+                result[key] = value
+    return result
 
 
 class Style:
@@ -103,8 +129,9 @@ class Style:
     def __init__(self, **kwargs):
         self.stack = [self._flatten(None, STYLE_DEFAULTS)]  # This creates a copy.
         self.svg_stack = [SVG_STYLE_DEFAULTS.copy()]
+        stylify(kwargs)
         for key, value in self._flatten(None, kwargs).items():
-            self[key] = to_style(key, value)
+            self[key] = value
 
     def _flatten(self, prefix, data):
         assert prefix is None or isinstance(prefix, str)
@@ -142,10 +169,10 @@ class Style:
         raise KeyError(f"no such style '{key}'")
 
     def __setitem__(self, key, value):
-        "Set the value of the style at the top of the stack."
+        "Set the value of the style at the top of the stack given the flattened key."
         if key not in self.stack[0]:
             raise KeyError(f"no such style '{key}'")
-        self.stack[-1][key] = to_style(key, value)
+        self.stack[-1][key] = to_style_value(key.split(".")[-1], value)
 
     def __enter__(self):
         "Push the style stack."
@@ -165,12 +192,12 @@ class Style:
 
     def update(self, data):
         "Modify the stack top according to the data dictionary."
-        assert isinstance(data, dict)
+        assert data is None or isinstance(data, dict)
+        data = stylify(data)
         flattened = self._flatten(None, data)
-        for key, value in list(flattened.items()):
+        for key in list(flattened):
             if key not in self.stack[0]:
                 raise KeyError(f"no such style '{key}'")
-            flattened[key] = to_style(key, value)
         self.stack[-1].update(flattened)
 
     def set_svg_attribute(self, elem, key, value=None):
@@ -213,7 +240,7 @@ class Style:
         """
         data = self.as_dict_content()
         if data:
-            return {"style": data}
+            return {"style": destylify(data)}
         else:
             return {}
 
@@ -222,21 +249,13 @@ class Style:
         Only return values that have been set at the top of the stack.
         """
         if len(self.stack) == 1:
-            differences = {}
+            result = {}
             for key, value in self._flatten(None, STYLE_DEFAULTS).items():
                 if (new := self.stack[0][key]) != value:
-                    differences[key] = new
+                    result[key] = new
         else:
-            differences = self.stack[-1]
-        result = {}
-        for key, value in differences.items():
-            if isinstance(value, Color):
-                result[key] = str(value)
-            elif isinstance(value, Palette):
-                result[key] = [str(c) for c in value.colors]
-            else:
-                result[key] = value
-        return self._unflatten(result)
+            result = self.stack[-1]
+        return self._unflatten(destylify(result))
 
 
 if __name__ == "__main__":

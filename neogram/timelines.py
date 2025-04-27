@@ -1,15 +1,15 @@
 "Neogram: Timelines chart."
 
-from icecream import ic
+__all__ = ["Timelines", "Event", "Period", "Epoch"]
 
 import datetime
 import enum
 
 from diagram import *
-import utils
-
-
-__all__ = ["Timelines", "Event", "Period", "Epoch"]
+from dimension import *
+from path import *
+from style import stylify, destylify
+from utils import N, get_text_length
 
 
 class Epoch(enum.StrEnum):
@@ -21,24 +21,26 @@ class Epoch(enum.StrEnum):
 class Timelines(Diagram):
     "Timelines chart; set of timelines."
 
-    DEFAULT_WIDTH = 500
+    DEFAULT_WIDTH = 500         # Entire diagram.
+    DEFAULT_HEIGHT = 16         # Each timeline.
 
     def __init__(
         self,
         id=None,
         klass=None,
         style=None,
-        width=None,
         epoch=Epoch.ORDINAL,
         entries=None,
     ):
-        assert width is None or isinstance(width, (int, float))
         assert epoch is None or isinstance(epoch, str)
         assert entries is None or isinstance(entries, (tuple, list))
 
         super().__init__(id=id, klass=klass, style=style)
+        if "width" not in self.style:
+            self.style["width"] = self.DEFAULT_WIDTH
+        if "height" not in self.style:
+            self.style["height"] = self.DEFAULT_HEIGHT
 
-        self.width = width if width is not None else self.DEFAULT_WIDTH
         self.epoch = epoch
         self.entries = []
         if entries:
@@ -50,32 +52,7 @@ class Timelines(Diagram):
         return self
 
     def append(self, entry):
-        try:
-            if isinstance(entry, (Event, Period)):
-                pass
-            elif isinstance(entry, (tuple, list)) and len(entry) == 2:
-                entry = Event(*entry)
-            elif isinstance(entry, (tuple, list)) and len(entry) == 3:
-                entry = Period(*entry)
-            elif isinstance(entry, dict) and "begin" in entry:
-                entry = Period(
-                    label=entry["label"],
-                    begin=entry["begin"],
-                    end=entry["end"],
-                    timeline=entry.get("timeline"),
-                    style=entry.get("style"),
-                )
-            elif isinstance(entry, dict) and "moment" in entry:
-                entry = Event(
-                    label=entry["label"],
-                    moment=entry["moment"],
-                    timeline=entry.get("timeline"),
-                    style=entry.get("style"),
-                )
-            else:
-                raise ValueError
-        except (ValueError, KeyError):
-            raise ValueError("invalid period specification")
+        assert isinstance(entry, (Event, Period))
         self.entries.append(entry)
 
     def viewbox(self):
@@ -84,9 +61,11 @@ class Timelines(Diagram):
         timelines = set()
         for entry in self.entries:
             if entry.timeline not in timelines:
-                height += entry.height + 2 * padding
+                with self.style:
+                    self.style.update(entry.style)
+                    height += self.style["height"] + 2 * padding
                 timelines.add(entry.timeline)
-        return (Vector2(0, 0), Vector2(self.width, height))
+        return (Vector2(0, 0), Vector2(self.style["width"], height))
 
     def svg(self):
         "Return the SVG minixml element for the diagram content."
@@ -95,18 +74,21 @@ class Timelines(Diagram):
         self.style.set_svg_attribute(diagram, "stroke_width")
 
         timelines = dict()
-        dimension = utils.Dimension(width=self.width)
+        dimension = Dimension(width=self.style["width"])
         height = 0
         padding = self.style["padding"] or 0
 
         for entry in self.entries:
-            dimension.offset = max(dimension.offset,
-                                   utils.get_text_length(entry.timeline, 14, "sans"))
+            dimension.offset = max(
+                dimension.offset, get_text_length(entry.timeline, 14, "sans")
+            )
             dimension.span = entry.value()
             if entry.timeline not in timelines:
                 height += padding
                 timelines[entry.timeline] = height
-                height += entry.height + padding
+                with self.style:
+                    self.style.update(entry.style)
+                    height += self.style["height"] + padding
 
         diagram += (container := Element("g"))
         with self.style as style:
@@ -134,10 +116,7 @@ class Timelines(Diagram):
                 if entry.label:
                     container += entry.label_element(self.style, timelines, dimension)
 
-        # Add labels and legends after graphics, to be visible.
-        legends = []
-        # for legend in legends:
-        #     diagram += legend
+        # ### Add legends after graphics, to be visible.
         return diagram
 
     def as_dict_content(self):
@@ -150,18 +129,14 @@ class Timelines(Diagram):
 class Entry:
     "Abstract entry in a timeline."
 
-    DEFAULT_HEIGHT = 16
-
-    def __init__(self, label, height=None, timeline=None, style=None):
+    def __init__(self, label, timeline=None, style=None):
         assert label and isinstance(label, str)
-        assert height is None or isinstance(height, (int, float))
         assert timeline is None or isinstance(timeline, str)
         assert style is None or isinstance(style, dict)
 
         self.label = label
-        self.height = height if height is not None else self.DEFAULT_HEIGHT
         self.timeline = timeline if timeline is not None else label
-        self.style = style
+        self.style = stylify(style)
 
     def value(self):
         raise NotImplementedError
@@ -177,49 +152,53 @@ class Entry:
 
     def as_dict_content(self):
         "Return content as a dictionary of basic YAML values."
-        result = dict(label=self.label, height=self.height)
+        result = dict(label=self.label)
         if self.timeline:
             result["timeline"] = self.timeline
         if self.style:
-            result["style"] = self.style
+            result["style"] = destylify(self.style)
         return result
 
 
 class Event(Entry):
     "Event in a timeline. An instant."
 
-    def __init__(self, label, moment, height=None, timeline=None, style=None):
-        super().__init__(label, height=height, timeline=timeline, style=style)
+    def __init__(self, label, moment, timeline=None, style=None):
+        super().__init__(label, timeline=timeline, style=style)
         self.moment = moment
 
     def value(self):
         return self.moment
 
     def graphic_element(self, style, timelines, dimension):
-        elem = Element("circle",
-                       cx=N(dimension.get_x(self.moment)),
-                       cy=N(timelines[self.timeline] + self.height / 2),
-                       r=5,
-                       )
         with style:
-            if self.style:
-                style.update(self.style)
+            style.update(self.style)
+            elem = Element(
+                "circle",
+                cx=N(dimension.get_x(self.moment)),
+                cy=N(timelines[self.timeline] + style["height"] / 2),
+                r=5,
+            )
             style.set_svg_attribute(elem, "stroke")
             style.set_svg_attribute(elem, "stroke_width")
             style.set_svg_attribute(elem, "fill")
         return elem
 
     def label_element(self, style, timelines, dimension):
-        elem = Element(
-            "text",
-            x=N(dimension.get_x(self.moment)),
-            y=N(timelines[self.timeline] + self.height - (style["padding"] or 0)),
-        )
-        elem += self.label
         with style:
-            if self.style:
-                style.update(self.style)
+            style.update(self.style)
+            elem = Element(
+                "text",
+                x=N(dimension.get_x(self.moment)),
+                y=N(timelines[self.timeline] + style["height"] - (style["padding"] or 0)),
+            )
+            elem += self.label
             style.set_svg_text_attributes(elem, "label")
+            match style["label.anchor"]:
+                case "start":
+                    elem["transform"] = "translate(5,0)"
+                case "end":
+                    elem["transform"] = "translate(-5,0)"
         return elem
 
     def as_dict_content(self):
@@ -235,8 +214,8 @@ class Event(Entry):
 class Period(Entry):
     "Period in a timeline. Has a duration."
 
-    def __init__(self, label, begin, end, height=None, timeline=None, style=None):
-        super().__init__(label, height=height, timeline=timeline, style=style)
+    def __init__(self, label, begin, end, timeline=None, style=None):
+        super().__init__(label, timeline=timeline, style=style)
         self.begin = begin
         self.end = end
 
@@ -244,16 +223,15 @@ class Period(Entry):
         return (self.begin, self.end)
 
     def graphic_element(self, style, timelines, dimension):
-        elem = Element(
-            "rect",
-            x=N(dimension.get_x(self.begin)),
-            y=N(timelines[self.timeline]),
-            width=N(dimension.get_width(self.begin, self.end)),
-            height=self.height,
-        )
         with style:
-            if self.style:
-                style.update(self.style)
+            style.update(self.style)
+            elem = Element(
+                "rect",
+                x=N(dimension.get_x(self.begin)),
+                y=N(timelines[self.timeline]),
+                width=N(dimension.get_width(self.begin, self.end)),
+                height=style["height"],
+            )
             if rounded := style["rounded"]:
                 elem["rx"] = rounded
                 elem["ry"] = rounded
@@ -263,15 +241,14 @@ class Period(Entry):
         return elem
 
     def label_element(self, style, timelines, dimension):
-        elem = Element(
-            "text",
-            x=N(dimension.get_x((self.begin + self.end) / 2)),
-            y=N(timelines[self.timeline] + self.height - (style["padding"] or 0)),
-        )
-        elem += self.label
         with style:
-            if self.style:
-                style.update(self.style)
+            style.update(self.style)
+            elem = Element(
+                "text",
+                x=N(dimension.get_x((self.begin + self.end) / 2)),
+                y=N(timelines[self.timeline] + style["height"] - (style["padding"] or 0)),
+            )
+            elem += self.label
             style.set_svg_text_attributes(elem, "label")
         return elem
 

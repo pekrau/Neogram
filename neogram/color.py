@@ -1,5 +1,7 @@
 "Neogram: Color and Palette classes."
 
+from icecream import ic
+
 import itertools
 
 import webcolors
@@ -7,17 +9,17 @@ import webcolors
 
 def to_hex(value):
     "Convert value to a hex specification."
-    if isinstance(value, str):
-        if value.startswith("#"):
-            return webcolors.normalize_hex(value)
-        else:
-            return webcolors.name_to_hex(value)
-    elif isinstance(value, Color):
-        return value.hex
-    elif isinstance(value, (tuple, list)) and len(value) == 3:
-        return webcolors.rgb_to_hex(value)
-    else:
-        raise ValueError("invalid color specification")
+    match value:
+        case str():
+            if value.startswith("#"):
+                return webcolors.normalize_hex(value)
+            else:
+                return webcolors.name_to_hex(value)
+        case Color():
+            return value.hex
+        case (int(), int(), int()) | [int(), int(), int()]:
+            return webcolors.rgb_to_hex(value)
+    raise ValueError("invalid color specification")
 
 
 class Color:
@@ -27,9 +29,6 @@ class Color:
         assert isinstance(value, (str, tuple, list, Color))
         self._hex = to_hex(value)
 
-    def __repr__(self):
-        return self._hex
-
     def __str__(self):
         "Return the named color, if any, or the hex code."
         try:
@@ -38,12 +37,12 @@ class Color:
             return self._hex
 
     def __eq__(self, other):
-        if isinstance(other, Color):
-            return self.hex == other.hex
-        elif isinstance(other, str):
-            return self.name == other or self.hex == other
-        else:
-            return False
+        match other:
+            case Color():
+                return self.hex == other.hex
+            case str():
+                return self.name == other or self.hex == other
+        return False
 
     @property
     def hex(self):
@@ -95,6 +94,9 @@ class Palette:
             if len(self) != len(other):
                 return False
             return all([c1 == c2 for c1, c2 in zip(self.colors, other.colors)])
+
+    def __iter__(self):
+        return iter(self.colors)
 
     def add(self, color):
         self.colors.append(color)

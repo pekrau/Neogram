@@ -1,5 +1,8 @@
 "Neogram. All currently implemented diagrams."
 
+import icecream
+icecream.install()
+
 import pathlib
 
 import yaml

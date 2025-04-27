@@ -1,6 +1,6 @@
-"Neogram. Diagram class, Path class."
+"Neogram: Diagram base class."
 
-from icecream import ic
+__all__ = ["Diagram", "Element"]
 
 import io
 import pathlib
@@ -8,23 +8,11 @@ import pathlib
 import yaml
 
 import constants
-from color import Color, Palette
-from degrees import Degrees
 from minixml import Element
-from path import Path, Vector2
+from vector2 import Vector2
 from style import Style
 from utils import N
 
-__all__ = [
-    "Diagram",
-    "Degrees",
-    "Element",
-    "Vector2",
-    "Color",
-    "Palette",
-    "Path",
-    "N",
-]
 
 class Diagram:
     "Abstract diagram."
@@ -78,14 +66,6 @@ class Diagram:
             g["class"] = self.klass
         return g
 
-    def save(self, filepath_or_stream):
-        "Write the YAML specification to the new file or open stream."
-        if isinstance(filepath_or_stream, (str, pathlib.Path)):
-            with open(filepath_or_stream, "w") as outfile:
-                yaml.safe_dump(self.as_dict(), outfile, sort_keys=False)
-        else:
-            yaml.safe_dump(self.as_dict(), filepath_or_stream, sort_keys=False)
-
     def write(self, filepath_or_stream):
         "Write the this diagram as SVG root to a new file or open stream."
         if isinstance(filepath_or_stream, (str, pathlib.Path)):
@@ -93,6 +73,14 @@ class Diagram:
                 outfile.write(repr(self.svg_document()))
         else:
             filepath_or_stream.write(repr(self.svg_document()))
+
+    def save(self, filepath_or_stream):
+        "Write the YAML specification to the new file or open stream."
+        if isinstance(filepath_or_stream, (str, pathlib.Path)):
+            with open(filepath_or_stream, "w") as outfile:
+                yaml.safe_dump(self.as_dict(), outfile, sort_keys=False)
+        else:
+            yaml.safe_dump(self.as_dict(), filepath_or_stream, sort_keys=False)
 
     def as_dict(self):
         "Return as a dictionary of basic YAML values."
