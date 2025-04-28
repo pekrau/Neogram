@@ -12,12 +12,12 @@ def N(x):
         return f"{x:.3f}"
 
 
-def get_text_length(text, size, family, italic=False, bold=False):
+def get_text_length(text, font, size, italic=False, bold=False):
     """Compute length of string given the size in points (pt).
     Uses empirically based measurements.
     """
-    assert family in ("sans", "serif", "monospace")
-    font = constants.CHARACTER_WIDTHS[family]
+    assert font in ("sans-serif", "serif", "monospace"), font
+    widths = constants.CHARACTER_WIDTHS[font]
     if italic:
         if bold:
             key = "ib"
@@ -29,5 +29,5 @@ def get_text_length(text, size, family, italic=False, bold=False):
         key = "n"
     total = 0
     for c in text:
-        total += font.get(c, font["default"])[key]
+        total += widths.get(c, widths["default"])[key]
     return total * size / 100

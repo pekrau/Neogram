@@ -128,9 +128,8 @@ class Style:
 
     def __init__(self, **kwargs):
         self.stack = [self._flatten(None, STYLE_DEFAULTS)]  # This creates a copy.
-        self.svg_stack = [SVG_STYLE_DEFAULTS.copy()]
-        stylify(kwargs)
-        for key, value in self._flatten(None, kwargs).items():
+        data = stylify(kwargs)
+        for key, value in self._flatten(None, data).items():
             self[key] = value
 
     def _flatten(self, prefix, data):
@@ -140,7 +139,7 @@ class Style:
         for key, value in data.items():
             fullkey = key if prefix is None else f"{prefix}.{key}"
             if isinstance(value, dict):
-                result.update(self._flatten(prefix=fullkey, data=value))
+                result.update(self._flatten(fullkey, value))
             else:
                 result[fullkey] = value
         return result
@@ -190,6 +189,13 @@ class Style:
         "Is the given key in the top of the stack?"
         return key in self.stack[-1]
 
+    def set_default(self, key, value):
+        "Set the default value for the given key, if not already set."
+        assert len(self.stack) == 1
+        if key not in self.stack[0]:
+            raise KeyError(f"no such style '{key}'")
+        self.stack[0][key] = to_style_value(key, value)
+
     def update(self, data):
         "Modify the stack top according to the data dictionary."
         assert data is None or isinstance(data, dict)
@@ -199,6 +205,10 @@ class Style:
             if key not in self.stack[0]:
                 raise KeyError(f"no such style '{key}'")
         self.stack[-1].update(flattened)
+
+    def init_svg_attributes(self):
+        "Initialize the SVG output attributes stack."
+        self.svg_stack = [SVG_STYLE_DEFAULTS.copy()]
 
     def set_svg_attribute(self, elem, key, value=None):
         """Set the given style as SVG attribute in the given element.

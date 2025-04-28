@@ -18,60 +18,42 @@ class Piechart(Diagram):
 
     def __init__(
         self,
-        id=None,
-        klass=None,
+        entries=None,
         style=None,
+        id=None,
         start=None,
         total=None,
-        slices=None,
     ):
+        super().__init__(entries=entries, style=style, id=id)
         assert start is None or isinstance(start, (int, float, Degrees))
         assert total is None or isinstance(total, (int, float))
-        assert slices is None or isinstance(slices, (tuple, list))
 
-        super().__init__(id=id, klass=klass, style=style)
-
-        if "radius" not in self.style:
-            self.style["radius"] = self.DEFAULT_RADIUS
-
+        self.style.set_default("radius", self.DEFAULT_RADIUS)
         if isinstance(start, (int, float)):
             self.start = Degrees(start)
         else:
             self.start = start
         self.total = total
-        self.slices = []
-        if slices:
-            for slice in slices:
-                self.append(slice)
 
-    def __iadd__(self, other):
-        self.append(other)
-        return self
-
-    def append(self, slice):
-        if isinstance(slice, dict):
-            slice = Slice(**slice)
-        assert isinstance(slice, Slice)
-        self.slices.append(slice)
-
-    def viewbox(self):
-        diameter = 2 * self.style["radius"]
-        if self.style["stroke"] and self.style["stroke_width"]:
-            diameter += self.style["stroke_width"]
-        extent = Vector2(diameter, diameter)
-        return (-0.5 * extent, extent)
+    def check_entry(self, entry):
+        if not isinstance(entry, Slice):
+            raise ValueError("entry is not a Slice instance")
 
     def svg(self):
         "Return the SVG minixml element for the diagram content."
         diagram = super().svg()
 
         radius = self.style["radius"]
-        diagram += (circle := Element("circle", r=N(radius)))
-        self.style.set_svg_attribute(circle, "stroke")
-        self.style.set_svg_attribute(circle, "stroke_width")
+        diagram += Element("circle", r=N(radius))
 
-        if self.slices:
-            total = sum([s.value for s in self.slices])
+        diameter = 2 * radius
+        if self.style["stroke"] and self.style["stroke_width"]:
+            diameter += self.style["stroke_width"]
+        self.extent = Vector2(diameter, diameter)
+        self.origin = -0.5 * self.extent
+
+        if self.entries:
+            total = sum([s.value for s in self.entries])
             if self.total:
                 total = max(total, self.total)
         else:
@@ -90,7 +72,7 @@ class Piechart(Diagram):
             self.style.set_svg_attribute(wedges, "stroke")
             self.style.set_svg_attribute(wedges, "stroke_width")
 
-            for slice in self.slices:
+            for slice in self.entries:
                 slice.fraction = slice.value / total
                 slice.start = stop
                 stop = slice.start + slice.fraction * Degrees(360)
@@ -123,7 +105,7 @@ class Piechart(Diagram):
             self.style.set_svg_attribute(labels, "label.fill")
             self.style.set_svg_text_attributes(labels, "label")
 
-            for slice in self.slices:
+            for slice in self.entries:
                 if slice.label:
                     middle = slice.start + 0.5 * slice.fraction * Degrees(360)
                     pos = Vector2.from_polar(0.7 * radius, float(middle))
@@ -137,13 +119,12 @@ class Piechart(Diagram):
 
     def as_dict_content(self):
         "Return content as a dictionary of basic YAML values."
-        data = super().as_dict_content()
-        data["start"] = None if self.start is None else self.start.degrees
-        data["slices"] = [s.as_dict_content() for s in self.slices]
-        return data
+        result = super().as_dict_content()
+        result["start"] = None if self.start is None else self.start.degrees
+        return result
 
 
-class Slice:
+class Slice(Entity):
     "A slice in a pie chart."
 
     def __init__(self, value, label=None, style=None):

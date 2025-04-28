@@ -1,13 +1,19 @@
 "Dimension and Tick classes."
 
-__all__ = ["Dimension", "Tick"]
+__all__ = ["Dimension", "Tick", "Epoch"]
 
 import math
 
 import collections
-import datetime
+import enum
 
-Tick = collections.namedtuple("Tick", ["user", "x"])
+Tick = collections.namedtuple("Tick", ["user", "pixel"])
+
+
+class Epoch(enum.StrEnum):
+    ORDINAL = "ordinal"
+    DATE = "Julian date"  # XXX not implemented
+    DATETIME = "Julian date and time"  # XXX not implemented
 
 
 class Dimension:
@@ -21,10 +27,11 @@ class Dimension:
 
     @property
     def span(self):
+        "Return current min and max values."
         return (self.min, self.max)
 
-    @span.setter
-    def span(self, value):
+    def update_span(self, value):
+        "Update current min and max values."
         if self.min is None:
             if isinstance(value, (tuple, list)):
                 self.min = min(*value)
@@ -44,8 +51,14 @@ class Dimension:
         else:
             self.max = max(self.max, value)
 
+    def update_offset(self, value):
+        if isinstance(value, (tuple, list)):
+            self.offset = max(self.offset, *value)
+        else:
+            self.offset = max(self.offset, value)
+
     def get_ticks(self, approx=5):
-        "Return tick positions for the current span."
+        "Return tick positions for the current span (min and max)."
         span = self.max - self.min
         self.base = 10 ** round(math.log10(round(span / approx)) - 0.5)
         for step in [2 * self.base, 5 * self.base]:
@@ -61,11 +74,11 @@ class Dimension:
             value = self.first + num * self.base
             if value > self.last:
                 break
-            result.append(Tick(user=value, x=self.get_x(value)))
+            result.append(Tick(user=value, pixel=self.get_pixel(value)))
             num += 1
         return result
 
-    def get_x(self, user):
+    def get_pixel(self, user):
         "Convert user coordinate to pixel coordinate."
         return self.offset + self.scale * (user - self.first)
 
