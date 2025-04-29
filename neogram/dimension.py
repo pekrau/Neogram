@@ -2,12 +2,15 @@
 
 __all__ = ["Dimension", "Tick", "Epoch"]
 
-import math
-
 import collections
 import enum
+import itertools
+import math
 
-Tick = collections.namedtuple("Tick", ["user", "pixel"])
+Tick = collections.namedtuple("Tick", ["user", "pixel", "label"], defaults=[None])
+
+
+from utils import N
 
 
 class Epoch(enum.StrEnum):
@@ -57,25 +60,56 @@ class Dimension:
         else:
             self.offset = max(self.offset, value)
 
-    def get_ticks(self, approx=5):
-        "Return tick positions for the current span (min and max)."
+    def get_ticks(self, style):
+        "Return ticks for the current span (min and max)."
+        number = style["grid.number"]
         span = self.max - self.min
-        self.base = 10 ** round(math.log10(round(span / approx)) - 0.5)
-        for step in [2 * self.base, 5 * self.base]:
-            if approx * step > span:
-                break
-            self.base = step
-        self.first = round(self.min / self.base - 0.5) * self.base
-        self.last = round(self.max / self.base + 0.5) * self.base
+        self.magnitude = math.log10(span / number)
+        series = []
+        for magnitude in [math.floor(self.magnitude), math.ceil(self.magnitude)]:
+            for base in [1, 2, 5]:
+                step = base * 10**magnitude
+                if self.min == 0:
+                    first = 0
+                else:
+                    first = math.floor(self.min / step) * step
+                values = []
+                i = itertools.count(0)
+                value = first
+                while value <= self.max:
+                    value = first + next(i) * step
+                    values.append(value)
+                while len(values) >= 2:
+                    if values[-1] > self.max and (
+                        values[-2] > self.max or math.isclose(values[-2], self.max)
+                    ):
+                        values.pop()
+                    else:
+                        break
+                series.append((magnitude, values))
+        self.magnitude, best = series[0]
+        score = abs(len(best) - number)
+        for magnitude, values in series[1:]:
+            s = abs(len(values) - number)
+            if s < score:
+                self.magnitude = magnitude
+                best = values
+                score = s
+        assert best[0] <= self.min
+        assert best[1] > self.min
+        assert best[-1] >= self.max
+        assert best[-2] < self.max
+        self.first = best[0]
+        self.last = best[-1]
         self.scale = (self.width - self.offset) / (self.last - self.first)
-        num = 0
-        result = []
-        while True:
-            value = self.first + num * self.base
-            if value > self.last:
-                break
-            result.append(Tick(user=value, pixel=self.get_pixel(value)))
-            num += 1
+        if style["grid.labels"]:
+            step = 10**self.magnitude
+            func = (lambda u: abs(u)) if style["grid.absolute"] else (lambda u: u)
+            result = [
+                Tick(u, self.get_pixel(u), label=N(round(func(u) / step))) for u in best
+            ]
+        else:
+            result = [Tick(u, self.get_pixel(u)) for u in best]
         return result
 
     def get_pixel(self, user):
@@ -88,12 +122,10 @@ class Dimension:
 
 
 if __name__ == "__main__":
-    d = Dimension()
-    d.span = -18.9
-    d.span = 88.2
-    d.offset = 20
-    ic(d.span, d.get_ticks(5), d.base)
-    d = Dimension()
-    d.span = [-13800000000, 0]
-    d.offset = 10
-    ic(d.span, d.get_ticks(5), d.base)
+    from icecream import ic
+
+    for x in range(1, 8):
+        d = Dimension()
+        d.update_span([0, x])
+        numbers = [t.user for t in d.get_ticks(5)]
+        ic(x, d.base, d.step, numbers)

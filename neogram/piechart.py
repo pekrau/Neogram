@@ -66,6 +66,7 @@ class Piechart(Diagram):
         else:
             colors = None
 
+        # Create slice wedges.
         with self.style:
             wedges = Element("g")
             diagram += wedges
@@ -92,11 +93,16 @@ class Piechart(Diagram):
                     self.style.update(slice.style)
                     self.style.set_svg_attribute(path, "stroke")
                     self.style.set_svg_attribute(path, "stroke_width")
-                    if "fill" in self.style:  # If defined at this level.
+                    if "fill" in self.style:  # If specifically defined for this slice.
                         self.style.set_svg_attribute(path, "fill")
-                    elif colors:
-                        path["fill"] = str(next(colors))
+                        slice.color = self.style["fill"]
+                    elif colors:  # Otherwise use palette, if defined (default).
+                        slice.color = next(colors)
+                        path["fill"] = str(slice.color)
+                    else:
+                        slice.color = self.style["fill"]
 
+        # Create labels.
         with self.style:
             labels = Element("g")
             diagram += labels
@@ -109,11 +115,20 @@ class Piechart(Diagram):
                 if slice.label:
                     middle = slice.start + 0.5 * slice.fraction * Degrees(360)
                     pos = Vector2.from_polar(0.7 * radius, float(middle))
-                    labels += (label := Element("text", x=N(pos.x), y=N(pos.y)))
+                    labels += (
+                        label := Element("text", slice.label, x=N(pos.x), y=N(pos.y))
+                    )
                     with self.style:
                         self.style.update(slice.style)
                         self.style.set_svg_text_attributes(label, "label")
-                    label += slice.label
+                        # Check if label fill specifically defined for this slice.
+                        if (
+                            self.style["label.contrast"]
+                            and "label.fill" not in self.style
+                        ):
+                            self.style.set_svg_attribute(
+                                label, "fill", value=slice.color.best_contrast()
+                            )
 
         return diagram
 

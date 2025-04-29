@@ -10,27 +10,38 @@ STYLE_LABEL_DEFAULTS = dict(
     fill=Color("black"),
     font="sans-serif",
     size=14,
+    descend=2,
     anchor="middle",
     bold=False,
     italic=False,
     underline=False,
+    contrast=False,
 )
 
 STYLE_LEGEND_DEFAULTS = STYLE_LABEL_DEFAULTS.copy()
 STYLE_LEGEND_DEFAULTS["anchor"] = "start"
 
+STYLE_GRID_DEFAULTS = dict(
+    stroke=Color("black"),
+    stroke_width=1,
+    number=8,
+    labels=True,
+    absolute=False,
+)
+
 STYLE_DEFAULTS = dict(
     stroke=Color("black"),
     stroke_width=1,
     fill=Color("white"),
-    radius=10,  # Default depends on the diagram.
-    width=10,  # Default depends on the diagram.
-    height=10,  # Default depends on the diagram.
+    radius=0,  # Default depends on the diagram.
+    width=0,  # Default depends on the diagram.
+    height=0,  # Default depends on the diagram.
     padding=None,  # int
     rounded=None,  # int
     palette=Palette("#4c78a8", "#9ecae9", "#f58518"),
     label=STYLE_LABEL_DEFAULTS,
     legend=STYLE_LEGEND_DEFAULTS,
+    grid=STYLE_GRID_DEFAULTS,
 )
 
 # Defaults for SVG attribute values according to the SVG documentation.
@@ -49,24 +60,12 @@ SVG_STYLE_DEFAULTS = {
 # Translation of Neogram style to SVG attribute name.
 SVG_STYLE_ATTRS = {
     "stroke_width": "stroke-width",
-    "label.stroke": "stroke",
-    "label.stroke_width": "stroke-width",
-    "label.fill": "fill",
-    "label.font": "font-family",
-    "label.size": "font-size",
-    "label.anchor": "text-anchor",
-    "label.bold": "font-weight",
-    "label.italic": "font-style",
-    "label.underline": "text-decoration",
-    "legend.stroke": "stroke",
-    "legen.stroke_width": "stroke-width",
-    "legend.fill": "fill",
-    "legend.font": "font-family",
-    "legend.size": "font-size",
-    "legend.anchor": "text-anchor",
-    "legend.bold": "font-weight",
-    "legend.italic": "font-style",
-    "legend.underline": "text-decoration",
+    "font": "font-family",
+    "size": "font-size",
+    "anchor": "text-anchor",
+    "bold": "font-weight",
+    "italic": "font-style",
+    "underline": "text-decoration",
 }
 
 
@@ -92,15 +91,27 @@ def to_style_value(key, value):
     "Convert (and check) the value to the proper representation according to the key."
     assert value is not None
     match key:
+        # Color value.
         case "fill" | "stroke":
             if not isinstance(value, Color):
                 value = Color(value)
-        case "radius" | "stroke_width" | "size" | "padding" | "rounded":
+
+        # Positive int or float.
+        case "radius" | "stroke_width" | "size" | "number":
             if not isinstance(value, (int, float)):
                 raise ValueError
             if value <= 0:
                 raise ValueError
-        case "bold" | "italic" | "underline":
+
+        # Non-negative int or float.
+        case "descend" | "padding" | "rounded":
+            if not isinstance(value, (int, float)):
+                raise ValueError
+            if value < 0:
+                raise ValueError
+
+        # Boolean value.
+        case "bold" | "italic" | "underline" | "contrast" | "labels" | "absolute":
             value = bool(value)
     return value
 
@@ -194,7 +205,8 @@ class Style:
         assert len(self.stack) == 1
         if key not in self.stack[0]:
             raise KeyError(f"no such style '{key}'")
-        self.stack[0][key] = to_style_value(key, value)
+        if not self.stack[0][key]:  # Zero, if not set explicitly.
+            self.stack[0][key] = to_style_value(key, value)
 
     def update(self, data):
         "Modify the stack top according to the data dictionary."
@@ -216,7 +228,12 @@ class Style:
         """
         if value is None:
             value = self[key]
-        attr = SVG_STYLE_ATTRS.get(key, key)
+        # Convert the key from Neogram to SVG terminology.
+        attr = key.split(".")[-1]
+        try:
+            attr = SVG_STYLE_ATTRS[attr]
+        except KeyError:
+            pass
         # Convert the value according to the SVG attribute.
         match attr:
             case "stroke" | "fill":

@@ -12,13 +12,15 @@ class Element:
     repr_indent = 2
     xml_decl = True
 
-    def __init__(self, tag, **attrs):
+    def __init__(self, tag, *subelements, **attrs):
         self.tag = tag
         self.attrs = {}
         for name, value in attrs.items():
             self[name] = value
         self.superelement = None
         self.subelements = []
+        for subelement in subelements:
+            self.append(subelement)
 
     def __str__(self):
         "Return the string representation of the element's starting tag."

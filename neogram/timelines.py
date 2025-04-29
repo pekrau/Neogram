@@ -16,20 +16,21 @@ class Timelines(Diagram):
 
     DEFAULT_WIDTH = 500  # Entire diagram.
     DEFAULT_HEIGHT = 16  # Each timeline.
+    DEFAULT_EPOCH = Epoch.ORDINAL
 
     def __init__(
         self,
         entries=None,
         id=None,
         style=None,
-        epoch=Epoch.ORDINAL,  # XXX not implemented
+        epoch=None,
     ):
         super().__init__(entries=entries, style=style, id=id)
         assert epoch is None or isinstance(epoch, str)
 
         self.style.set_default("width", self.DEFAULT_WIDTH)
         self.style.set_default("height", self.DEFAULT_HEIGHT)
-        self.epoch = epoch
+        self.epoch = epoch or self.DEFAULT_EPOCH
 
     def check_entry(self, entry):
         if not isinstance(entry, Temporal):
@@ -47,16 +48,21 @@ class Timelines(Diagram):
         padding = self.style["padding"] or 0
 
         # Set the heights for each timeline, and the offset for legends.
+        # Legends are controlled by top-level styles.
+        font = self.style["legend.font"]
+        size = self.style["legend.size"]
+        italic = self.style["legend.italic"]
+        bold = self.style["legend.bold"]
         for entry in self.entries:
             with self.style:
                 self.style.update(entry.style)
                 dimension.update_offset(
                     get_text_length(
                         entry.timeline,
-                        font = self.style["legend.font"],
-                        size = self.style["legend.size"],
-                        italic = self.style["legend.italic"],
-                        bold = self.style["legend.bold"],
+                        font=font,
+                        size=size,
+                        italic=italic,
+                        bold=bold,
                     )
                 )
                 dimension.update_span(entry.minmax)
@@ -65,17 +71,36 @@ class Timelines(Diagram):
                     timelines[entry.timeline] = height
                     height += self.style["height"] + padding
 
-        self.origin = Vector2(0, 0)
-        self.extent = Vector2(self.style["width"], height)
-
+        # Add grid lines and their labels.
         diagram += (grid := Element("g"))
         with self.style:
-            # XXX Set ticks style; new style subsection required.
-            ticks = dimension.get_ticks()
+            self.style.set_svg_attribute(grid, "grid.stroke")
+            self.style.set_svg_attribute(grid, "grid.stroke_width")
+            ticks = dimension.get_ticks(self.style)
             path = Path(Vector2(ticks[0].pixel, 0)).V(height)
             for tick in ticks[1:]:
                 path.M(Vector2(tick.pixel, 0)).V(height)
             grid += Element("path", d=path)
+            if self.style["grid.labels"]:
+                grid += (labels := Element("g"))
+                with self.style:
+                    height += self.style["legend.size"]
+                    self.style.set_svg_text_attributes(labels, "legend")
+                    self.style.set_svg_attribute(labels, "anchor", "middle")
+                    for tick in ticks:
+                        labels += (
+                            label := Element("text", tick.label, x=tick.pixel, y=height)
+                        )
+                        if tick is ticks[0]:
+                            with self.style:
+                                self.style.set_svg_attribute(label, "anchor", "start")
+                        elif tick is ticks[-1]:
+                            with self.style:
+                                self.style.set_svg_attribute(label, "anchor", "end")
+                    height += self.style["legend.descend"]
+
+        self.origin = Vector2(0, 0)
+        self.extent = Vector2(self.style["width"], height)
 
         # Add graphics for entries.
         diagram += (graphics := Element("g"))
@@ -94,7 +119,7 @@ class Timelines(Diagram):
                 if entry.label:
                     labels += entry.label_element(self.style, timelines, dimension)
 
-        # Add legends after graphics, to render on top.
+        # Add legends after graphics.
         diagram += (legends := Element("g"))
         with self.style:
             self.style.set_svg_text_attributes(legends, "legend")
@@ -102,14 +127,19 @@ class Timelines(Diagram):
                 legends += (legend := Element("text"))
                 legend += timeline
                 legend["x"] = self.style["padding"]
-                legend["y"] = self.style["height"] + timelines[timeline]
+                legend["y"] = (
+                    (self.style["height"] + self.style["legend.size"]) / 2
+                    + timelines[timeline]
+                    - self.style["legend.descend"]
+                )
 
         return diagram
 
     def as_dict_content(self):
         "Return content as a dictionary of basic YAML values."
         result = super().as_dict_content()
-        result["epoch"] = str(self.epoch)
+        if self.epoch != self.DEFAULT_EPOCH:
+            result["epoch"] = str(self.epoch)
         return result
 
 
@@ -162,12 +192,20 @@ class Event(Temporal):
     def graphic_element(self, style, timelines, dimension):
         with style:
             style.update(self.style)
+            # XXX adjust for marker style width
             elem = Element(
-                "circle",
+                "ellipse",
                 cx=N(dimension.get_pixel(self.moment)),
                 cy=N(timelines[self.timeline] + style["height"] / 2),
-                r=style["height"] / 2,
+                rx=style["height"] / 4,
+                ry=style["height"] / 2,
             )
+            # elem = Element(
+            #     "circle",
+            #     cx=N(dimension.get_pixel(self.moment)),
+            #     cy=N(timelines[self.timeline] + style["height"] / 2),
+            #     r=style["height"] / 2,
+            # )
             style.set_svg_attribute(elem, "stroke")
             style.set_svg_attribute(elem, "stroke_width")
             style.set_svg_attribute(elem, "fill")
@@ -176,20 +214,28 @@ class Event(Temporal):
     def label_element(self, style, timelines, dimension):
         with style:
             style.update(self.style)
+            # XXX adjust for marker style width
             elem = Element(
                 "text",
-                x=N(dimension.get_pixel(self.moment)),
+                self.label,
+                x=N(dimension.get_pixel(self.moment) + 1),
                 y=N(
-                    timelines[self.timeline] + style["height"] - (style["padding"] or 0)
+                    timelines[self.timeline]
+                    + (style["height"] + style["label.size"]) / 2
+                    - (style["padding"] or 0)
+                    - style["label.descend"]
                 ),
             )
-            elem += self.label
             style.set_svg_text_attributes(elem, "label")
             match style["label.anchor"]:
                 case "start":
                     elem["transform"] = "translate(5,0)"
                 case "end":
                     elem["transform"] = "translate(-5,0)"
+            if style["label.contrast"]:
+                style.set_svg_attribute(
+                    elem, "fill", value=style["fill"].best_contrast()
+                )
         return elem
 
     def as_dict_content(self):
@@ -239,7 +285,10 @@ class Period(Temporal):
                 "text",
                 x=N(dimension.get_pixel((self.begin + self.end) / 2)),
                 y=N(
-                    timelines[self.timeline] + style["height"] - (style["padding"] or 0)
+                    timelines[self.timeline]
+                    + (style["height"] + style["label.size"]) / 2
+                    - (style["padding"] or 0)
+                    - style["label.descend"]
                 ),
             )
             elem += self.label

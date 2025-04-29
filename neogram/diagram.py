@@ -65,7 +65,7 @@ class Diagram(Entity):
     def svg_document(self, antialias=True):
         "Return the SVG minixml element for the entire document."
         self.style.init_svg_attributes()
-        svg = self.svg()        # Computes origin and extent.
+        svg = self.svg()  # Computes origin and extent.
         if antialias:
             self.extent = self.extent + Vector2(1, 1)
             transform = "translate(0.5, 0.5)"
