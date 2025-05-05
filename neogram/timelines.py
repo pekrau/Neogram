@@ -53,36 +53,41 @@ class Timelines(Diagram):
         size = self.style["legend.size"]
         italic = self.style["legend.italic"]
         bold = self.style["legend.bold"]
+        width = self.style["legend.width"]
         for entry in self.entries:
             with self.style:
                 self.style.update(entry.style)
-                dimension.update_offset(
-                    get_text_length(
-                        entry.timeline,
-                        font=font,
-                        size=size,
-                        italic=italic,
-                        bold=bold,
+                if width is True:
+                    dimension.update_offset(
+                        get_text_length(
+                            entry.timeline,
+                            font=font,
+                            size=size,
+                            italic=italic,
+                            bold=bold,
+                        )
                     )
-                )
                 dimension.update_span(entry.minmax)
                 if entry.timeline not in timelines:
                     height += padding
                     timelines[entry.timeline] = height
                     height += self.style["height"] + padding
+        # Legend width has been explicitly set.
+        if width and width > 1:
+            dimension.update_offset(width)
 
-        # Add grid lines and their labels.
-        diagram += (grid := Element("g"))
+        # Add axis lines and their labels.
+        diagram += (axis := Element("g"))
         with self.style:
-            self.style.set_svg_attribute(grid, "grid.stroke")
-            self.style.set_svg_attribute(grid, "grid.stroke_width")
+            self.style.set_svg_attribute(axis, "axis.stroke")
+            self.style.set_svg_attribute(axis, "axis.stroke_width")
             ticks = dimension.get_ticks(self.style)
             path = Path(Vector2(ticks[0].pixel, 0)).V(height)
             for tick in ticks[1:]:
                 path.M(Vector2(tick.pixel, 0)).V(height)
-            grid += Element("path", d=path)
-            if self.style["grid.labels"]:
-                grid += (labels := Element("g"))
+            axis += Element("path", d=path)
+            if self.style["axis.labels"]:
+                axis += (labels := Element("g"))
                 with self.style:
                     height += self.style["legend.size"]
                     self.style.set_svg_text_attributes(labels, "legend")
@@ -120,18 +125,19 @@ class Timelines(Diagram):
                     labels += entry.label_element(self.style, timelines, dimension)
 
         # Add legends after graphics.
-        diagram += (legends := Element("g"))
-        with self.style:
-            self.style.set_svg_text_attributes(legends, "legend")
-            for timeline in timelines:
-                legends += (legend := Element("text"))
-                legend += timeline
-                legend["x"] = self.style["padding"]
-                legend["y"] = (
-                    (self.style["height"] + self.style["legend.size"]) / 2
-                    + timelines[timeline]
-                    - self.style["legend.descend"]
-                )
+        if width:
+            diagram += (legends := Element("g"))
+            with self.style:
+                self.style.set_svg_text_attributes(legends, "legend")
+                for timeline in timelines:
+                    legends += (legend := Element("text"))
+                    legend += timeline
+                    legend["x"] = self.style["padding"]
+                    legend["y"] = (
+                        (self.style["height"] + self.style["legend.size"]) / 2
+                        + timelines[timeline]
+                        - self.style["legend.descend"]
+                    )
 
         return diagram
 

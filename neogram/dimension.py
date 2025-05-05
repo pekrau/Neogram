@@ -62,7 +62,7 @@ class Dimension:
 
     def get_ticks(self, style):
         "Return ticks for the current span (min and max)."
-        number = style["grid.number"]
+        number = style["axis.number"]
         span = self.max - self.min
         self.magnitude = math.log10(span / number)
         series = []
@@ -102,9 +102,9 @@ class Dimension:
         self.first = best[0]
         self.last = best[-1]
         self.scale = (self.width - self.offset) / (self.last - self.first)
-        if style["grid.labels"]:
+        if style["axis.labels"]:
             step = 10**self.magnitude
-            func = (lambda u: abs(u)) if style["grid.absolute"] else (lambda u: u)
+            func = (lambda u: abs(u)) if style["axis.absolute"] else (lambda u: u)
             result = [
                 Tick(u, self.get_pixel(u), label=N(round(func(u) / step))) for u in best
             ]

@@ -65,18 +65,18 @@ class Gantt(Diagram):
                     lanes[entry.lane] = height
                     height += self.style["height"] + padding
 
-        # Add grid lines and their labels.
-        diagram += (grid := Element("g"))
+        # Add axis lines and their labels.
+        diagram += (axis := Element("g"))
         with self.style:
-            self.style.set_svg_attribute(grid, "grid.stroke")
-            self.style.set_svg_attribute(grid, "grid.stroke_width")
+            self.style.set_svg_attribute(axis, "axis.stroke")
+            self.style.set_svg_attribute(axis, "axis.stroke_width")
             ticks = dimension.get_ticks(self.style)
             path = Path(Vector2(ticks[0].pixel, 0)).V(height)
             for tick in ticks[1:]:
                 path.M(Vector2(tick.pixel, 0)).V(height)
-            grid += Element("path", d=path)
-            if self.style["grid.labels"]:
-                grid += (labels := Element("g"))
+            axis += Element("path", d=path)
+            if self.style["axis.labels"]:
+                axis += (labels := Element("g"))
                 with self.style:
                     height += self.style["legend.size"]
                     self.style.set_svg_text_attributes(labels, "legend")

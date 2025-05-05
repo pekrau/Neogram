@@ -22,7 +22,9 @@ def test_piechart():
 
 
 def test_timelines():
-    universe = Timelines(style=dict(grid=dict(stroke="lightgrey", absolute=True)))
+    universe = Timelines(style=dict(axis=dict(stroke="lightgrey", absolute=True),
+                                    legend=dict(width=False),
+                                    padding=4))
     universe += Event(
         "Big Bang",
         -13787000000,

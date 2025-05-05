@@ -5,3 +5,5 @@ Create SVG diagrams of different kinds from specifications in YAML.
 
 ## Timelines chart
 
+## Gantt chart
+

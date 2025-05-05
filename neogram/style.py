@@ -20,8 +20,9 @@ STYLE_LABEL_DEFAULTS = dict(
 
 STYLE_LEGEND_DEFAULTS = STYLE_LABEL_DEFAULTS.copy()
 STYLE_LEGEND_DEFAULTS["anchor"] = "start"
+STYLE_LEGEND_DEFAULTS["width"] = True
 
-STYLE_GRID_DEFAULTS = dict(
+STYLE_AXIS_DEFAULTS = dict(
     stroke=Color("black"),
     stroke_width=1,
     number=8,
@@ -41,7 +42,7 @@ STYLE_DEFAULTS = dict(
     palette=Palette("#4c78a8", "#9ecae9", "#f58518"),
     label=STYLE_LABEL_DEFAULTS,
     legend=STYLE_LEGEND_DEFAULTS,
-    grid=STYLE_GRID_DEFAULTS,
+    axis=STYLE_AXIS_DEFAULTS,
 )
 
 # Defaults for SVG attribute values according to the SVG documentation.
