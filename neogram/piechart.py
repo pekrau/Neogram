@@ -1,6 +1,6 @@
 "Pie chart."
 
-__all__ = ["Piechart", "Slice", "Degrees"]
+__all__ = ["Piechart", "Slice"]
 
 
 from color import Color, Palette
@@ -21,14 +21,15 @@ class Piechart(Diagram):
         entries=None,
         style=None,
         id=None,
+        title=None,
         total=None,
     ):
-        super().__init__(entries=entries, style=style, id=id)
+        super().__init__(entries=entries, style=style, id=id, title=title)
         assert total is None or isinstance(total, (int, float))
 
-        self.style.set_default("size", self.DEFAULT_SIZE)
         self.total = total
         self.start = Degrees(self.style["start"])
+        self.style.set_default("size", self.DEFAULT_SIZE)
 
     def check_entry(self, entry):
         if not isinstance(entry, Slice):
@@ -151,6 +152,8 @@ SCHEMA = {
     "description": "Piechart with slices.",
     "type": "object",
     "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
         "style": {"$ref": "#/$defs/style"},
         "entries": {
             "type": "array",

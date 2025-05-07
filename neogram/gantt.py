@@ -10,7 +10,7 @@ from utils import N, get_text_length
 
 
 class Gantt(Diagram):
-    "Gantt chart."
+    "Gantt chart displaying tasks."
 
     DEFAULT_WIDTH = 500         # Entire diagram.
     DEFAULT_SIZE = 16           # Height of each lane.
@@ -19,16 +19,17 @@ class Gantt(Diagram):
     def __init__(
         self,
         entries=None,
-        id=None,
         style=None,
+        id=None,
+        title=None,
         epoch=None,
     ):
-        super().__init__(entries=entries, style=style, id=id)
+        super().__init__(entries=entries, style=style, id=id, title=title)
         assert epoch is None or isinstance(epoch, str)
 
+        self.epoch = epoch or self.DEFAULT_EPOCH
         self.style.set_default("width", self.DEFAULT_WIDTH)
         self.style.set_default("size", self.DEFAULT_SIZE)
-        self.epoch = epoch or self.DEFAULT_EPOCH
 
     def svg(self):
         """Return the SVG minixml element for the diagram content.
@@ -211,6 +212,8 @@ SCHEMA = {
     "description": "Gantt chart containing tasks.",
     "type": "object",
     "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
         "style": {"$ref": "#/$defs/style"},
         "entries": {
             "type": "array",

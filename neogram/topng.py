@@ -6,7 +6,7 @@ import pathlib
 import cairosvg
 import click
 
-from diagrams import retrieve
+from lookup import retrieve
 
 
 def validate_scale(ctx, param, value):

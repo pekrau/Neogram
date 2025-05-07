@@ -12,7 +12,7 @@ from utils import N, get_text_length
 
 
 class Timelines(Diagram):
-    "Timelines chart; set of timelines."
+    "Timelines chart; set of timelines displaying events and periods."
 
     DEFAULT_WIDTH = 500         # Entire diagram.
     DEFAULT_SIZE = 16           # Height of each timeline.
@@ -21,16 +21,17 @@ class Timelines(Diagram):
     def __init__(
         self,
         entries=None,
-        id=None,
         style=None,
+        id=None,
+        title=None,
         epoch=None,
     ):
-        super().__init__(entries=entries, style=style, id=id)
+        super().__init__(entries=entries, style=style, id=id, title=title)
         assert epoch is None or isinstance(epoch, str)
 
+        self.epoch = epoch or self.DEFAULT_EPOCH
         self.style.set_default("width", self.DEFAULT_WIDTH)
         self.style.set_default("size", self.DEFAULT_SIZE)
-        self.epoch = epoch or self.DEFAULT_EPOCH
 
     def check_entry(self, entry):
         if not isinstance(entry, Temporal):
@@ -54,6 +55,9 @@ class Timelines(Diagram):
         italic = self.style["legend.italic"]
         bold = self.style["legend.bold"]
         width = self.style["legend.width"]
+        # Legend width has been explicitly set to a number.
+        if width and width > 1:
+            dimension.update_offset(width)
         for entry in self.entries:
             with self.style:
                 self.style.update(entry.style)
@@ -72,9 +76,6 @@ class Timelines(Diagram):
                     height += padding
                     timelines[entry.timeline] = height
                     height += self.style["size"] + padding
-        # Legend width has been explicitly set.
-        if width and width > 1:
-            dimension.update_offset(width)
 
         # Add axis lines and their labels.
         diagram += (axis := Element("g"))
@@ -318,6 +319,8 @@ SCHEMA = {
     "description": "Timelines containing events and periods.",
     "type": "object",
     "properties": {
+        "id": {"type": "string"},
+        "title": {"type": "string"},
         "style": {"$ref": "#/$defs/style"},
         "entries": {
             "type": "array",

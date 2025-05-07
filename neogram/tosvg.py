@@ -4,7 +4,7 @@ import pathlib
 
 import click
 
-from diagrams import retrieve
+from lookup import retrieve
 
 
 @click.command()

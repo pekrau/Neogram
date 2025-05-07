@@ -30,16 +30,18 @@ class Entity:
 class Diagram(Entity):
     "Abstract diagram."
 
-    def __init__(self, entries=None, style=None, id=None):
+    def __init__(self, entries=None, style=None, id=None, title=None):
         assert entries is None or isinstance(entries, (tuple, list))
         assert style is None or isinstance(style, dict)
         assert id is None or isinstance(id, str)
+        assert title is None or isinstance(title, str)
 
         self.entries = []
         if entries:
             for entry in entries:
                 self.append(entry)
         self.id = id
+        self.title = title
         style = style or {}
         self.style = Style(**style)
 
@@ -101,6 +103,8 @@ class Diagram(Entity):
         result = dict(entries=[e.as_dict() for e in self.entries])
         if self.id:
             result["id"] = self.id
+        if self.title:
+            result["title"] = self.title
         result.update(self.style.as_dict())
         return result
 
@@ -116,8 +120,10 @@ class Diagram(Entity):
 
     def save(self, filepath_or_stream):
         "Write the YAML specification to the new file or open stream."
+        data = {constants.SOFTWARE.casefold(): constants.__version__}
+        data.update(self.as_dict())
         if isinstance(filepath_or_stream, (str, pathlib.Path)):
             with open(filepath_or_stream, "w") as outfile:
-                yaml.safe_dump(self.as_dict(), outfile, sort_keys=False)
+                yaml.safe_dump(data, outfile, sort_keys=False)
         else:
-            yaml.safe_dump(self.as_dict(), filepath_or_stream, sort_keys=False)
+            yaml.safe_dump(data, filepath_or_stream, sort_keys=False)

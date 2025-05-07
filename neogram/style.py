@@ -363,7 +363,7 @@ UNDERLINE_SCHEMA = {
 
 
 CONTRAST_SCHEMA = {
-    "title": "Set white or black according to which gives best contrast againts background.",
+    "title": "Set to white or black for best contrast against background.",
     "type": "boolean",
     "default": False,
 }
@@ -377,11 +377,6 @@ SCHEMA = {
         "stroke": STROKE_SCHEMA,
         "stroke_width": STROKE_WIDTH_SCHEMA,
         "fill": FILL_SCHEMA,
-        "radius": {
-            "title": "Radius of circle.",
-            "type": "number",
-            "minimum": 0,
-        },
         "width": {
             "title": "Width of diagram, if applicable.",
             "type": "number",
@@ -417,7 +412,7 @@ SCHEMA = {
             "type": "array",
             "items": {
                 "type": "string",
-                "format": "color"
+                "format": "color",
             }
         },
         "label": {
@@ -433,13 +428,24 @@ SCHEMA = {
                 "italic": ITALIC_SCHEMA,
                 "underline": UNDERLINE_SCHEMA,
                 "contrast": CONTRAST_SCHEMA,
-            }
+            },
+            "additionalProperties": False,
         },
         "legend": {
             "type": "object",
             "properties": {
                 "width": {
-                    "type": "boolean"
+                    "oneOf": [
+                        {
+                            "title": "Width of legend area.",
+                            "type": "integer",
+                            "minimum": 0,
+                        },
+                        {
+                            "title": "Compute width of legend, or do not display.",
+                            "type": "boolean",
+                        },
+                    ],
                 },
                 "stroke": STROKE_SCHEMA,
                 "fill": FILL_SCHEMA,
@@ -451,7 +457,8 @@ SCHEMA = {
                 "italic": ITALIC_SCHEMA,
                 "underline": UNDERLINE_SCHEMA,
                 "contrast": CONTRAST_SCHEMA,
-            }
+            },
+            "additionalProperties": False,
         },
         "axis": {
             "type": "object",
@@ -469,9 +476,11 @@ SCHEMA = {
                 "absolute": {
                     "title": "Display absolute values of label values.",
                     "type": "boolean"
-                }
-            }
-        }
+                },
+            "additionalProperties": False,
+            },
+        },
+        "additionalProperties": False,
     },
     "additionalProperties": False,
 }

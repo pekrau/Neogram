@@ -1,13 +1,15 @@
 "Constants."
 
 SOFTWARE = "Neogram"
-VERSION = (0, 6, 0)
+VERSION = (0, 6, 1)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
 SVG_CONTENT_TYPE = "image/svg+xml"
 YAML_CONTENT_TYPE = "application/yaml"
 
+JSONSCHEMA_ID = "https://neogram.org/schema"
+JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
 SANS_SERIF_FONT_FAMILIES = "FreeSans Arial Helvetica sans-serif"
 SERIF_FONT_FAMILIES = "FreeSerif Times serif"
 MONO_FONT_FAMILIES = "FreeMono Courier monospace"

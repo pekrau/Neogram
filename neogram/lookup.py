@@ -8,6 +8,7 @@ import pathlib
 
 import yaml
 
+import constants
 import diagram
 import piechart
 import timelines
@@ -32,6 +33,9 @@ def retrieve(filepath_or_stream):
             data = yaml.safe_load(infile)
     else:
         data = yaml.safe_load(filepath_or_stream)
+    version = data.pop(constants.SOFTWARE.casefold(), None)
+    if version != constants.__version__:
+        raise ValueError(f"YAML file has wrong version {version}.")
     if len(data) != 1:
         raise ValueError("YAML file must contain exactly one top-level diagram.")
     return parse(*data.popitem())
