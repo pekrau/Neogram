@@ -5,15 +5,15 @@ __all__ = ["Gantt", "Task"]
 from diagram import *
 from dimension import *
 from path import *
-from style import stylify, destylify
+import style as style_module
 from utils import N, get_text_length
 
 
 class Gantt(Diagram):
     "Gantt chart."
 
-    DEFAULT_WIDTH = 500  # Entire diagram.
-    DEFAULT_HEIGHT = 16  # Each lane.
+    DEFAULT_WIDTH = 500         # Entire diagram.
+    DEFAULT_SIZE = 16           # Height of each lane.
     DEFAULT_EPOCH = Epoch.ORDINAL
 
     def __init__(
@@ -27,7 +27,7 @@ class Gantt(Diagram):
         assert epoch is None or isinstance(epoch, str)
 
         self.style.set_default("width", self.DEFAULT_WIDTH)
-        self.style.set_default("height", self.DEFAULT_HEIGHT)
+        self.style.set_default("size", self.DEFAULT_SIZE)
         self.epoch = epoch or self.DEFAULT_EPOCH
 
     def svg(self):
@@ -38,13 +38,13 @@ class Gantt(Diagram):
 
         lanes = dict()
         dimension = Dimension(width=self.style["width"])
+        padding = self.style["padding"]
         height = 0
-        padding = self.style["padding"] or 0
 
         # Set the heights for each lane, and the offset for legends.
         # Legends are controlled by top-level styles.
         font = self.style["legend.font"]
-        size = self.style["legend.size"]
+        font_size = self.style["legend.font_size"]
         italic = self.style["legend.italic"]
         bold = self.style["legend.bold"]
         for entry in self.entries:
@@ -54,7 +54,7 @@ class Gantt(Diagram):
                     get_text_length(
                         entry.lane,
                         font=font,
-                        size=size,
+                        size=font_size,
                         italic=italic,
                         bold=bold,
                     )
@@ -63,7 +63,7 @@ class Gantt(Diagram):
                 if entry.lane not in lanes:
                     height += padding
                     lanes[entry.lane] = height
-                    height += self.style["height"] + padding
+                    height += self.style["size"] + padding
 
         # Add axis lines and their labels.
         diagram += (axis := Element("g"))
@@ -78,7 +78,7 @@ class Gantt(Diagram):
             if self.style["axis.labels"]:
                 axis += (labels := Element("g"))
                 with self.style:
-                    height += self.style["legend.size"]
+                    height += self.style["size"]
                     self.style.set_svg_text_attributes(labels, "legend")
                     self.style.set_svg_attribute(labels, "anchor", "middle")
                     for tick in ticks:
@@ -121,7 +121,7 @@ class Gantt(Diagram):
                 legends += (legend := Element("text", lane))
                 legend["x"] = self.style["padding"]
                 legend["y"] = (
-                    (self.style["height"] + self.style["legend.size"]) / 2
+                    (self.style["size"] + self.style["legend.font_size"]) / 2
                     + lanes[lane]
                     - self.style["legend.descend"]
                 )
@@ -151,7 +151,7 @@ class Task(Entity):
         self.finish = finish
         assert self.start <= self.finish
         self.lane = lane if lane is not None else self.label
-        self.style = stylify(style)
+        self.style = style_module.stylify(style)
 
     @property
     def minmax(self):
@@ -165,7 +165,7 @@ class Task(Entity):
                 x=N(dimension.get_pixel(self.start)),
                 y=N(lanes[self.lane]),
                 width=N(dimension.get_width(self.start, self.finish)),
-                height=style["height"],
+                height=style["size"],
             )
             if rounded := style["rounded"]:
                 elem["rx"] = rounded
@@ -184,8 +184,7 @@ class Task(Entity):
                 x=N(dimension.get_pixel((self.start + self.finish) / 2)),
                 y=N(
                     lanes[self.lane]
-                    + (style["height"] + style["label.size"]) / 2
-                    - (style["padding"] or 0)
+                    + (style["size"] + style["label.font_size"]) / 2
                     - style["label.descend"]
                 ),
             )
@@ -203,5 +202,45 @@ class Task(Entity):
         if self.lane != self.label:
             result["lane"] = self.lange
         if self.style:
-            result["style"] = destylify(self.style)
+            result["style"] = style_module.destylify(self.style)
         return result
+
+
+SCHEMA = {
+    "title": "Gantt chart",
+    "description": "Gantt chart containing tasks.",
+    "type": "object",
+    "properties": {
+        "style": {"$ref": "#/$defs/style"},
+        "entries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "object",
+                        "properties": {
+                            "style": {"$ref": "#/$defs/style"},
+                            "label": {
+                                "type": "string",
+                            },
+                            "start": {
+                                "type": "number",
+                            },
+                            "finish": {
+                                "type": "number",
+                            },
+                            "lane": {
+                                "type": "string",
+                            },
+                        },
+                        "required": ["start", "finish"],
+                        "additionalProperties": False,
+                    },
+                },
+                "additionalProperties": False,
+            },
+        },
+    },
+    "additionalProperties": False,
+}

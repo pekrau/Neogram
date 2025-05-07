@@ -6,10 +6,10 @@ __all__ = ["Style"]
 from color import Color, Palette
 
 STYLE_LABEL_DEFAULTS = dict(
-    stroke="none",
+    stroke=None,
     fill=Color("black"),
     font="sans-serif",
-    size=14,
+    font_size=14,
     descend=2,
     anchor="middle",
     bold=False,
@@ -34,11 +34,12 @@ STYLE_DEFAULTS = dict(
     stroke=Color("black"),
     stroke_width=1,
     fill=Color("white"),
-    radius=0,  # Default depends on the diagram.
-    width=0,  # Default depends on the diagram.
-    height=0,  # Default depends on the diagram.
-    padding=None,  # int
-    rounded=None,  # int
+    width=0,                    # Default depends on the diagram.
+    height=0,                   # Default depends on the diagram.
+    size=0,                     # Default depends on the diagram.
+    start=0,
+    padding=0,
+    rounded=0,
     palette=Palette("#4c78a8", "#9ecae9", "#f58518"),
     label=STYLE_LABEL_DEFAULTS,
     legend=STYLE_LEGEND_DEFAULTS,
@@ -47,7 +48,7 @@ STYLE_DEFAULTS = dict(
 
 # Defaults for SVG attribute values according to the SVG documentation.
 SVG_STYLE_DEFAULTS = {
-    "stroke": "none",
+    "stroke": None,
     "stroke-width": 1,
     "fill": "black",
     "font-family": None,
@@ -55,14 +56,14 @@ SVG_STYLE_DEFAULTS = {
     "font-weight": "normal",
     "font-style": "normal",
     "text-anchor": "start",
-    "text-decoration": "none",
+    "text-decoration": None,
 }
 
-# Translation of Neogram style to SVG attribute name.
+# Translation of Neogram style name to SVG attribute name.
 SVG_STYLE_ATTRS = {
     "stroke_width": "stroke-width",
     "font": "font-family",
-    "size": "font-size",
+    "font_size": "font-size",
     "anchor": "text-anchor",
     "bold": "font-weight",
     "italic": "font-style",
@@ -98,7 +99,7 @@ def to_style_value(key, value):
                 value = Color(value)
 
         # Positive int or float.
-        case "radius" | "stroke_width" | "size" | "number":
+        case "radius" | "stroke_width" | "font_size" | "number":
             if not isinstance(value, (int, float)):
                 raise ValueError
             if value <= 0:
@@ -236,9 +237,10 @@ class Style:
         except KeyError:
             pass
         # Convert the value according to the SVG attribute.
+        # Not all values need to be converted.
         match attr:
             case "stroke" | "fill":
-                value = "none" if value is None else str(value)
+                value = str(value) if value else "none"
             case "font-weight":
                 value = "bold" if value else "normal"
             case "font-style":
@@ -256,7 +258,7 @@ class Style:
         self.set_svg_attribute(elem, f"{kind}.stroke")
         self.set_svg_attribute(elem, f"{kind}.fill")
         self.set_svg_attribute(elem, f"{kind}.font")
-        self.set_svg_attribute(elem, f"{kind}.size")
+        self.set_svg_attribute(elem, f"{kind}.font_size")
         self.set_svg_attribute(elem, f"{kind}.anchor")
         self.set_svg_attribute(elem, f"{kind}.bold")
         self.set_svg_attribute(elem, f"{kind}.italic")
@@ -286,18 +288,190 @@ class Style:
         return self._unflatten(destylify(result))
 
 
-if __name__ == "__main__":
-    from minixml import Element
+STROKE_SCHEMA = {
+    "title": "Color for outline, line and curve",
+    "oneOf": [
+        {
+            "type": "string",
+            "format": "color"
+        },
+        {
+            "const": None
+        },
+    ],
+}
 
-    style = Style()
-    svg = Element("svg")
-    style.push(stroke=Color("red"))
-    svg += (g := Element("g"))
-    style.set_attribute(g, "stroke")
-    style.set_attribute(g, "fill")
-    style.set_text_attributes(g, "label")
-    g += (text := Element("text"))
-    style.set_text_attributes(text, "legend")
-    text += "blopp"
-    print(repr(svg))
-    print(len(style))
+STROKE_WIDTH_SCHEMA= {
+    "title": "Width of outline, line and curve",
+    "type": "number",
+    "minimum": 0,
+}
+
+FILL_SCHEMA = {
+    "title": "Color for area.",
+    "oneOf": [
+        {
+            "type": "string",
+            "format": "color"
+        },
+        {
+            "const": None
+        },
+    ],
+}
+
+FONT_SCHEMA = {
+    "title": "Name of font family.",
+    "type": "string",
+}
+
+FONT_SIZE_SCHEMA = {
+    "title": "Size of the font.",
+    "type": "number",
+    "exclusiveMinimum": 0,
+}
+
+DESCEND_SCHEMA = {
+    "title": "Size of the font descender.",
+    "type": "number",
+    "minimum": 0,
+}
+
+ANCHOR_SCHEMA = {
+    "title": "Placement point for the output string.",
+    "enum": ["start", "middle", "end"],
+}
+
+BOLD_SCHEMA = {
+    "title": "Bold text or normal.",
+    "type": "boolean",
+    "default": False,
+}
+
+
+ITALIC_SCHEMA = {
+    "title": "Italic text or normal.",
+    "type": "boolean",
+    "default": False,
+}
+
+UNDERLINE_SCHEMA = {
+    "title": "Underlined text or normal.",
+    "type": "boolean",
+    "default": False,
+}
+
+
+CONTRAST_SCHEMA = {
+    "title": "Set white or black according to which gives best contrast againts background.",
+    "type": "boolean",
+    "default": False,
+}
+
+
+SCHEMA = {
+    "title": "Style",
+    "description": "Style specification",
+    "type": "object",
+    "properties": {
+        "stroke": STROKE_SCHEMA,
+        "stroke_width": STROKE_WIDTH_SCHEMA,
+        "fill": FILL_SCHEMA,
+        "radius": {
+            "title": "Radius of circle.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "width": {
+            "title": "Width of diagram, if applicable.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "height": {
+            "title": "Height of diagram, if applicable.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "size": {
+            "title": "Size of main graphical items of the specific diagram.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "start": {
+            "title": "Start of graphical items.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "padding": {
+            "title": "Padding around main graphical items of the specific diagram.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "rounded": {
+            "title": "Rounding of the main rectangle items of the specific diagram.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "palette": {
+            "title": "Color palette for graphical items to cycle through.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "color"
+            }
+        },
+        "label": {
+            "type": "object",
+            "properties": {
+                "stroke": STROKE_SCHEMA,
+                "fill": FILL_SCHEMA,
+                "font": FONT_SCHEMA,
+                "font_size": FONT_SIZE_SCHEMA,
+                "descend": DESCEND_SCHEMA,
+                "anchor": ANCHOR_SCHEMA,
+                "bold": BOLD_SCHEMA,
+                "italic": ITALIC_SCHEMA,
+                "underline": UNDERLINE_SCHEMA,
+                "contrast": CONTRAST_SCHEMA,
+            }
+        },
+        "legend": {
+            "type": "object",
+            "properties": {
+                "width": {
+                    "type": "boolean"
+                },
+                "stroke": STROKE_SCHEMA,
+                "fill": FILL_SCHEMA,
+                "font": FONT_SCHEMA,
+                "font_size": FONT_SIZE_SCHEMA,
+                "descend": DESCEND_SCHEMA,
+                "anchor": ANCHOR_SCHEMA,
+                "bold": BOLD_SCHEMA,
+                "italic": ITALIC_SCHEMA,
+                "underline": UNDERLINE_SCHEMA,
+                "contrast": CONTRAST_SCHEMA,
+            }
+        },
+        "axis": {
+            "type": "object",
+            "properties": {
+                "stroke": STROKE_SCHEMA,
+                "stroke_width": STROKE_WIDTH_SCHEMA,
+                "number": {
+                    "title": "Requested number of ticks.",
+                    "type": "integer"
+                },
+                "labels": {
+                    "title": "Display labels for values.",
+                    "type": "boolean"
+                },
+                "absolute": {
+                    "title": "Display absolute values of label values.",
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "additionalProperties": False,
+}

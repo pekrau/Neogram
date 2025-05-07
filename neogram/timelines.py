@@ -7,15 +7,15 @@ import datetime
 from diagram import *
 from dimension import *
 from path import *
-from style import stylify, destylify
+import style as style_module
 from utils import N, get_text_length
 
 
 class Timelines(Diagram):
     "Timelines chart; set of timelines."
 
-    DEFAULT_WIDTH = 500  # Entire diagram.
-    DEFAULT_HEIGHT = 16  # Each timeline.
+    DEFAULT_WIDTH = 500         # Entire diagram.
+    DEFAULT_SIZE = 16           # Height of each timeline.
     DEFAULT_EPOCH = Epoch.ORDINAL
 
     def __init__(
@@ -29,7 +29,7 @@ class Timelines(Diagram):
         assert epoch is None or isinstance(epoch, str)
 
         self.style.set_default("width", self.DEFAULT_WIDTH)
-        self.style.set_default("height", self.DEFAULT_HEIGHT)
+        self.style.set_default("size", self.DEFAULT_SIZE)
         self.epoch = epoch or self.DEFAULT_EPOCH
 
     def check_entry(self, entry):
@@ -45,12 +45,12 @@ class Timelines(Diagram):
         timelines = dict()
         dimension = Dimension(width=self.style["width"])
         height = 0
-        padding = self.style["padding"] or 0
+        padding = self.style["padding"]
 
         # Set the heights for each timeline, and the offset for legends.
         # Legends are controlled by top-level styles.
         font = self.style["legend.font"]
-        size = self.style["legend.size"]
+        size = self.style["legend.font_size"]
         italic = self.style["legend.italic"]
         bold = self.style["legend.bold"]
         width = self.style["legend.width"]
@@ -71,7 +71,7 @@ class Timelines(Diagram):
                 if entry.timeline not in timelines:
                     height += padding
                     timelines[entry.timeline] = height
-                    height += self.style["height"] + padding
+                    height += self.style["size"] + padding
         # Legend width has been explicitly set.
         if width and width > 1:
             dimension.update_offset(width)
@@ -89,7 +89,7 @@ class Timelines(Diagram):
             if self.style["axis.labels"]:
                 axis += (labels := Element("g"))
                 with self.style:
-                    height += self.style["legend.size"]
+                    height += self.style["legend.font_size"]
                     self.style.set_svg_text_attributes(labels, "legend")
                     self.style.set_svg_attribute(labels, "anchor", "middle")
                     for tick in ticks:
@@ -134,7 +134,7 @@ class Timelines(Diagram):
                     legend += timeline
                     legend["x"] = self.style["padding"]
                     legend["y"] = (
-                        (self.style["height"] + self.style["legend.size"]) / 2
+                        (self.style["size"] + self.style["legend.font_size"]) / 2
                         + timelines[timeline]
                         - self.style["legend.descend"]
                     )
@@ -159,7 +159,7 @@ class Temporal(Entity):
 
         self.label = label
         self.timeline = timeline if timeline is not None else label
-        self.style = stylify(style)
+        self.style = style_module.stylify(style)
 
     @property
     def minmax(self):
@@ -180,7 +180,7 @@ class Temporal(Entity):
         if self.timeline:
             result["timeline"] = self.timeline
         if self.style:
-            result["style"] = destylify(self.style)
+            result["style"] = style_module.destylify(self.style)
         return result
 
 
@@ -189,6 +189,7 @@ class Event(Temporal):
 
     def __init__(self, label, moment, timeline=None, style=None):
         super().__init__(label, timeline=timeline, style=style)
+        assert isinstance(moment, (int, float))
         self.moment = moment
 
     @property
@@ -202,15 +203,15 @@ class Event(Temporal):
             elem = Element(
                 "ellipse",
                 cx=N(dimension.get_pixel(self.moment)),
-                cy=N(timelines[self.timeline] + style["height"] / 2),
-                rx=style["height"] / 4,
-                ry=style["height"] / 2,
+                cy=N(timelines[self.timeline] + style["size"] / 2),
+                rx=style["size"] / 4,
+                ry=style["size"] / 2,
             )
             # elem = Element(
             #     "circle",
             #     cx=N(dimension.get_pixel(self.moment)),
-            #     cy=N(timelines[self.timeline] + style["height"] / 2),
-            #     r=style["height"] / 2,
+            #     cy=N(timelines[self.timeline] + style["size"] / 2),
+            #     r=style["size"] / 2,
             # )
             style.set_svg_attribute(elem, "stroke")
             style.set_svg_attribute(elem, "stroke_width")
@@ -227,8 +228,7 @@ class Event(Temporal):
                 x=N(dimension.get_pixel(self.moment) + 1),
                 y=N(
                     timelines[self.timeline]
-                    + (style["height"] + style["label.size"]) / 2
-                    - (style["padding"] or 0)
+                    + (style["size"] + style["label.font_size"]) / 2
                     - style["label.descend"]
                 ),
             )
@@ -259,6 +259,8 @@ class Period(Temporal):
 
     def __init__(self, label, begin, end, timeline=None, style=None):
         super().__init__(label, timeline=timeline, style=style)
+        assert isinstance(begin, (int, float))
+        assert isinstance(end, (int, float))
         self.begin = begin
         self.end = end
 
@@ -274,7 +276,7 @@ class Period(Temporal):
                 x=N(dimension.get_pixel(self.begin)),
                 y=N(timelines[self.timeline]),
                 width=N(dimension.get_width(self.begin, self.end)),
-                height=style["height"],
+                height=style["size"],
             )
             if rounded := style["rounded"]:
                 elem["rx"] = rounded
@@ -292,8 +294,7 @@ class Period(Temporal):
                 x=N(dimension.get_pixel((self.begin + self.end) / 2)),
                 y=N(
                     timelines[self.timeline]
-                    + (style["height"] + style["label.size"]) / 2
-                    - (style["padding"] or 0)
+                    + (style["size"] + style["label.font_size"]) / 2
                     - style["label.descend"]
                 ),
             )
@@ -312,9 +313,66 @@ class Period(Temporal):
         return result
 
 
-if __name__ == "__main__":
-    bp = Epoch.BP
-    ic(isinstance(bp, str))
-    ic(bp.name == "BP")
-    ic(str(bp))
-    ic(Epoch("Before Present"))
+SCHEMA = {
+    "title": "Timelines",
+    "description": "Timelines containing events and periods.",
+    "type": "object",
+    "properties": {
+        "style": {"$ref": "#/$defs/style"},
+        "entries": {
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "event": {
+                                "type": "object",
+                                "properties": {
+                                    "style": {"$ref": "#/$defs/style"},
+                                    "label": {
+                                        "type": "string",
+                                    },
+                                    "moment": {
+                                        "type": "number",
+                                    },
+                                    "timeline": {
+                                        "type": "string",
+                                    },
+                                },
+                                "required": ["moment"],
+                                "additionalProperties": False,
+                            },
+                        },
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "period": {
+                                "type": "object",
+                                "properties": {
+                                    "style": {"$ref": "#/$defs/style"},
+                                    "label": {
+                                        "type": "string",
+                                    },
+                                    "begin": {
+                                        "type": "number",
+                                    },
+                                    "end": {
+                                        "type": "number",
+                                    },
+                                    "timeline": {
+                                        "type": "string",
+                                    },
+                                },
+                                "required": ["begin", "end"],
+                                "additionalProperties": False,
+                            },
+                        },
+                    },
+                ]
+            },
+        },
+    },
+    "additionalProperties": False,
+}

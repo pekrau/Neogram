@@ -8,11 +8,10 @@ import pathlib
 
 import yaml
 
-from diagram import *
-from piechart import *
-from timelines import *
-
-# from gantt import *
+import diagram
+import piechart
+import timelines
+import gantt
 
 
 _entity_lookup = {}
@@ -20,7 +19,7 @@ _entity_lookup = {}
 
 def register(cls):
     "Add the entity class to the lookup table."
-    assert issubclass(cls, Entity)
+    assert issubclass(cls, diagram.Entity)
     _entity_lookup[cls.__name__.casefold()] = cls
 
 
@@ -53,12 +52,12 @@ def parse(entity, data):
     return cls(**data)
 
 
-register(Piechart)
-register(Slice)
+register(piechart.Piechart)
+register(piechart.Slice)
 
-register(Timelines)
-register(Event)
-register(Period)
+register(timelines.Timelines)
+register(timelines.Event)
+register(timelines.Period)
 
-# register(Gantt)
-# register(Task)
+register(gantt.Gantt)
+register(gantt.Task)

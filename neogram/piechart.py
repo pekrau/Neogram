@@ -7,33 +7,28 @@ from color import Color, Palette
 from diagram import *
 from degrees import *
 from path import *
-from style import stylify, destylify
+import style as style_module
 from utils import N
 
 
 class Piechart(Diagram):
     "Pie chart displaying slices."
 
-    DEFAULT_RADIUS = 100.0
+    DEFAULT_SIZE = 200.0
 
     def __init__(
         self,
         entries=None,
         style=None,
         id=None,
-        start=None,
         total=None,
     ):
         super().__init__(entries=entries, style=style, id=id)
-        assert start is None or isinstance(start, (int, float, Degrees))
         assert total is None or isinstance(total, (int, float))
 
-        self.style.set_default("radius", self.DEFAULT_RADIUS)
-        if isinstance(start, (int, float)):
-            self.start = Degrees(start)
-        else:
-            self.start = start
+        self.style.set_default("size", self.DEFAULT_SIZE)
         self.total = total
+        self.start = Degrees(self.style["start"])
 
     def check_entry(self, entry):
         if not isinstance(entry, Slice):
@@ -43,10 +38,10 @@ class Piechart(Diagram):
         "Return the SVG minixml element for the diagram content."
         diagram = super().svg()
 
-        radius = self.style["radius"]
+        diameter = self.style["size"]
+        radius = diameter / 2
         diagram += Element("circle", r=N(radius))
 
-        diameter = 2 * radius
         if self.style["stroke"] and self.style["stroke_width"]:
             diameter += self.style["stroke_width"]
         self.extent = Vector2(diameter, diameter)
@@ -132,25 +127,54 @@ class Piechart(Diagram):
 
         return diagram
 
-    def as_dict_content(self):
-        "Return content as a dictionary of basic YAML values."
-        result = super().as_dict_content()
-        result["start"] = None if self.start is None else self.start.degrees
-        return result
-
 
 class Slice(Entity):
     "A slice in a pie chart."
 
     def __init__(self, value, label=None, style=None):
+        assert isinstance(value, (int, float))
         self.value = value
         self.label = label
-        self.style = stylify(style)
+        self.style = style_module.stylify(style)
 
     def as_dict_content(self):
         result = dict(value=self.value)
         if self.label:
             result["label"] = self.label
         if self.style:
-            result.update({"style": destylify(self.style)})
+            result.update({"style": style_module.destylify(self.style)})
         return result
+
+
+SCHEMA = {
+    "title": "Piechart",
+    "description": "Piechart with slices.",
+    "type": "object",
+    "properties": {
+        "style": {"$ref": "#/$defs/style"},
+        "entries": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "slice": {
+                        "type": "object",
+                        "properties": {
+                            "style": {"$ref": "#/$defs/style"},
+                            "label": {
+                                "type": "string",
+                            },
+                            "value": {
+                                "type": "number",
+                            },
+                        },
+                        "required": ["value"],
+                        "additionalProperties": False,
+                    },
+                },
+                "additionalProperties": False,
+            },
+        },
+    },
+    "additionalProperties": False,
+}
