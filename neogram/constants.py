@@ -1,7 +1,7 @@
 "Constants."
 
 SOFTWARE = "Neogram"
-VERSION = (0, 6, 1)
+VERSION = (0, 6, 2)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"

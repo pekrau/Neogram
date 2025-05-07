@@ -1,26 +1,20 @@
-"Style class."
-
-__all__ = ["Style"]
-
+"Style handling."
 
 from color import Color, Palette
 
-STYLE_LABEL_DEFAULTS = dict(
+STYLE_TEXT_DEFAULTS = dict(
+    width=True,
     stroke=None,
     fill=Color("black"),
     font="sans-serif",
     font_size=14,
     descend=2,
-    anchor="middle",
+    anchor=None,
     bold=False,
     italic=False,
     underline=False,
     contrast=False,
 )
-
-STYLE_LEGEND_DEFAULTS = STYLE_LABEL_DEFAULTS.copy()
-STYLE_LEGEND_DEFAULTS["anchor"] = "start"
-STYLE_LEGEND_DEFAULTS["width"] = True
 
 STYLE_AXIS_DEFAULTS = dict(
     stroke=Color("black"),
@@ -34,15 +28,16 @@ STYLE_DEFAULTS = dict(
     stroke=Color("black"),
     stroke_width=1,
     fill=Color("white"),
-    width=0,                    # Default depends on the diagram.
-    height=0,                   # Default depends on the diagram.
-    size=0,                     # Default depends on the diagram.
+    width=0,  # Default depends on the diagram.
+    height=0,  # Default depends on the diagram.
+    size=0,  # Default depends on the diagram.
     start=0,
     padding=0,
     rounded=0,
     palette=Palette("#4c78a8", "#9ecae9", "#f58518"),
-    label=STYLE_LABEL_DEFAULTS,
-    legend=STYLE_LEGEND_DEFAULTS,
+    title=STYLE_TEXT_DEFAULTS,
+    label=STYLE_TEXT_DEFAULTS,
+    legend=STYLE_TEXT_DEFAULTS,
     axis=STYLE_AXIS_DEFAULTS,
 )
 
@@ -259,7 +254,14 @@ class Style:
         self.set_svg_attribute(elem, f"{kind}.fill")
         self.set_svg_attribute(elem, f"{kind}.font")
         self.set_svg_attribute(elem, f"{kind}.font_size")
-        self.set_svg_attribute(elem, f"{kind}.anchor")
+        # Special case for legend; default anchor is 'start'.
+        if self[f"{kind}.anchor"] is None:
+            if kind == "legend":
+                self.set_svg_attribute(elem, "legend.anchor", value="start")
+            else:
+                self.set_svg_attribute(elem, f"{kind}.anchor", value="middle")
+        else:
+            self.set_svg_attribute(elem, f"{kind}.anchor")
         self.set_svg_attribute(elem, f"{kind}.bold")
         self.set_svg_attribute(elem, f"{kind}.italic")
         self.set_svg_attribute(elem, f"{kind}.underline")
@@ -291,17 +293,12 @@ class Style:
 STROKE_SCHEMA = {
     "title": "Color for outline, line and curve",
     "oneOf": [
-        {
-            "type": "string",
-            "format": "color"
-        },
-        {
-            "const": None
-        },
+        {"type": "string", "format": "color"},
+        {"const": None},
     ],
 }
 
-STROKE_WIDTH_SCHEMA= {
+STROKE_WIDTH_SCHEMA = {
     "title": "Width of outline, line and curve",
     "type": "number",
     "minimum": 0,
@@ -310,64 +307,70 @@ STROKE_WIDTH_SCHEMA= {
 FILL_SCHEMA = {
     "title": "Color for area.",
     "oneOf": [
-        {
-            "type": "string",
-            "format": "color"
-        },
-        {
-            "const": None
-        },
+        {"type": "string", "format": "color"},
+        {"const": None},
     ],
 }
 
-FONT_SCHEMA = {
-    "title": "Name of font family.",
-    "type": "string",
+TEXT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "width": {
+            "oneOf": [
+                {
+                    "title": "Width of text area.",
+                    "type": "number",
+                    "minimum": 2,
+                },
+                {
+                    "title": "Compute width of text area, or do not display.",
+                    "type": "boolean",
+                },
+            ],
+        },
+        "stroke": STROKE_SCHEMA,
+        "fill": FILL_SCHEMA,
+        "font": {
+            "title": "Name of font family.",
+            "type": "string",
+        },
+        "font_size": {
+            "title": "Size of the font.",
+            "type": "number",
+            "exclusiveMinimum": 0,
+        },
+        "descend": {
+            "title": "Size of the font descender.",
+            "type": "number",
+            "minimum": 0,
+        },
+        "anchor": {
+            "title": "Placement point for the output string.",
+            "enum": ["start", "middle", "end"],
+        },
+        "bold": {
+            "title": "Bold text or normal.",
+            "type": "boolean",
+            "default": False,
+        },
+        "italic": {
+            "title": "Italic text or normal.",
+            "type": "boolean",
+            "default": False,
+        },
+        "underline": {
+            "title": "Underlined text or normal.",
+            "type": "boolean",
+            "default": False,
+        },
+        "contrast": {
+            "title": "Set to white or black for best contrast against background.",
+            "type": "boolean",
+            "default": False,
+        },
+    },
+    "additionalProperties": False,
 }
-
-FONT_SIZE_SCHEMA = {
-    "title": "Size of the font.",
-    "type": "number",
-    "exclusiveMinimum": 0,
-}
-
-DESCEND_SCHEMA = {
-    "title": "Size of the font descender.",
-    "type": "number",
-    "minimum": 0,
-}
-
-ANCHOR_SCHEMA = {
-    "title": "Placement point for the output string.",
-    "enum": ["start", "middle", "end"],
-}
-
-BOLD_SCHEMA = {
-    "title": "Bold text or normal.",
-    "type": "boolean",
-    "default": False,
-}
-
-
-ITALIC_SCHEMA = {
-    "title": "Italic text or normal.",
-    "type": "boolean",
-    "default": False,
-}
-
-UNDERLINE_SCHEMA = {
-    "title": "Underlined text or normal.",
-    "type": "boolean",
-    "default": False,
-}
-
-
-CONTRAST_SCHEMA = {
-    "title": "Set to white or black for best contrast against background.",
-    "type": "boolean",
-    "default": False,
-}
-
 
 SCHEMA = {
     "title": "Style",
@@ -413,71 +416,22 @@ SCHEMA = {
             "items": {
                 "type": "string",
                 "format": "color",
-            }
-        },
-        "label": {
-            "type": "object",
-            "properties": {
-                "stroke": STROKE_SCHEMA,
-                "fill": FILL_SCHEMA,
-                "font": FONT_SCHEMA,
-                "font_size": FONT_SIZE_SCHEMA,
-                "descend": DESCEND_SCHEMA,
-                "anchor": ANCHOR_SCHEMA,
-                "bold": BOLD_SCHEMA,
-                "italic": ITALIC_SCHEMA,
-                "underline": UNDERLINE_SCHEMA,
-                "contrast": CONTRAST_SCHEMA,
             },
-            "additionalProperties": False,
         },
-        "legend": {
-            "type": "object",
-            "properties": {
-                "width": {
-                    "oneOf": [
-                        {
-                            "title": "Width of legend area.",
-                            "type": "integer",
-                            "minimum": 0,
-                        },
-                        {
-                            "title": "Compute width of legend, or do not display.",
-                            "type": "boolean",
-                        },
-                    ],
-                },
-                "stroke": STROKE_SCHEMA,
-                "fill": FILL_SCHEMA,
-                "font": FONT_SCHEMA,
-                "font_size": FONT_SIZE_SCHEMA,
-                "descend": DESCEND_SCHEMA,
-                "anchor": ANCHOR_SCHEMA,
-                "bold": BOLD_SCHEMA,
-                "italic": ITALIC_SCHEMA,
-                "underline": UNDERLINE_SCHEMA,
-                "contrast": CONTRAST_SCHEMA,
-            },
-            "additionalProperties": False,
-        },
+        "label": {"$ref": "#/$defs/text"},
+        "legend": {"$ref": "#/$defs/text"},
         "axis": {
             "type": "object",
             "properties": {
                 "stroke": STROKE_SCHEMA,
                 "stroke_width": STROKE_WIDTH_SCHEMA,
-                "number": {
-                    "title": "Requested number of ticks.",
-                    "type": "integer"
-                },
-                "labels": {
-                    "title": "Display labels for values.",
-                    "type": "boolean"
-                },
+                "number": {"title": "Requested number of ticks.", "type": "integer"},
+                "labels": {"title": "Display labels for values.", "type": "boolean"},
                 "absolute": {
                     "title": "Display absolute values of label values.",
-                    "type": "boolean"
+                    "type": "boolean",
                 },
-            "additionalProperties": False,
+                "additionalProperties": False,
             },
         },
         "additionalProperties": False,

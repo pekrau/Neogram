@@ -1,4 +1,4 @@
-"Neogram: Validate the contents of the YAML file(s) against the schema."
+"Validate the contents of the YAML file(s) against the schema."
 
 import sys
 
@@ -12,11 +12,12 @@ import schema
 @click.command()
 @click.argument("infilepaths", required=True, nargs=-1)
 def validate(infilepaths):
+    validator = schema.get_validator()
     for infilepath in infilepaths:
         with open(infilepath) as infile:
             data = yaml.safe_load(infile)
         try:
-            schema.validate(data)
+            validator.validate(data)
         except jsonschema.exceptions.ValidationError as error:
             path = "".join([f"['{p}']" for p in error.path])
             sys.exit(f"{error.message}\n  instance {path}:\n    {error.instance}")

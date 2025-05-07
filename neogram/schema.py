@@ -1,5 +1,7 @@
 "Neogram. JSON Schema definitions of YAML content."
 
+import json
+
 import jsonschema
 import webcolors
 import yaml
@@ -15,16 +17,22 @@ SCHEMA = {
     "title": "Neogram",
     "description": "Neogram YAML format specification.",
     "$defs": {
+        "text": style.TEXT_SCHEMA,
         "style": style.SCHEMA,
     },
     "type": "object",
     "properties": {
-        constants.SOFTWARE.casefold(): {"type": "string"},
+        constants.SOFTWARE.casefold(): {
+            "oneOf": [{"type": "string"}, {"const": None}],
+        },
         "piechart": lookup.piechart.SCHEMA,
         "timelines": lookup.timelines.SCHEMA,
         "gantt": lookup.gantt.SCHEMA,
     },
     "additionalProperties": False,
+    "required": [constants.SOFTWARE.casefold()],
+    "minProperties": 2,
+    "maxProperties": 2,
 }
 
 
@@ -42,19 +50,18 @@ def get_validator():
                 return False
         return True
 
-    return jsonschema.Draft202012Validator(
-        schema=SCHEMA, format_checker=format_checker
-    )
+    return jsonschema.Draft202012Validator(schema=SCHEMA, format_checker=format_checker)
+
 
 def check_schema():
     get_validator().check_schema(SCHEMA)
-    
+
 
 def validate(instance):
     get_validator().validate(instance)
 
 
 if __name__ == "__main__":
-    import json
     check_schema()
-    print(json.dumps(SCHEMA, indent=2))
+    with open("schema.json", "w") as outfile:
+        json.dump(SCHEMA, outfile, indent=2, sort_keys=False)

@@ -12,8 +12,8 @@ from utils import N, get_text_length
 class Gantt(Diagram):
     "Gantt chart displaying tasks."
 
-    DEFAULT_WIDTH = 500         # Entire diagram.
-    DEFAULT_SIZE = 16           # Height of each lane.
+    DEFAULT_WIDTH = 500  # Entire diagram.
+    DEFAULT_SIZE = 16  # Height of each lane.
     DEFAULT_EPOCH = Epoch.ORDINAL
 
     def __init__(
@@ -39,32 +39,26 @@ class Gantt(Diagram):
 
         lanes = dict()
         dimension = Dimension(width=self.style["width"])
-        padding = self.style["padding"]
-        height = 0
 
         # Set the heights for each lane, and the offset for legends.
         # Legends are controlled by top-level styles.
-        font = self.style["legend.font"]
-        font_size = self.style["legend.font_size"]
-        italic = self.style["legend.italic"]
-        bold = self.style["legend.bold"]
+        area_height = self.height
+        kwargs = dict(
+            font=self.style["legend.font"],
+            size=self.style["legend.font_size"],
+            italic=self.style["legend.italic"],
+            bold=self.style["legend.bold"],
+        )
+        padding = self.style["padding"]
         for entry in self.entries:
             with self.style:
                 self.style.update(entry.style)
-                dimension.update_offset(
-                    get_text_length(
-                        entry.lane,
-                        font=font,
-                        size=font_size,
-                        italic=italic,
-                        bold=bold,
-                    )
-                )
+                dimension.update_offset(get_text_length(entry.lane, **kwargs))
                 dimension.update_span(entry.minmax)
                 if entry.lane not in lanes:
-                    height += padding
-                    lanes[entry.lane] = height
-                    height += self.style["size"] + padding
+                    self.height += padding
+                    lanes[entry.lane] = self.height
+                    self.height += self.style["size"] + padding
 
         # Add axis lines and their labels.
         diagram += (axis := Element("g"))
@@ -72,19 +66,23 @@ class Gantt(Diagram):
             self.style.set_svg_attribute(axis, "axis.stroke")
             self.style.set_svg_attribute(axis, "axis.stroke_width")
             ticks = dimension.get_ticks(self.style)
-            path = Path(Vector2(ticks[0].pixel, 0)).V(height)
+            path = Path(Vector2(ticks[0].pixel, area_height)).V(self.height)
             for tick in ticks[1:]:
-                path.M(Vector2(tick.pixel, 0)).V(height)
+                path.M(Vector2(tick.pixel, area_height)).V(self.height)
+            path.M(Vector2(ticks[0].pixel, area_height)).H(self.style["width"])
+            path.M(Vector2(ticks[0].pixel, self.height)).H(self.style["width"])
             axis += Element("path", d=path)
             if self.style["axis.labels"]:
                 axis += (labels := Element("g"))
                 with self.style:
-                    height += self.style["size"]
+                    self.height += self.style["size"]
                     self.style.set_svg_text_attributes(labels, "legend")
                     self.style.set_svg_attribute(labels, "anchor", "middle")
                     for tick in ticks:
                         labels += (
-                            label := Element("text", tick.label, x=tick.pixel, y=height)
+                            label := Element(
+                                "text", tick.label, x=tick.pixel, y=self.height
+                            )
                         )
                         if tick is ticks[0]:
                             with self.style:
@@ -92,10 +90,7 @@ class Gantt(Diagram):
                         elif tick is ticks[-1]:
                             with self.style:
                                 self.style.set_svg_attribute(label, "anchor", "end")
-                    height += self.style["legend.descend"]
-
-        self.origin = Vector2(0, 0)
-        self.extent = Vector2(self.style["width"], height)
+                    self.height += self.style["legend.descend"]
 
         # Add graphics for entries.
         diagram += (graphics := Element("g"))
@@ -126,6 +121,9 @@ class Gantt(Diagram):
                     + lanes[lane]
                     - self.style["legend.descend"]
                 )
+
+        self.origin = Vector2(0, 0)
+        self.extent = Vector2(self.style["width"], self.height)
 
         return diagram
 
@@ -223,19 +221,19 @@ SCHEMA = {
                     "task": {
                         "type": "object",
                         "properties": {
-                            "style": {"$ref": "#/$defs/style"},
-                            "label": {
-                                "type": "string",
-                            },
                             "start": {
                                 "type": "number",
                             },
                             "finish": {
                                 "type": "number",
                             },
+                            "label": {
+                                "type": "string",
+                            },
                             "lane": {
                                 "type": "string",
                             },
+                            "style": {"$ref": "#/$defs/style"},
                         },
                         "required": ["start", "finish"],
                         "additionalProperties": False,
@@ -246,4 +244,5 @@ SCHEMA = {
         },
     },
     "additionalProperties": False,
+    "required": ["entries"],
 }

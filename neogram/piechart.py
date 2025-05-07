@@ -30,6 +30,10 @@ class Piechart(Diagram):
         self.total = total
         self.start = Degrees(self.style["start"])
         self.style.set_default("size", self.DEFAULT_SIZE)
+        width = self.style["size"] + 2 * self.style["padding"]
+        if self.style["stroke"] and self.style["stroke_width"]:
+            width += self.style["stroke_width"]
+        self.style.set_default("width", width)
 
     def check_entry(self, entry):
         if not isinstance(entry, Slice):
@@ -38,15 +42,6 @@ class Piechart(Diagram):
     def svg(self):
         "Return the SVG minixml element for the diagram content."
         diagram = super().svg()
-
-        diameter = self.style["size"]
-        radius = diameter / 2
-        diagram += Element("circle", r=N(radius))
-
-        if self.style["stroke"] and self.style["stroke_width"]:
-            diameter += self.style["stroke_width"]
-        self.extent = Vector2(diameter, diameter)
-        self.origin = -0.5 * self.extent
 
         if self.entries:
             total = sum([s.value for s in self.entries])
@@ -62,12 +57,18 @@ class Piechart(Diagram):
         else:
             colors = None
 
-        # Create slice wedges.
+        # Create pie with slices.
+        radius = self.style["size"] / 2
+        x = radius + self.style["padding"]
+        y = self.height + x
+
+        diagram += (pie := Element("g", transform=f"translate({N(x)}, {N(y)})"))
+        pie += Element("circle", r=N(radius))
+
         with self.style:
-            wedges = Element("g")
-            diagram += wedges
-            self.style.set_svg_attribute(wedges, "stroke")
-            self.style.set_svg_attribute(wedges, "stroke_width")
+            pie += (slices := Element("g"))
+            self.style.set_svg_attribute(slices, "stroke")
+            self.style.set_svg_attribute(slices, "stroke_width")
 
             for slice in self.entries:
                 slice.fraction = slice.value / total
@@ -76,7 +77,7 @@ class Piechart(Diagram):
                 p0 = Vector2.from_polar(radius, float(slice.start))
                 p1 = Vector2.from_polar(radius, float(stop))
                 lof = 1 if stop - slice.start > Degrees(180) else 0
-                wedges += (
+                slices += (
                     path := Element(
                         "path",
                         d=Path(Vector2(0, 0))
@@ -98,10 +99,10 @@ class Piechart(Diagram):
                     else:
                         slice.color = self.style["fill"]
 
-        # Create labels.
+        # Add labels.
         with self.style:
             labels = Element("g")
-            diagram += labels
+            pie += labels
             self.style.set_svg_attribute(labels, "stroke")
             self.style.set_svg_attribute(labels, "stroke_width")
             self.style.set_svg_attribute(labels, "label.fill")
@@ -125,6 +126,9 @@ class Piechart(Diagram):
                             self.style.set_svg_attribute(
                                 label, "fill", value=slice.color.best_contrast()
                             )
+
+        self.origin = Vector2(0, 0)
+        self.extent = Vector2(self.style["width"], self.style["width"] + self.height)
 
         return diagram
 
@@ -163,13 +167,13 @@ SCHEMA = {
                     "slice": {
                         "type": "object",
                         "properties": {
-                            "style": {"$ref": "#/$defs/style"},
-                            "label": {
-                                "type": "string",
-                            },
                             "value": {
                                 "type": "number",
                             },
+                            "label": {
+                                "type": "string",
+                            },
+                            "style": {"$ref": "#/$defs/style"},
                         },
                         "required": ["value"],
                         "additionalProperties": False,
@@ -179,5 +183,6 @@ SCHEMA = {
             },
         },
     },
+    "required": ["entries"],
     "additionalProperties": False,
 }

@@ -14,8 +14,8 @@ from utils import N, get_text_length
 class Timelines(Diagram):
     "Timelines chart; set of timelines displaying events and periods."
 
-    DEFAULT_WIDTH = 500         # Entire diagram.
-    DEFAULT_SIZE = 16           # Height of each timeline.
+    DEFAULT_WIDTH = 500  # Entire diagram.
+    DEFAULT_SIZE = 16  # Height of each timeline.
     DEFAULT_EPOCH = Epoch.ORDINAL
 
     def __init__(
@@ -45,37 +45,33 @@ class Timelines(Diagram):
 
         timelines = dict()
         dimension = Dimension(width=self.style["width"])
-        height = 0
-        padding = self.style["padding"]
 
         # Set the heights for each timeline, and the offset for legends.
         # Legends are controlled by top-level styles.
-        font = self.style["legend.font"]
-        size = self.style["legend.font_size"]
-        italic = self.style["legend.italic"]
-        bold = self.style["legend.bold"]
-        width = self.style["legend.width"]
+        area_height = self.height
+        kwargs = dict(
+            font=self.style["legend.font"],
+            size=self.style["legend.font_size"],
+            italic=self.style["legend.italic"],
+            bold=self.style["legend.bold"],
+        )
+        padding = self.style["padding"]
+
         # Legend width has been explicitly set to a number.
+        width = self.style["legend.width"]
         if width and width > 1:
             dimension.update_offset(width)
+
         for entry in self.entries:
             with self.style:
                 self.style.update(entry.style)
                 if width is True:
-                    dimension.update_offset(
-                        get_text_length(
-                            entry.timeline,
-                            font=font,
-                            size=size,
-                            italic=italic,
-                            bold=bold,
-                        )
-                    )
+                    dimension.update_offset(get_text_length(entry.timeline, **kwargs))
                 dimension.update_span(entry.minmax)
                 if entry.timeline not in timelines:
-                    height += padding
-                    timelines[entry.timeline] = height
-                    height += self.style["size"] + padding
+                    self.height += padding
+                    timelines[entry.timeline] = self.height
+                    self.height += self.style["size"] + padding
 
         # Add axis lines and their labels.
         diagram += (axis := Element("g"))
@@ -83,19 +79,23 @@ class Timelines(Diagram):
             self.style.set_svg_attribute(axis, "axis.stroke")
             self.style.set_svg_attribute(axis, "axis.stroke_width")
             ticks = dimension.get_ticks(self.style)
-            path = Path(Vector2(ticks[0].pixel, 0)).V(height)
+            path = Path(Vector2(ticks[0].pixel, area_height)).V(self.height)
             for tick in ticks[1:]:
-                path.M(Vector2(tick.pixel, 0)).V(height)
+                path.M(Vector2(tick.pixel, area_height)).V(self.height)
+            path.M(Vector2(ticks[0].pixel, area_height)).H(self.style["width"])
+            path.M(Vector2(ticks[0].pixel, self.height)).H(self.style["width"])
             axis += Element("path", d=path)
             if self.style["axis.labels"]:
                 axis += (labels := Element("g"))
                 with self.style:
-                    height += self.style["legend.font_size"]
+                    self.height += self.style["legend.font_size"]
                     self.style.set_svg_text_attributes(labels, "legend")
                     self.style.set_svg_attribute(labels, "anchor", "middle")
                     for tick in ticks:
                         labels += (
-                            label := Element("text", tick.label, x=tick.pixel, y=height)
+                            label := Element(
+                                "text", tick.label, x=tick.pixel, y=self.height
+                            )
                         )
                         if tick is ticks[0]:
                             with self.style:
@@ -103,10 +103,7 @@ class Timelines(Diagram):
                         elif tick is ticks[-1]:
                             with self.style:
                                 self.style.set_svg_attribute(label, "anchor", "end")
-                    height += self.style["legend.descend"]
-
-        self.origin = Vector2(0, 0)
-        self.extent = Vector2(self.style["width"], height)
+                    self.height += self.style["legend.descend"]
 
         # Add graphics for entries.
         diagram += (graphics := Element("g"))
@@ -139,6 +136,9 @@ class Timelines(Diagram):
                         + timelines[timeline]
                         - self.style["legend.descend"]
                     )
+
+        self.origin = Vector2(0, 0)
+        self.extent = Vector2(self.style["width"], self.height)
 
         return diagram
 
@@ -200,20 +200,14 @@ class Event(Temporal):
     def graphic_element(self, style, timelines, dimension):
         with style:
             style.update(self.style)
-            # XXX adjust for marker style width
+            # XXX adjust label for marker style width
             elem = Element(
                 "ellipse",
                 cx=N(dimension.get_pixel(self.moment)),
                 cy=N(timelines[self.timeline] + style["size"] / 2),
-                rx=style["size"] / 4,
+                rx=style["size"] / 5,
                 ry=style["size"] / 2,
             )
-            # elem = Element(
-            #     "circle",
-            #     cx=N(dimension.get_pixel(self.moment)),
-            #     cy=N(timelines[self.timeline] + style["size"] / 2),
-            #     r=style["size"] / 2,
-            # )
             style.set_svg_attribute(elem, "stroke")
             style.set_svg_attribute(elem, "stroke_width")
             style.set_svg_attribute(elem, "fill")
@@ -222,7 +216,7 @@ class Event(Temporal):
     def label_element(self, style, timelines, dimension):
         with style:
             style.update(self.style)
-            # XXX adjust for marker style width
+            # XXX label adjust for marker style width
             elem = Element(
                 "text",
                 self.label,
@@ -325,57 +319,50 @@ SCHEMA = {
         "entries": {
             "type": "array",
             "items": {
-                "anyOf": [
-                    {
+                "type": "object",
+                "properties": {
+                    "event": {
                         "type": "object",
                         "properties": {
-                            "event": {
-                                "type": "object",
-                                "properties": {
-                                    "style": {"$ref": "#/$defs/style"},
-                                    "label": {
-                                        "type": "string",
-                                    },
-                                    "moment": {
-                                        "type": "number",
-                                    },
-                                    "timeline": {
-                                        "type": "string",
-                                    },
-                                },
-                                "required": ["moment"],
-                                "additionalProperties": False,
+                            "moment": {
+                                "type": "number",
                             },
+                            "label": {
+                                "type": "string",
+                            },
+                            "timeline": {
+                                "type": "string",
+                            },
+                            "style": {"$ref": "#/$defs/style"},
                         },
+                        "required": ["moment"],
+                        "additionalProperties": False,
                     },
-                    {
+                    "period": {
                         "type": "object",
                         "properties": {
-                            "period": {
-                                "type": "object",
-                                "properties": {
-                                    "style": {"$ref": "#/$defs/style"},
-                                    "label": {
-                                        "type": "string",
-                                    },
-                                    "begin": {
-                                        "type": "number",
-                                    },
-                                    "end": {
-                                        "type": "number",
-                                    },
-                                    "timeline": {
-                                        "type": "string",
-                                    },
-                                },
-                                "required": ["begin", "end"],
-                                "additionalProperties": False,
+                            "begin": {
+                                "type": "number",
                             },
+                            "end": {
+                                "type": "number",
+                            },
+                            "label": {
+                                "type": "string",
+                            },
+                            "timeline": {
+                                "type": "string",
+                            },
+                            "style": {"$ref": "#/$defs/style"},
                         },
+                        "required": ["begin", "end"],
+                        "additionalProperties": False,
                     },
-                ]
+                },
+                "additionalProperties": False,
             },
         },
     },
+    "required": ["entries"],
     "additionalProperties": False,
 }

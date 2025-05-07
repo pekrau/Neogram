@@ -87,24 +87,35 @@ class Diagram(Entity):
 
     def svg(self):
         """Return the SVG minixml element for the diagram content.
-        Sets the 'origin' and 'extent' members.
-        To be elaborated by inheriting class.
+        To be elaborated by inheriting class; set 'origin' and 'extent'.
         """
+        self.height = 0
         self.style.init_svg_attributes()
         g = Element("g")
         if self.id:
             g["id"] = self.id
         self.style.set_svg_attribute(g, "stroke")
         self.style.set_svg_attribute(g, "stroke_width")
+        if self.title:
+            with self.style:
+                self.height += self.style["title.font_size"] + self.style["padding"]
+                g += (
+                    title := Element(
+                        "text", self.title, x=self.style["width"] / 2, y=self.height
+                    )
+                )
+                self.style.set_svg_text_attributes(title, "title")
+            self.height += self.style["title.descend"] + self.style["padding"]
         return g
 
     def as_dict_content(self):
         "Return the content as a dictionary of basic YAML values."
-        result = dict(entries=[e.as_dict() for e in self.entries])
+        result = {}
         if self.id:
             result["id"] = self.id
         if self.title:
             result["title"] = self.title
+        result["entries"] = [e.as_dict() for e in self.entries]
         result.update(self.style.as_dict())
         return result
 

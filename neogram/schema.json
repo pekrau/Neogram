@@ -1,0 +1,405 @@
+{
+  "$id": "https://neogram.org/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Neogram",
+  "description": "Neogram YAML format specification.",
+  "$defs": {
+    "text": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "oneOf": [
+            {
+              "title": "Width of text area.",
+              "type": "number",
+              "minimum": 2
+            },
+            {
+              "title": "Compute width of text area, or do not display.",
+              "type": "boolean"
+            }
+          ]
+        },
+        "stroke": {
+          "title": "Color for outline, line and curve",
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "color"
+            },
+            {
+              "const": null
+            }
+          ]
+        },
+        "fill": {
+          "title": "Color for area.",
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "color"
+            },
+            {
+              "const": null
+            }
+          ]
+        },
+        "font": {
+          "title": "Name of font family.",
+          "type": "string"
+        },
+        "font_size": {
+          "title": "Size of the font.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "descend": {
+          "title": "Size of the font descender.",
+          "type": "number",
+          "minimum": 0
+        },
+        "anchor": {
+          "title": "Placement point for the output string.",
+          "enum": [
+            "start",
+            "middle",
+            "end"
+          ]
+        },
+        "bold": {
+          "title": "Bold text or normal.",
+          "type": "boolean",
+          "default": false
+        },
+        "italic": {
+          "title": "Italic text or normal.",
+          "type": "boolean",
+          "default": false
+        },
+        "underline": {
+          "title": "Underlined text or normal.",
+          "type": "boolean",
+          "default": false
+        },
+        "contrast": {
+          "title": "Set to white or black for best contrast against background.",
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "style": {
+      "title": "Style",
+      "description": "Style specification",
+      "type": "object",
+      "properties": {
+        "stroke": {
+          "title": "Color for outline, line and curve",
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "color"
+            },
+            {
+              "const": null
+            }
+          ]
+        },
+        "stroke_width": {
+          "title": "Width of outline, line and curve",
+          "type": "number",
+          "minimum": 0
+        },
+        "fill": {
+          "title": "Color for area.",
+          "oneOf": [
+            {
+              "type": "string",
+              "format": "color"
+            },
+            {
+              "const": null
+            }
+          ]
+        },
+        "width": {
+          "title": "Width of diagram, if applicable.",
+          "type": "number",
+          "minimum": 0
+        },
+        "height": {
+          "title": "Height of diagram, if applicable.",
+          "type": "number",
+          "minimum": 0
+        },
+        "size": {
+          "title": "Size of main graphical items of the specific diagram.",
+          "type": "number",
+          "minimum": 0
+        },
+        "start": {
+          "title": "Start of graphical items.",
+          "type": "number",
+          "minimum": 0
+        },
+        "padding": {
+          "title": "Padding around main graphical items of the specific diagram.",
+          "type": "number",
+          "minimum": 0
+        },
+        "rounded": {
+          "title": "Rounding of the main rectangle items of the specific diagram.",
+          "type": "number",
+          "minimum": 0
+        },
+        "palette": {
+          "title": "Color palette for graphical items to cycle through.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "color"
+          }
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "legend": {
+          "$ref": "#/$defs/text"
+        },
+        "axis": {
+          "type": "object",
+          "properties": {
+            "stroke": {
+              "title": "Color for outline, line and curve",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "format": "color"
+                },
+                {
+                  "const": null
+                }
+              ]
+            },
+            "stroke_width": {
+              "title": "Width of outline, line and curve",
+              "type": "number",
+              "minimum": 0
+            },
+            "number": {
+              "title": "Requested number of ticks.",
+              "type": "integer"
+            },
+            "labels": {
+              "title": "Display labels for values.",
+              "type": "boolean"
+            },
+            "absolute": {
+              "title": "Display absolute values of label values.",
+              "type": "boolean"
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "properties": {
+    "neogram": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "const": null
+        }
+      ]
+    },
+    "piechart": {
+      "title": "Piechart",
+      "description": "Piechart with slices.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slice": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "number"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "style": {
+                    "$ref": "#/$defs/style"
+                  }
+                },
+                "required": [
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "entries"
+      ],
+      "additionalProperties": false
+    },
+    "timelines": {
+      "title": "Timelines",
+      "description": "Timelines containing events and periods.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "event": {
+                "type": "object",
+                "properties": {
+                  "moment": {
+                    "type": "number"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "timeline": {
+                    "type": "string"
+                  },
+                  "style": {
+                    "$ref": "#/$defs/style"
+                  }
+                },
+                "required": [
+                  "moment"
+                ],
+                "additionalProperties": false
+              },
+              "period": {
+                "type": "object",
+                "properties": {
+                  "begin": {
+                    "type": "number"
+                  },
+                  "end": {
+                    "type": "number"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "timeline": {
+                    "type": "string"
+                  },
+                  "style": {
+                    "$ref": "#/$defs/style"
+                  }
+                },
+                "required": [
+                  "begin",
+                  "end"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "entries"
+      ],
+      "additionalProperties": false
+    },
+    "gantt": {
+      "title": "Gantt chart",
+      "description": "Gantt chart containing tasks.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "task": {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "number"
+                  },
+                  "finish": {
+                    "type": "number"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "lane": {
+                    "type": "string"
+                  },
+                  "style": {
+                    "$ref": "#/$defs/style"
+                  }
+                },
+                "required": [
+                  "start",
+                  "finish"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "entries"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "neogram"
+  ],
+  "minProperties": 2,
+  "maxProperties": 2
+}
