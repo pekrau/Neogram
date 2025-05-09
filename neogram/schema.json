@@ -1,6 +1,6 @@
 {
-  "$id": "https://neogram.org/schema",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://neogram.org/schema",
   "type": "object",
   "properties": {
     "neogram": {
@@ -16,10 +16,53 @@
     "timelines": {
       "title": "Timelines having events and periods.",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "title": {
-          "title": "Title of chart.",
-          "type": "string"
+          "oneOf": [
+            {
+              "title": "Title of pie chart.",
+              "type": "string"
+            },
+            {
+              "title": "Title of pie chart, with styling.",
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 14
+                },
+                "bold": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "italic": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "color": {
+                  "type": "string",
+                  "format": "color",
+                  "default": "black"
+                },
+                "anchor": {
+                  "enum": [
+                    "start",
+                    "middle",
+                    "end"
+                  ],
+                  "default": "middle"
+                }
+              }
+            }
+          ]
         },
         "width": {
           "title": "Width of chart, in pixels.",
@@ -34,10 +77,16 @@
             "anyOf": [
               {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "event": {
                     "title": "Event at a moment in time.",
                     "type": "object",
+                    "required": [
+                      "label",
+                      "moment"
+                    ],
+                    "additionalProperties": false,
                     "properties": {
                       "label": {
                         "type": "string"
@@ -48,22 +97,23 @@
                       "timeline": {
                         "type": "string"
                       }
-                    },
-                    "required": [
-                      "label",
-                      "moment"
-                    ],
-                    "additionalProperties": false
+                    }
                   }
-                },
-                "additionalProperties": false
+                }
               },
               {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "period": {
                     "title": "Period of time.",
                     "type": "object",
+                    "required": [
+                      "label",
+                      "begin",
+                      "end"
+                    ],
+                    "additionalProperties": false,
                     "properties": {
                       "label": {
                         "type": "string"
@@ -77,31 +127,65 @@
                       "timeline": {
                         "type": "string"
                       }
-                    },
-                    "required": [
-                      "label",
-                      "begin",
-                      "end"
-                    ],
-                    "additionalProperties": false
+                    }
                   }
-                },
-                "additionalProperties": false
+                }
               }
             ]
           }
-        },
-        "additionalProperties": false
-      },
-      "additionalProperties": false
+        }
+      }
     },
     "piechart": {
       "title": "Pie chart with slices.",
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "title": {
-          "title": "Title of pie chart.",
-          "type": "string"
+          "oneOf": [
+            {
+              "title": "Title of pie chart.",
+              "type": "string"
+            },
+            {
+              "title": "Title of pie chart, with styling.",
+              "type": "object",
+              "required": [
+                "text"
+              ],
+              "properties": {
+                "text": {
+                  "type": "string"
+                },
+                "size": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "default": 14
+                },
+                "bold": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "italic": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "color": {
+                  "type": "string",
+                  "format": "color",
+                  "default": "black"
+                },
+                "anchor": {
+                  "enum": [
+                    "start",
+                    "middle",
+                    "end"
+                  ],
+                  "default": "middle"
+                }
+              }
+            }
+          ]
         },
         "width": {
           "title": "Width of chart, in pixels.",
@@ -123,30 +207,33 @@
           "type": "array",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "slice": {
                 "title": "Slice representing a value.",
                 "type": "object",
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false,
                 "properties": {
                   "label": {
                     "type": "string"
                   },
                   "value": {
                     "type": "number"
+                  },
+                  "color": {
+                    "type": "string",
+                    "format": "color"
                   }
-                },
-                "required": [
-                  "label",
-                  "value"
-                ],
-                "additionalProperties": false
-              },
-              "additionalProperties": false
+                }
+              }
             }
           }
         }
-      },
-      "additionalProperties": false
+      }
     }
   },
   "required": [

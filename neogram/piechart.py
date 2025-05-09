@@ -7,6 +7,7 @@ import itertools
 from degrees import *
 from diagram import *
 from path import *
+import utils
 
 
 class Piechart(Diagram):
@@ -18,48 +19,42 @@ class Piechart(Diagram):
     SCHEMA = {
         "title": "Pie chart with slices.",
         "type": "object",
-        "properties": {
-            "title": {
-                "title": "Title of pie chart.",
-                "type": "string",
-            },
-            "width": {
-                "title": "Width of chart, in pixels.",
-                "type": "number",
-                "default": constants.DEFAULT_WIDTH,
-                "exclusiveMinimum": 0,
-            },
-            "total": {
-                "title": "Total value to relate slice values to.",
-                "type": "number",
-                "exclusiveMinimum": 0,
-            },
-            "start": {
-                "title": "Starting point for first slice; in degrees from top.",
-                "type": "number",
-            },
-            "entries": {
-                "title": "Entries (slices) in the pie chart.",
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "slice": {
-                            "title": "Slice representing a value.",
-                            "type": "object",
-                            "properties": {
-                                "label": {"type": "string"},
-                                "value": {"type": "number"},
-                            },
-                            "required": ["label", "value"],
-                            "additionalProperties": False,
-                        },
+        "additionalProperties": False,
+        "properties": utils.join(
+            COMMON_SCHEMA_PROPERTIES,
+            {
+                "total": {
+                    "title": "Total value to relate slice values to.",
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                },
+                "start": {
+                    "title": "Starting point for first slice; in degrees from top.",
+                    "type": "number",
+                },
+                "entries": {
+                    "title": "Entries (slices) in the pie chart.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
                         "additionalProperties": False,
+                        "properties": {
+                            "slice": {
+                                "title": "Slice representing a value.",
+                                "type": "object",
+                                "required": ["label", "value"],
+                                "additionalProperties": False,
+                                "properties": {
+                                    "label": {"type": "string"},
+                                    "value": {"type": "number"},
+                                    "color": {"type": "string", "format": "color"},
+                                },
+                            },
+                        },
                     },
                 },
             },
-        },
-        "additionalProperties": False,
+        ),
     }
 
     def __init__(
@@ -94,8 +89,10 @@ class Piechart(Diagram):
         y = self.height + radius + constants.DEFAULT_PADDING
         self.height += 2 * (radius + constants.DEFAULT_PADDING)
 
-        self.svg += (pie := Element("g", transform=f"translate({N(x)}, {N(y)})"))
-        pie += Element("circle", r=N(radius))
+        self.svg += (
+            pie := Element("g", transform=f"translate({utils.N(x)}, {utils.N(y)})")
+        )
+        pie += Element("circle", r=utils.N(radius))
 
         # Add slices.
         pie += (slices := Element("g"))
@@ -115,13 +112,13 @@ class Piechart(Diagram):
             slices += (
                 path := Element(
                     "path",
-                    d=Path(Vector2(0, 0))
-                    .L(p0)
-                    .A(radius, radius, 0, lof, 1, p1)
-                    .Z(),
+                    d=Path(Vector2(0, 0)).L(p0).A(radius, radius, 0, lof, 1, p1).Z(),
                 )
             )
-            path["fill"] = next(colors)
+            if entry.color:
+                path["fill"] = entry.color
+            else:
+                path["fill"] = next(colors)
 
         # Add labels on top of slices.
         pie += (labels := Element("g"))
@@ -131,13 +128,13 @@ class Piechart(Diagram):
         for entry in self.entries:
             middle = entry.start + 0.5 * entry.fraction * Degrees(360)
             pos = Vector2.from_polar(0.7 * radius, float(middle))
-            labels += Element("text", entry.label, x=N(pos.x), y=N(pos.y))
+            labels += Element("text", entry.label, x=utils.N(pos.x), y=utils.N(pos.y))
 
     def data_as_dict(self):
         result = super().data_as_dict()
         result["entries"] = [e.as_dict() for e in self.entries]
         if self.total is not None:
-            result["total"] = self.total 
+            result["total"] = self.total
         if self.start is not None:
             result["start"] = self.start
         return result
@@ -146,15 +143,20 @@ class Piechart(Diagram):
 class Slice(Entity):
     "A slice in a pie chart."
 
-    def __init__(self, label, value):
+    def __init__(self, label, value, color=None):
         assert isinstance(value, (int, float))
         assert isinstance(label, str)
+        assert color is None or isinstance(color, str)
 
         self.value = value
         self.label = label
+        self.color = color
 
     def data_as_dict(self):
-        return {"label": self.label, "value": self.value}
+        result = {"label": self.label, "value": self.value}
+        if self.color:
+            result["color"] = self.color
+        return result
 
 
 register(Piechart)

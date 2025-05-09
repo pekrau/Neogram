@@ -15,63 +15,57 @@ class Timelines(Diagram):
     SCHEMA = {
         "title": "Timelines having events and periods.",
         "type": "object",
-        "properties": {
-            "title": {
-                "title": "Title of chart.",
-                "type": "string",
-            },
-            "width": {
-                "title": "Width of chart, in pixels.",
-                "type": "number",
-                "default": constants.DEFAULT_WIDTH,
-                "exclusiveMinimum": 0,
-            },
-            "entries": {
-                "title": "Entries (events, periods) in the timelines.",
-                "type": "array",
-                "items": {
-                    "anyOf": [
-                        {
-                            "type": "object",
-                            "properties": {
-                                "event": {
-                                    "title": "Event at a moment in time.",
-                                    "type": "object",
-                                    "properties": {
-                                        "label": {"type": "string"},
-                                        "moment": {"type": "number"},
-                                        "timeline": {"type": "string"},
+        "additionalProperties": False,
+        "properties": utils.join(
+            COMMON_SCHEMA_PROPERTIES,
+            {
+                "entries": {
+                    "title": "Entries (events, periods) in the timelines.",
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "type": "object",
+                                "additionalProperties": False,
+                                "properties": {
+                                    "event": {
+                                        "title": "Event at a moment in time.",
+                                        "type": "object",
+                                        "required": ["label", "moment"],
+                                        "additionalProperties": False,
+                                        "properties": {
+                                            "label": {"type": "string"},
+                                            "moment": {"type": "number"},
+                                            "timeline": {"type": "string"},
+                                            "color": {"type": "string", "format": "color"},
+                                        },
                                     },
-                                    "required": ["label", "moment"],
-                                    "additionalProperties": False,
                                 },
                             },
-                            "additionalProperties": False,
-                        },
-                        {
-                            "type": "object",
-                            "properties": {
-                                "period": {
-                                    "title": "Period of time.",
-                                    "type": "object",
-                                    "properties": {
-                                        "label": {"type": "string"},
-                                        "begin": {"type": "number"},
-                                        "end": {"type": "number"},
-                                        "timeline": {"type": "string"},
+                            {
+                                "type": "object",
+                                "additionalProperties": False,
+                                "properties": {
+                                    "period": {
+                                        "title": "Period of time.",
+                                        "type": "object",
+                                        "required": ["label", "begin", "end"],
+                                        "additionalProperties": False,
+                                        "properties": {
+                                            "label": {"type": "string"},
+                                            "begin": {"type": "number"},
+                                            "end": {"type": "number"},
+                                            "timeline": {"type": "string"},
+                                            "color": {"type": "string", "format": "color"},
+                                        },
                                     },
-                                    "required": ["label", "begin", "end"],
-                                    "additionalProperties": False,
                                 },
                             },
-                            "additionalProperties": False,
-                        },
-                    ],
+                        ],
+                    },
                 },
             },
-            "additionalProperties": False,
-        },
-        "additionalProperties": False,
+        ),
     }
 
     def check_entry(self, entry):
@@ -124,13 +118,15 @@ class Timelines(Diagram):
         self.height += constants.DEFAULT_SIZE
         for tick in ticks:
             labels += (
-                label := Element("text", tick.label, x=N(tick.pixel), y=N(self.height))
+                label := Element(
+                    "text", tick.label, x=utils.N(tick.pixel), y=utils.N(self.height)
+                )
             )
             if tick is ticks[0]:
                 label["text-anchor"] = "start"
             elif tick is ticks[-1]:
                 label["text-anchor"] = "end"
-        self.height += constants.DEFAULT_FONT_DESCEND
+        self.height += constants.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
 
         # Add graphics for entries.
         self.svg += (graphics := Element("g"))
@@ -151,25 +147,27 @@ class Timelines(Diagram):
         legends["fill"] = "black"
         for text, height in timelines.items():
             legends += (legend := Element("text", text))
-            legend["x"] = N(constants.DEFAULT_PADDING)
-            legend["y"] = N(
+            legend["x"] = utils.N(constants.DEFAULT_PADDING)
+            legend["y"] = utils.N(
                 height
                 + (constants.DEFAULT_SIZE + constants.DEFAULT_FONT_SIZE) / 2
-                - constants.DEFAULT_FONT_DESCEND
+                - constants.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
             )
 
-        self.height += constants.DEFAULT_PADDING - constants.DEFAULT_FONT_DESCEND
+        self.height += constants.DEFAULT_PADDING - constants.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
 
 
 class _Entry(Entity):
     "Abstract entry in a timelines chart."
 
-    def __init__(self, label, timeline=None):
+    def __init__(self, label, timeline=None, color=None):
         assert isinstance(label, str)
         assert timeline is None or isinstance(timeline, str)
+        assert color is None or isinstance(color, str)
 
         self.label = label
         self.timeline = timeline or label
+        self.color = color
 
     @property
     def minmax(self):
@@ -191,8 +189,8 @@ class _Entry(Entity):
 class Event(_Entry):
     "Event at a given moment in a timeline."
 
-    def __init__(self, label, moment, timeline=None):
-        super().__init__(label=label, timeline=timeline)
+    def __init__(self, label, moment, timeline=None, color=None):
+        super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(moment, (int, float))
 
         self.moment = moment
@@ -204,22 +202,26 @@ class Event(_Entry):
     def graphic_element(self, timelines, dimension):
         elem = Element(
             "ellipse",
-            cx=N(dimension.get_pixel(self.moment)),
-            cy=N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
+            cx=utils.N(dimension.get_pixel(self.moment)),
+            cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
             rx=constants.DEFAULT_SIZE / 5,
             ry=constants.DEFAULT_SIZE / 2,
         )
+        elem["stroke"] = "none"
+        elem["fill"] = self.color or "black"
         return elem
 
     def label_element(self, timelines, dimension):
         elem = Element(
             "text",
             self.label,
-            x=N(dimension.get_pixel(self.moment) + constants.DEFAULT_SIZE / 5 + 1),
-            y=N(
+            x=utils.N(
+                dimension.get_pixel(self.moment) + constants.DEFAULT_SIZE / 5 + 1
+            ),
+            y=utils.N(
                 timelines[self.timeline]
                 + (constants.DEFAULT_SIZE + constants.DEFAULT_FONT_SIZE) / 2
-                - constants.DEFAULT_FONT_DESCEND
+                - constants.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
             ),
         )
         elem["text-anchor"] = "start"
@@ -234,8 +236,8 @@ class Event(_Entry):
 class Period(_Entry):
     "Period of time in a timeline."
 
-    def __init__(self, label, begin, end, timeline=None):
-        super().__init__(label=label, timeline=timeline)
+    def __init__(self, label, begin, end, timeline=None, color=None):
+        super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(begin, (int, float))
         assert isinstance(end, (int, float))
 
@@ -249,22 +251,23 @@ class Period(_Entry):
     def graphic_element(self, timelines, dimension):
         elem = Element(
             "rect",
-            x=N(dimension.get_pixel(self.begin)),
-            y=N(timelines[self.timeline]),
-            width=N(dimension.get_width(self.begin, self.end)),
+            x=utils.N(dimension.get_pixel(self.begin)),
+            y=utils.N(timelines[self.timeline]),
+            width=utils.N(dimension.get_width(self.begin, self.end)),
             height=constants.DEFAULT_SIZE,
         )
+        elem["fill"] = self.color or "white"
         return elem
 
     def label_element(self, timelines, dimension):
         elem = Element(
             "text",
             self.label,
-            x=N(dimension.get_pixel((self.begin + self.end) / 2) + 1),
-            y=N(
+            x=utils.N(dimension.get_pixel((self.begin + self.end) / 2) + 1),
+            y=utils.N(
                 timelines[self.timeline]
                 + (constants.DEFAULT_SIZE + constants.DEFAULT_FONT_SIZE) / 2
-                - constants.DEFAULT_FONT_DESCEND
+                - constants.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
             ),
         )
         elem["text-anchor"] = "middle"

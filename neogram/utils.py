@@ -1,6 +1,16 @@
 "Various utility functions."
 
+import copy
+
 import constants
+
+
+def join(base, *others):
+    "Join the dictionaries into a new one."
+    result = copy.deepcopy(base)
+    for other in others:
+        result.update(copy.deepcopy(other))
+    return result
 
 
 def N(x):

@@ -7,7 +7,7 @@ import yaml
 import constants
 from minixml import Element
 from vector2 import *
-from utils import N
+import utils
 
 
 class Entity:
@@ -27,11 +27,47 @@ class Entity:
         raise NotImplementedError
 
 
+COMMON_SCHEMA_PROPERTIES = {
+    "title": {
+        "oneOf": [
+            {
+                "title": "Title of pie chart.",
+                "type": "string",
+            },
+            {
+                "title": "Title of pie chart, with styling.",
+                "type": "object",
+                "required": ["text"],
+                # "additionalProperties": False,
+                "properties": {
+                    "text": {"type": "string"},
+                    "size": {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "default": constants.DEFAULT_FONT_SIZE
+                    },
+                    "bold": {"type": "boolean", "default": False},
+                    "italic": {"type": "boolean", "default": False},
+                    "color": {"type": "string", "format": "color", "default": "black"},
+                    "anchor": {"enum": ["start", "middle", "end"], "default": "middle"},
+                },
+            },
+        ],
+    },
+    "width": {
+        "title": "Width of chart, in pixels.",
+        "type": "number",
+        "default": constants.DEFAULT_WIDTH,
+        "exclusiveMinimum": 0,
+    },
+}
+
+
 class Diagram(Entity):
     "Abstract diagram."
 
     def __init__(self, title=None, width=None, entries=None):
-        assert title is None or isinstance(title, str)
+        assert title is None or isinstance(title, (str, dict))
         assert width is None or (isinstance(width, (int, float)) and width > 0)
         assert entries is None or isinstance(entries, (tuple, list))
 
@@ -62,7 +98,21 @@ class Diagram(Entity):
     def data_as_dict(self):
         result = {}
         if self.title:
-            result["title"] = self.title
+            if isinstance(self.title, dict):
+                result["title"] = title = {"text": self.title["text"]}
+                
+                if (size := self.title.get("size")) is not None and size != constants.DEFAULT_FONT_SIZE:
+                    title["size"] = size
+                if self.title.get("bold"):
+                    title["bold"] = True
+                if self.title.get("italic"):
+                    title["italic"] = True
+                if (color := self.title.get("color")) is not None and color != "black":
+                    title["color"] = color
+                if (anchor := self.title.get("anchor")) is not None and anchor != "middle":
+                    title["anchor"] = anchor
+            else:
+                result["title"] = self.title
         if self.width != constants.DEFAULT_WIDTH:
             result["width"] = self.width
         return result
@@ -83,9 +133,9 @@ class Diagram(Entity):
         document = Element(
             "svg",
             xmlns=constants.SVG_XMLNS,
-            width=N(extent.x),
-            height=N(extent.y),
-            viewBox=f"0 0 {N(extent.x)} {N(extent.y)}",
+            width=utils.N(extent.x),
+            height=utils.N(extent.y),
+            viewBox=f"0 0 {utils.N(extent.x)} {utils.N(extent.y)}",
             transform=transform,
         )
         document += self.svg
@@ -109,34 +159,54 @@ class Diagram(Entity):
         self.svg["font-family"] = constants.DEFAULT_FONT_FAMILY
         self.svg["font-size"] = constants.DEFAULT_FONT_SIZE
         if self.title:
-            self.height += constants.DEFAULT_FONT_SIZE
+            if isinstance(self.title, dict):
+                self.height += self.title.get("size") or constants.DEFAULT_FONT_SIZE
+            else:
+                self.height += constants.DEFAULT_FONT_SIZE
             self.svg += (
-                title := Element("text", self.title, x=self.width / 2, y=self.height)
+                title := Element("text", x=self.width / 2, y=self.height)
             )
+            
             title["stroke"] = "none"
-            title["fill"] = "black"
-            title["text-anchor"] = "middle"
-            self.height += constants.DEFAULT_PADDING + constants.DEFAULT_FONT_DESCEND
+            if isinstance(self.title, dict):
+                title += self.title["text"]
+                if (size := self.title.get("size")):
+                    title["font-size"] = size
+                else:
+                    size = constants.DEFAULT_FONT_SIZE
+                if self.title.get("bold"):
+                    title["font-weight"] = "bold"
+                if self.title.get("italic"):
+                    title["font-style"] = "italic"
+                title["text-anchor"] = self.title.get("anchor") or "middle"
+                title["fill"] = self.title.get("color") or "black"
+            else:
+                size = constants.DEFAULT_FONT_SIZE
+                title["fill"] = "black"
+                title["text-anchor"] = "middle"
+            self.height += constants.DEFAULT_PADDING + constants.FONT_DESCEND * size
 
     def save(self, target=None):
         """Output the diagram as YAML.
         If target is provided, write into file given by path or open file object.
         """
         import schema
+
         data = {"neogram": constants.__version__}
         data.update(self.as_dict())
         schema.validate(data)
         if isinstance(target, (str, pathlib.Path)):
             with open(target, "w") as outfile:
-                yaml.dump(data, outfile, sort_keys=False)
+                yaml.dump(data, outfile, allow_unicode=True, sort_keys=False)
         elif target is None:
-            return yaml.dump(data, sort_keys=False)
+            return yaml.dump(data, allow_unicode=True, sort_keys=False)
         else:
-            yaml.dump(data, outfile, sort_keys=False)
+            yaml.dump(data, outfile, allow_unicode=True, sort_keys=False)
 
 
 # Key: name of class (lower case); value: class
 _entity_lookup = {}
+
 
 def register(cls):
     "Register the diagram or entity for parsing."
