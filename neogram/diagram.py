@@ -30,21 +30,40 @@ class Entity:
 class Diagram(Entity):
     "Abstract diagram."
 
-    DEFAULT_WIDTH = 500
-
-    def __init__(self, title=None, width=None):
+    def __init__(self, title=None, width=None, entries=None):
         assert title is None or isinstance(title, str)
         assert width is None or (isinstance(width, (int, float)) and width > 0)
+        assert entries is None or isinstance(entries, (tuple, list))
 
         self.title = title
-        self.width = width or self.DEFAULT_WIDTH
+        self.width = width or constants.DEFAULT_WIDTH
         self.height = 0
+        self.entries = []
+        if entries:
+            for entry in entries:
+                self.append(entry)
+
+    def __iadd__(self, entry):
+        self.append(entry)
+        return self
+
+    def append(self, entry):
+        "Append the entry to the diagram."
+        if isinstance(entry, dict):
+            assert len(entry) == 1
+            entry = parse(*entry.popitem())
+        self.check_entry(entry)
+        self.entries.append(entry)
+
+    def check_entry(self, entry):
+        "Check that the entry is valid for the diagram."
+        raise NotImplementedError
 
     def data_as_dict(self):
         result = {}
         if self.title:
             result["title"] = self.title
-        if self.width != self.DEFAULT_WIDTH:
+        if self.width != constants.DEFAULT_WIDTH:
             result["width"] = self.width
         return result
 
@@ -52,6 +71,8 @@ class Diagram(Entity):
         """Render diagram and return SVG.
         If target is provided, write into file given by path or open file object.
         """
+        if not self.entries:
+            raise ValueError("no entries in diagram to render.")
         self.build()
         if antialias:
             extent = Vector2(self.width + 1, self.height + 1)
@@ -94,8 +115,6 @@ class Diagram(Entity):
             )
             title["stroke"] = "none"
             title["fill"] = "black"
-            title["font-family"] = constants.DEFAULT_FONT_FAMILY
-            title["font-size"] = constants.DEFAULT_FONT_SIZE
             title["text-anchor"] = "middle"
             self.height += constants.DEFAULT_PADDING + constants.DEFAULT_FONT_DESCEND
 
@@ -103,8 +122,10 @@ class Diagram(Entity):
         """Output the diagram as YAML.
         If target is provided, write into file given by path or open file object.
         """
+        import schema
         data = {"neogram": constants.__version__}
         data.update(self.as_dict())
+        schema.validate(data)
         if isinstance(target, (str, pathlib.Path)):
             with open(target, "w") as outfile:
                 yaml.dump(data, outfile, sort_keys=False)
@@ -112,3 +133,46 @@ class Diagram(Entity):
             return yaml.dump(data, sort_keys=False)
         else:
             yaml.dump(data, outfile, sort_keys=False)
+
+
+# Key: name of class (lower case); value: class
+_entity_lookup = {}
+
+def register(cls):
+    "Register the diagram or entity for parsing."
+    assert issubclass(cls, Entity)
+    key = cls.__name__.casefold()
+    if key in _entity_lookup:
+        raise KeyError(f"entity '{key}' already registered")
+    _entity_lookup[key] = cls
+
+
+def parse(key, data):
+    "Parse the data for the entity given by the key."
+    try:
+        cls = _entity_lookup[key]
+    except KeyError:
+        raise ValueError(f"no such entity '{key}'")
+    return cls(**data)
+
+
+def retrieve(source):
+    """Read and parse the YAML file given by its path or open file object.
+    Return a Diagram instance.
+    """
+    if isinstance(source, (str, pathlib.Path)):
+        with open(source) as infile:
+            data = yaml.safe_load(infile)
+    else:
+        data = yaml.safe_load(source)
+    try:
+        version = data.pop("neogram")
+    except KeyError:
+        raise ValueError(
+            f"YAML file must contain marker for software: 'neogram: {constants.__version__}' "
+        )
+    if version and version != constants.__version__:
+        raise ValueError(f"YAML file has wrong version {version}.")
+    if len(data) != 1:
+        raise ValueError("YAML file must contain exactly one top-level diagram.")
+    return parse(*data.popitem())

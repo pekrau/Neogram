@@ -4,7 +4,7 @@ import jsonschema
 import webcolors
 
 import constants
-import lookup
+import lib
 
 
 # Schema for YAML file contents.
@@ -17,7 +17,8 @@ SCHEMA = {
                 {"type": "string"},
             ],
         },
-        "timelines": lookup.Timelines.SCHEMA,
+        "timelines": lib.Timelines.SCHEMA,
+        "piechart": lib.Piechart.SCHEMA,
     },
     "required": ["neogram"],
     "additionalProperties": False,
@@ -61,3 +62,7 @@ def validate(instance, schema=SCHEMA):
     except jsonschema.exceptions.ValidationError as error:
         path = "".join([f"['{p}']" for p in error.path])
         raise ValueError(f"{error.message}\n  instance {path}:\n    {error.instance}")
+
+
+if __name__ == "__main__":
+    check_schema(SCHEMA)

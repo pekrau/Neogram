@@ -1,27 +1,33 @@
 "Timelines having events and periods."
 
-from icecream import ic
+__all__ = ["Timelines", "Event", "Period"]
 
 import constants
 from diagram import *
 from dimension import *
-import lookup
 from path import *
-import schema
 import utils
 
 
 class Timelines(Diagram):
     "Timelines having events and periods."
 
-    # Schema for timelines content.
     SCHEMA = {
         "title": "Timelines having events and periods.",
         "type": "object",
         "properties": {
-            "title": {"type": "string"},
-            "width": {"type": "number", "exclusiveMinimum": 0},
+            "title": {
+                "title": "Title of chart.",
+                "type": "string",
+            },
+            "width": {
+                "title": "Width of chart, in pixels.",
+                "type": "number",
+                "default": constants.DEFAULT_WIDTH,
+                "exclusiveMinimum": 0,
+            },
             "entries": {
+                "title": "Entries (events, periods) in the timelines.",
                 "type": "array",
                 "items": {
                     "anyOf": [
@@ -29,13 +35,14 @@ class Timelines(Diagram):
                             "type": "object",
                             "properties": {
                                 "event": {
+                                    "title": "Event at a moment in time.",
                                     "type": "object",
                                     "properties": {
-                                        "moment": {"type": "number"},
                                         "label": {"type": "string"},
+                                        "moment": {"type": "number"},
                                         "timeline": {"type": "string"},
                                     },
-                                    "required": ["moment"],
+                                    "required": ["label", "moment"],
                                     "additionalProperties": False,
                                 },
                             },
@@ -45,14 +52,15 @@ class Timelines(Diagram):
                             "type": "object",
                             "properties": {
                                 "period": {
+                                    "title": "Period of time.",
                                     "type": "object",
                                     "properties": {
+                                        "label": {"type": "string"},
                                         "begin": {"type": "number"},
                                         "end": {"type": "number"},
-                                        "label": {"type": "string"},
                                         "timeline": {"type": "string"},
                                     },
-                                    "required": ["begin", "end"],
+                                    "required": ["label", "begin", "end"],
                                     "additionalProperties": False,
                                 },
                             },
@@ -66,31 +74,15 @@ class Timelines(Diagram):
         "additionalProperties": False,
     }
 
-    def __init__(self, title=None, width=None, entries=None):
-        super().__init__(title=title, width=width)
-        assert entries is None or isinstance(entries, (tuple, list))
-
-        self.title = title
-        self.entries = []
-        if entries:
-            for entry in entries:
-                self.append(entry)
-
-    def __iadd__(self, entry):
-        self.append(entry)
-        return self
-
-    def append(self, entry):
-        assert isinstance(entry, (dict, Entry))
-        if isinstance(entry, dict):
-            assert len(entry) == 1
-            entry = lookup.parse(*entry.popitem())
-        self.entries.append(entry)
+    def check_entry(self, entry):
+        return isinstance(entry, (Event, Period))
 
     def data_as_dict(self):
         result = super().data_as_dict()
         if self.entries:
             result["entries"] = [e.as_dict() for e in self.entries]
+        import schema
+
         schema.validate(result, schema=self.SCHEMA)
         return result
 
@@ -151,8 +143,7 @@ class Timelines(Diagram):
         labels["stroke"] = "none"
         labels["fill"] = "black"
         for entry in self.entries:
-            if entry.label:
-                labels += entry.label_element(timelines, dimension)
+            labels += entry.label_element(timelines, dimension)
 
         # Add legend labels.
         self.svg += (legends := Element("g"))
@@ -170,7 +161,7 @@ class Timelines(Diagram):
         self.height += constants.DEFAULT_PADDING - constants.DEFAULT_FONT_DESCEND
 
 
-class Entry(Entity):
+class _Entry(Entity):
     "Abstract entry in a timelines chart."
 
     def __init__(self, label, timeline=None):
@@ -197,7 +188,7 @@ class Entry(Entity):
         return result
 
 
-class Event(Entry):
+class Event(_Entry):
     "Event at a given moment in a timeline."
 
     def __init__(self, label, moment, timeline=None):
@@ -240,7 +231,7 @@ class Event(Entry):
         return result
 
 
-class Period(Entry):
+class Period(_Entry):
     "Period of time in a timeline."
 
     def __init__(self, label, begin, end, timeline=None):
@@ -286,5 +277,6 @@ class Period(Entry):
         return result
 
 
-if __name__ == "__main__":
-    schema.check_schema(Timelines.SCHEMA)
+register(Timelines)
+register(Event)
+register(Period)

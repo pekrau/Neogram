@@ -4,7 +4,7 @@ import pathlib
 
 import click
 
-import lookup
+import lib
 
 
 @click.command()
@@ -15,7 +15,7 @@ def tosvg(indent, infilepath, outfilepath):
     infilepath = pathlib.Path(infilepath)
     if not infilepath.exists():
         raise click.BadParameter("no such input file")
-    diagram = lookup.retrieve(infilepath)
+    diagram = lib.retrieve(infilepath)
     if not outfilepath:
         outfilepath = infilepath.with_suffix(".svg")
     diagram.render(outfilepath, indent=max(0, indent))
