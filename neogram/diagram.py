@@ -1,140 +1,114 @@
-"Diagram base class."
+"Abstract Diagram and Entity classes."
 
-__all__ = ["Diagram", "Vector2", "Element", "Entity"]
-
-import io
 import pathlib
 
 import yaml
 
 import constants
-import lookup
 from minixml import Element
-from vector2 import Vector2
-from style import Style
+from vector2 import *
 from utils import N
 
 
 class Entity:
-    "Diagram entity; diagram itself or part of diagram."
+    "Abstract graphical entity: diagram or part thereof."
+
+    def __eq__(self, other):
+        if not isinstance(other, Entity):
+            return False
+        if self.__class__ != other.__class__:
+            return False
+        return self.as_dict() == other.as_dict()
 
     def as_dict(self):
-        "Return as a dictionary of basic YAML values."
-        return {self.__class__.__name__.casefold(): self.as_dict_content()}
+        return {self.__class__.__name__.casefold(): self.data_as_dict()}
 
-    def as_dict_content(self):
-        "Return the content as a dictionary of basic YAML values."
+    def data_as_dict(self):
         raise NotImplementedError
 
 
 class Diagram(Entity):
     "Abstract diagram."
 
-    def __init__(self, entries=None, style=None, id=None, title=None):
-        assert entries is None or isinstance(entries, (tuple, list))
-        assert style is None or isinstance(style, dict)
-        assert id is None or isinstance(id, str)
+    DEFAULT_WIDTH = 500
+
+    def __init__(self, title=None, width=None):
         assert title is None or isinstance(title, str)
+        assert width is None or (isinstance(width, (int, float)) and width > 0)
 
-        self.entries = []
-        if entries:
-            for entry in entries:
-                self.append(entry)
-        self.id = id
         self.title = title
-        style = style or {}
-        self.style = Style(**style)
-
-    def __eq__(self, other):
-        if not isinstance(other, Diagram) or self.__class__ != other.__class__:
-            return False
-        return self.as_dict() == other.as_dict()
-
-    def __iadd__(self, other):
-        self.append(other)
-        return self
-
-    def append(self, entry):
-        if isinstance(entry, dict):
-            entry = lookup.parse_dict(entry)
-        self.check_entry(entry)
-        self.entries.append(entry)
-
-    def check_entry(self, entry):
-        "Check validity of entry. Raise ValueError if any problem."
-        pass
-
-    def svg_document(self, antialias=True):
-        "Return the SVG minixml element for the entire document."
-        self.style.init_svg_attributes()
-        svg = self.svg()  # Also sets 'origin' and 'extent'.
-        if antialias:
-            self.extent = self.extent + Vector2(1, 1)
-            transform = "translate(0.5, 0.5)"
-        else:
-            transform = None
-        result = Element(
-            "svg",
-            xmlns=constants.SVG_XMLNS,
-            width=N(self.extent.x),
-            height=N(self.extent.y),
-            viewBox=f"{N(self.origin.x)} {N(self.origin.y)} {N(self.extent.x)} {N(self.extent.y)}",
-            transform=transform,
-        )
-        result += svg
-        assert len(self.style) == 1
-        return result
-
-    def svg(self):
-        """Return the SVG minixml element for the diagram content.
-        To be elaborated by inheriting class; set 'origin' and 'extent'.
-        """
+        self.width = width or self.DEFAULT_WIDTH
         self.height = 0
-        self.style.init_svg_attributes()
-        g = Element("g")
-        if self.id:
-            g["id"] = self.id
-        self.style.set_svg_attribute(g, "stroke")
-        self.style.set_svg_attribute(g, "stroke_width")
-        if self.title:
-            with self.style:
-                self.height += self.style["title.font_size"] + self.style["padding"]
-                g += (
-                    title := Element(
-                        "text", self.title, x=self.style["width"] / 2, y=self.height
-                    )
-                )
-                self.style.set_svg_text_attributes(title, "title")
-            self.height += self.style["title.descend"] + self.style["padding"]
-        return g
 
-    def as_dict_content(self):
-        "Return the content as a dictionary of basic YAML values."
+    def data_as_dict(self):
         result = {}
-        if self.id:
-            result["id"] = self.id
         if self.title:
             result["title"] = self.title
-        result["entries"] = [e.as_dict() for e in self.entries]
-        result.update(self.style.as_dict())
+        if self.width != self.DEFAULT_WIDTH:
+            result["width"] = self.width
         return result
 
-    def render(self, filepath_or_stream):
-        "Render the this diagram as SVG root to a new file or open stream."
-        if not self.entries:
-            raise ValueError("no entries in diagram to render")
-        if isinstance(filepath_or_stream, (str, pathlib.Path)):
-            with open(filepath_or_stream, "w") as outfile:
-                outfile.write(repr(self.svg_document()))
+    def render(self, target=None, antialias=True, indent=2):
+        """Render diagram and return SVG.
+        If target is provided, write into file given by path or open file object.
+        """
+        self.build()
+        if antialias:
+            extent = Vector2(self.width + 1, self.height + 1)
+            transform = "translate(0.5, 0.5)"
         else:
-            filepath_or_stream.write(repr(self.svg_document()))
+            extent = Vector2(self.width, self.height)
+            transform = None
+        document = Element(
+            "svg",
+            xmlns=constants.SVG_XMLNS,
+            width=N(extent.x),
+            height=N(extent.y),
+            viewBox=f"0 0 {N(extent.x)} {N(extent.y)}",
+            transform=transform,
+        )
+        document += self.svg
+        document.repr_indent = indent
+        if isinstance(target, (str, pathlib.Path)):
+            with open(target, "w") as outfile:
+                outfile.write(repr(document))
+        elif target is None:
+            return repr(document)
+        else:
+            target.write(repr(document))
 
-    def save(self, filepath_or_stream):
-        "Write the YAML specification to the new file or open stream."
-        data = {constants.SOFTWARE.casefold(): constants.__version__}
+    def build(self):
+        """Create and set the 'svg' and 'height' attributes.
+        To be extended in subclasses.
+        """
+        self.height = 0
+        self.svg = Element("g")
+        self.svg["stroke"] = "black"
+        self.svg["fill"] = "white"
+        self.svg["font-family"] = constants.DEFAULT_FONT_FAMILY
+        self.svg["font-size"] = constants.DEFAULT_FONT_SIZE
+        if self.title:
+            self.height += constants.DEFAULT_FONT_SIZE
+            self.svg += (
+                title := Element("text", self.title, x=self.width / 2, y=self.height)
+            )
+            title["stroke"] = "none"
+            title["fill"] = "black"
+            title["font-family"] = constants.DEFAULT_FONT_FAMILY
+            title["font-size"] = constants.DEFAULT_FONT_SIZE
+            title["text-anchor"] = "middle"
+            self.height += constants.DEFAULT_PADDING + constants.DEFAULT_FONT_DESCEND
+
+    def save(self, target=None):
+        """Output the diagram as YAML.
+        If target is provided, write into file given by path or open file object.
+        """
+        data = {"neogram": constants.__version__}
         data.update(self.as_dict())
-        if isinstance(filepath_or_stream, (str, pathlib.Path)):
-            with open(filepath_or_stream, "w") as outfile:
-                yaml.safe_dump(data, outfile, sort_keys=False)
+        if isinstance(target, (str, pathlib.Path)):
+            with open(target, "w") as outfile:
+                yaml.dump(data, outfile, sort_keys=False)
+        elif target is None:
+            return yaml.dump(data, sort_keys=False)
         else:
-            yaml.safe_dump(data, filepath_or_stream, sort_keys=False)
+            yaml.dump(data, outfile, sort_keys=False)

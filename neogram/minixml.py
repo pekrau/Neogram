@@ -1,5 +1,7 @@
 "Minimalist XML library for reading, writing, creating and editing an element tree."
 
+__all__ = ["Element", "read", "parse"]
+
 import copy
 import io
 import xml.sax
@@ -218,7 +220,7 @@ class Element:
             outfile.write(" />")
 
 
-class DefaultContentHandler(xml.sax.ContentHandler):
+class ContentHandler(xml.sax.ContentHandler):
     "Parse XML read events into Element tree."
 
     def __init__(self):
@@ -242,17 +244,17 @@ class DefaultContentHandler(xml.sax.ContentHandler):
             self.stack[-1].subelements.append(xml.sax.saxutils.unescape(content))
 
 
-def read(filepath_or_stream, content_handler=DefaultContentHandler()):
+def read(filepath_or_stream):
     """Read and parse the file given by its path, or an open file object.
     Returns the root XML element.
     """
     try:
-        xml.sax.parse(filepath_or_stream, content_handler)
+        xml.sax.parse(filepath_or_stream, ContentHandler())
     except xml.sax.SAXException as error:
         raise ValueError(f"XML parse error: {error}")
     return content_handler.root
 
 
-def parse(content, content_handler=None):
+def parse(content):
     "Parse the given XML content. Return the root XML element."
-    return read(io.StringIO(content), content_handler=content_handler)
+    return read(io.StringIO(content))

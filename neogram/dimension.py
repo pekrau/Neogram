@@ -1,16 +1,13 @@
 "Dimension and Tick classes."
 
-__all__ = ["Dimension", "Tick", "Epoch"]
-
 import collections
 import enum
 import itertools
 import math
 
-Tick = collections.namedtuple("Tick", ["user", "pixel", "label"], defaults=[None])
-
-
 from utils import N
+
+Tick = collections.namedtuple("Tick", ["user", "pixel", "label"], defaults=[None])
 
 
 class Epoch(enum.StrEnum):
@@ -22,11 +19,14 @@ class Epoch(enum.StrEnum):
 class Dimension:
     "Store min/max and calculate base/first/last and ticks for the span."
 
-    def __init__(self, offset=0, width=100):
+    def __init__(self, width, offset=0):
+        assert isinstance(width, (int, float)) and width > 0
+        assert isinstance(offset, (int, float)) and offset >= 0
+
+        self.width = width
+        self.offset = offset
         self.min = None
         self.max = None
-        self.offset = offset
-        self.width = width
 
     @property
     def span(self):
@@ -60,9 +60,8 @@ class Dimension:
         else:
             self.offset = max(self.offset, value)
 
-    def get_ticks(self, style):
+    def get_ticks(self, number=8):
         "Return ticks for the current span (min and max)."
-        number = style["axis.number"]
         span = self.max - self.min
         self.magnitude = math.log10(span / number)
         series = []
@@ -102,14 +101,12 @@ class Dimension:
         self.first = best[0]
         self.last = best[-1]
         self.scale = (self.width - self.offset) / (self.last - self.first)
-        if style["axis.labels"]:
-            step = 10**self.magnitude
-            func = (lambda u: abs(u)) if style["axis.absolute"] else (lambda u: u)
-            result = [
-                Tick(u, self.get_pixel(u), label=N(round(func(u) / step))) for u in best
-            ]
-        else:
-            result = [Tick(u, self.get_pixel(u)) for u in best]
+        step = 10**self.magnitude
+        absolute = False
+        func = (lambda u: abs(u)) if absolute else (lambda u: u)
+        result = [
+            Tick(u, self.get_pixel(u), label=N(round(func(u) / step))) for u in best
+        ]
         return result
 
     def get_pixel(self, user):

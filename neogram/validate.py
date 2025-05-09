@@ -3,7 +3,6 @@
 import sys
 
 import click
-import jsonschema
 import yaml
 
 import schema
@@ -12,15 +11,13 @@ import schema
 @click.command()
 @click.argument("infilepaths", required=True, nargs=-1)
 def validate(infilepaths):
-    validator = schema.get_validator()
     for infilepath in infilepaths:
         with open(infilepath) as infile:
             data = yaml.safe_load(infile)
         try:
-            validator.validate(data)
-        except jsonschema.exceptions.ValidationError as error:
-            path = "".join([f"['{p}']" for p in error.path])
-            sys.exit(f"{error.message}\n  instance {path}:\n    {error.instance}")
+            schema.validate(data)
+        except ValueError as error:
+            sys.exit(str(error))
 
 
 if __name__ == "__main__":

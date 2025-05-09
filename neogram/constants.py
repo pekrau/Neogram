@@ -1,7 +1,6 @@
 "Constants."
 
-SOFTWARE = "Neogram"
-VERSION = (0, 6, 2)
+VERSION = (0, 7, 0)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -10,11 +9,15 @@ YAML_CONTENT_TYPE = "application/yaml"
 
 JSONSCHEMA_ID = "https://neogram.org/schema"
 JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
-SANS_SERIF_FONT_FAMILIES = "FreeSans Arial Helvetica sans-serif"
-SERIF_FONT_FAMILIES = "FreeSerif Times serif"
-MONO_FONT_FAMILIES = "FreeMono Courier monospace"
 
 PRECISION = 0.0005
+
+DEFAULT_WIDTH = 500
+DEFAULT_SIZE = 18
+DEFAULT_PADDING = 2
+DEFAULT_FONT_FAMILY = "sans-serif"
+DEFAULT_FONT_SIZE = 14
+DEFAULT_FONT_DESCEND = 2
 
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {

@@ -1,43 +1,38 @@
-"All currently implemented diagrams."
-
-import icecream
-
-icecream.install()
+"Diagram entity lookup, retrieve function and parser."
 
 import pathlib
 
 import yaml
 
-import constants
-import diagram
-import piechart
-import timelines
-import gantt
-
+from diagram import *
+from timelines import *
 
 _entity_lookup = {}
 
 
-def register(cls):
-    "Add the entity class to the lookup table."
-    assert issubclass(cls, diagram.Entity)
-    _entity_lookup[cls.__name__.casefold()] = cls
+def register_entity(cls):
+    "Register the diagram or entity for parsing."
+    assert issubclass(cls, Entity)
+    key = cls.__name__.casefold()
+    if key in _entity_lookup:
+        raise KeyError(f"entity '{key}' already registered")
+    _entity_lookup[key] = cls
 
 
-def retrieve(filepath_or_stream):
-    """Read and parse the YAML file given by its path, or an open file object.
+def retrieve(source):
+    """Read and parse the YAML file given by its path or open file object.
     Return a Diagram instance.
     """
-    if isinstance(filepath_or_stream, (str, pathlib.Path)):
-        with open(filepath_or_stream) as infile:
+    if isinstance(source, (str, pathlib.Path)):
+        with open(source) as infile:
             data = yaml.safe_load(infile)
     else:
-        data = yaml.safe_load(filepath_or_stream)
+        data = yaml.safe_load(source)
     try:
-        version = data.pop(constants.SOFTWARE.casefold())
+        version = data.pop("neogram")
     except KeyError:
         raise ValueError(
-            f"YAML file must contain marker for software: '{constants.SOFTWARE.casefold()}: {constants.__version__}' "
+            f"YAML file must contain marker for software: 'neogram: {constants.__version__}' "
         )
     if version and version != constants.__version__:
         raise ValueError(f"YAML file has wrong version {version}.")
@@ -46,27 +41,15 @@ def retrieve(filepath_or_stream):
     return parse(*data.popitem())
 
 
-def parse_dict(data):
-    "Parse the single item in the dictionary for the entity instance given by the key."
-    assert len(data) == 1
-    return parse(*data.popitem())
-
-
-def parse(entity, data):
-    "Parse the data for the entity entity given by the key."
+def parse(key, data):
+    "Parse the data for the entity given by the key."
     try:
-        cls = _entity_lookup[entity]
+        cls = _entity_lookup[key]
     except KeyError:
-        raise ValueError(f"no such entity '{entity}'")
+        raise ValueError(f"no such entity '{key}'")
     return cls(**data)
 
 
-register(piechart.Piechart)
-register(piechart.Slice)
-
-register(timelines.Timelines)
-register(timelines.Event)
-register(timelines.Period)
-
-register(gantt.Gantt)
-register(gantt.Task)
+register_entity(Timelines)
+register_entity(Event)
+register_entity(Period)

@@ -1,42 +1,32 @@
-"Neogram. JSON Schema definitions of YAML content."
-
-import json
+"Functions for schema handling."
 
 import jsonschema
 import webcolors
-import yaml
 
 import constants
 import lookup
-import style
 
 
+# Schema for YAML file contents.
 SCHEMA = {
-    "$id": constants.JSONSCHEMA_ID,
-    "$schema": constants.JSONSCHEMA_VERSION,
-    "title": "Neogram",
-    "description": "Neogram YAML format specification.",
-    "$defs": {
-        "text": style.TEXT_SCHEMA,
-        "style": style.SCHEMA,
-    },
     "type": "object",
     "properties": {
-        constants.SOFTWARE.casefold(): {
-            "oneOf": [{"type": "string"}, {"const": None}],
+        "neogram": {
+            "oneOf": [
+                {"const": None},
+                {"type": "string"},
+            ],
         },
-        "piechart": lookup.piechart.SCHEMA,
-        "timelines": lookup.timelines.SCHEMA,
-        "gantt": lookup.gantt.SCHEMA,
+        "timelines": lookup.Timelines.SCHEMA,
     },
+    "required": ["neogram"],
     "additionalProperties": False,
-    "required": [constants.SOFTWARE.casefold()],
     "minProperties": 2,
     "maxProperties": 2,
 }
 
 
-def get_validator():
+def get_validator(schema):
     format_checker = jsonschema.FormatChecker()
 
     @format_checker.checks("color")
@@ -50,18 +40,24 @@ def get_validator():
                 return False
         return True
 
-    return jsonschema.Draft202012Validator(schema=SCHEMA, format_checker=format_checker)
+    return jsonschema.Draft202012Validator(schema=schema, format_checker=format_checker)
 
 
-def check_schema():
-    get_validator().check_schema(SCHEMA)
+def check_schema(schema):
+    get_validator(schema).check_schema(schema)
 
 
-def validate(instance):
-    get_validator().validate(instance)
+def is_valid(instance, schema=SCHEMA):
+    try:
+        get_validator(schema).validate(instance)
+    except jsonschema.exceptions.ValidationError as error:
+        return False
+    return True
 
 
-if __name__ == "__main__":
-    check_schema()
-    with open("schema.json", "w") as outfile:
-        json.dump(SCHEMA, outfile, indent=2, sort_keys=False)
+def validate(instance, schema=SCHEMA):
+    try:
+        get_validator(schema).validate(instance)
+    except jsonschema.exceptions.ValidationError as error:
+        path = "".join([f"['{p}']" for p in error.path])
+        raise ValueError(f"{error.message}\n  instance {path}:\n    {error.instance}")

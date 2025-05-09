@@ -27,7 +27,5 @@ def get_text_length(text, font, size, italic=False, bold=False):
         key = "b"
     else:
         key = "n"
-    total = 0
-    for c in text:
-        total += widths.get(c, widths["default"])[key]
+    total = sum([widths.get(c, widths["default"])[key] for c in text])
     return total * size / 100

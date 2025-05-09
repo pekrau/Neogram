@@ -6,7 +6,7 @@ import pathlib
 import cairosvg
 import click
 
-from lookup import retrieve
+import lookup
 
 
 def validate_scale(ctx, param, value):
@@ -23,12 +23,12 @@ def topng(scale, infilepath, outfilepath):
     infilepath = pathlib.Path(infilepath)
     if not infilepath.exists():
         raise click.BadParameter("no such input file")
-    diagram = retrieve(infilepath)
+    diagram = lookup.retrieve(infilepath)
     if not outfilepath:
         outfilepath = infilepath.with_suffix(".png")
+    svgfile = io.StringIO(diagram.render())
     with open(outfilepath, "wb") as outfile:
-        inputfile = io.StringIO(repr(diagram.svg_document()))
-        outfile.write(cairosvg.svg2png(file_obj=inputfile, scale=scale))
+        outfile.write(cairosvg.svg2png(file_obj=svgfile, scale=scale))
 
 
 if __name__ == "__main__":

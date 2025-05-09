@@ -4,7 +4,7 @@ import pathlib
 
 import click
 
-from lookup import retrieve
+import lookup
 
 
 @click.command()
@@ -15,11 +15,10 @@ def tosvg(indent, infilepath, outfilepath):
     infilepath = pathlib.Path(infilepath)
     if not infilepath.exists():
         raise click.BadParameter("no such input file")
-    diagram = retrieve(infilepath)
+    diagram = lookup.retrieve(infilepath)
     if not outfilepath:
         outfilepath = infilepath.with_suffix(".svg")
-    with open(outfilepath, "w") as outfile:
-        diagram.svg_document().write(outfile, indent=max(0, indent))
+    diagram.render(outfilepath, indent=max(0, indent))
 
 
 if __name__ == "__main__":
