@@ -1,0 +1,158 @@
+{
+  "$id": "https://neogram.org/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "neogram": {
+      "oneOf": [
+        {
+          "const": null
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "timelines": {
+      "title": "Timelines having events and periods.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title of chart.",
+          "type": "string"
+        },
+        "width": {
+          "title": "Width of chart, in pixels.",
+          "type": "number",
+          "default": 500,
+          "exclusiveMinimum": 0
+        },
+        "entries": {
+          "title": "Entries (events, periods) in the timelines.",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "event": {
+                    "title": "Event at a moment in time.",
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "moment": {
+                        "type": "number"
+                      },
+                      "timeline": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "moment"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "period": {
+                    "title": "Period of time.",
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "begin": {
+                        "type": "number"
+                      },
+                      "end": {
+                        "type": "number"
+                      },
+                      "timeline": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "begin",
+                      "end"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "additionalProperties": false
+    },
+    "piechart": {
+      "title": "Pie chart with slices.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "title": "Title of pie chart.",
+          "type": "string"
+        },
+        "width": {
+          "title": "Width of chart, in pixels.",
+          "type": "number",
+          "default": 500,
+          "exclusiveMinimum": 0
+        },
+        "total": {
+          "title": "Total value to relate slice values to.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "start": {
+          "title": "Starting point for first slice; in degrees from top.",
+          "type": "number"
+        },
+        "entries": {
+          "title": "Entries (slices) in the pie chart.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "slice": {
+                "title": "Slice representing a value.",
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "neogram"
+  ],
+  "additionalProperties": false,
+  "minProperties": 2,
+  "maxProperties": 2
+}

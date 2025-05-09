@@ -1,5 +1,7 @@
 "Functions for schema handling."
 
+import json
+
 import jsonschema
 import webcolors
 
@@ -9,6 +11,8 @@ import lib
 
 # Schema for YAML file contents.
 SCHEMA = {
+    "$schema": constants.JSONSCHEMA_VERSION,
+    "$id": constants.JSONSCHEMA_ID,
     "type": "object",
     "properties": {
         "neogram": {
@@ -66,3 +70,5 @@ def validate(instance, schema=SCHEMA):
 
 if __name__ == "__main__":
     check_schema(SCHEMA)
+    with open("schema.json", "w") as outfile:
+        json.dump(SCHEMA, outfile, indent=2, sort_keys=False)

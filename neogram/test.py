@@ -34,9 +34,6 @@ def test_pyramid():
     pyramid.render("pyramid.svg")
 
     pyramid2 = retrieve("pyramid.yaml")
-    pyramid2.save("pyramid2.yaml")
-    pyramid2.render("pyramid2.svg")
-
     assert pyramid == pyramid2
     assert pyramid.render() == pyramid2.render()
 
