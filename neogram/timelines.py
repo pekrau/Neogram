@@ -21,6 +21,7 @@ class Timelines(Diagram):
         "properties": {
             "title": {"$ref": "#title"},
             "width": {"$ref": "#width"},
+            "legend": {"type": "boolean", "default": False},
             "entries": {
                 "title": "Entries (events, periods) in the timelines.",
                 "type": "array",
@@ -69,12 +70,25 @@ class Timelines(Diagram):
         },
     }
 
+    def __init__(
+        self,
+        title=None,
+        width=None,
+        entries=None,
+        legend=None,
+    ):
+        super().__init__(title=title, width=width, entries=entries)
+        assert legend is None or isinstance(legend, bool)
+
+        self.legend = True if legend is None else legend
+
     def check_entry(self, entry):
         return isinstance(entry, (Event, Period))
 
     def data_as_dict(self):
         result = super().data_as_dict()
-        # XXX additional items when defined
+        if self.legend is not None and not self.legend:
+            result["legend"] = False
         return result
 
     def build(self):
@@ -92,7 +106,8 @@ class Timelines(Diagram):
         )
 
         for entry in self.entries:
-            dimension.update_offset(utils.get_text_length(entry.timeline, **kwargs))
+            if self.legend:
+                dimension.update_offset(utils.get_text_length(entry.timeline, **kwargs))
             dimension.update_span(entry.minmax)
             if entry.timeline not in timelines:
                 self.height += constants.DEFAULT_PADDING
@@ -139,21 +154,21 @@ class Timelines(Diagram):
             labels += entry.render_label(timelines, dimension)
 
         # Add legend labels.
-        self.svg += (legends := Element("g"))
-        legends["stroke"] = "none"
-        legends["fill"] = "black"
-        for text, height in timelines.items():
-            legends += (legend := Element("text", text))
-            legend["x"] = utils.N(constants.DEFAULT_PADDING)
-            legend["y"] = utils.N(
-                height
-                + (constants.DEFAULT_SIZE + self.DEFAULT_FONT_SIZE) / 2
-                - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
-            )
+        if self.legend:
+            self.svg += (legends := Element("g"))
+            legends["stroke"] = "none"
+            legends["fill"] = "black"
+            for text, height in timelines.items():
+                legends += (legend := Element("text", text))
+                legend["x"] = utils.N(constants.DEFAULT_PADDING)
+                legend["y"] = utils.N(
+                    height
+                    + (constants.DEFAULT_SIZE + self.DEFAULT_FONT_SIZE) / 2
+                    - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
+                )
 
         self.height += (
-            constants.DEFAULT_PADDING
-            - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
+            constants.DEFAULT_PADDING - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
         )
 
 

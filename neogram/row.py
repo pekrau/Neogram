@@ -81,11 +81,10 @@ class Row(Diagram):
                     y = self.height
                 case _:
                     raise ValueError(f"invalid value for 'align': '{self.align}'")
-            self.svg += Element(
-                "g", entry.svg, transform=f"translate({x}, {y})"
-            )
+            self.svg += Element("g", entry.svg, transform=f"translate({x}, {y})")
             x += entry.width + constants.DEFAULT_PADDING
 
         self.height += max_height
+
 
 register(Row)

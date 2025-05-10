@@ -30,7 +30,7 @@ SCHEMA = {
                         "text": {"type": "string"},
                         "size": {
                             "type": "number",
-                            "exclusiveMinimum": 0, #Default depends on the diagram.
+                            "exclusiveMinimum": 0,  # Default depends on the diagram.
                         },
                         "bold": {"type": "boolean", "default": False},
                         "italic": {"type": "boolean", "default": False},

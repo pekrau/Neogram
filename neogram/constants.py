@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 5)
+VERSION = (0, 7, 6)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -16,7 +16,7 @@ DEFAULT_WIDTH = 600
 DEFAULT_SIZE = 18
 DEFAULT_PADDING = 2
 DEFAULT_FONT_FAMILY = "sans-serif"
-FONT_DESCEND = 0.2              # Constant throughout.
+FONT_DESCEND = 0.2  # Constant throughout.
 
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {

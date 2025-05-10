@@ -3,13 +3,20 @@
 from lib import *
 
 
-def test_universum():
-    universum = Timelines({"text": "Universum", "bold": True, "color": "red"})
+def get_universum():
+    universum = Timelines(
+        {"text": "Universum", "bold": True, "color": "red"}, legend=False
+    )
     universum += Event("Big Bang", -13_787_000_000, timeline="Universum", color="red")
     universum += Period(
         "Vintergatan", -8_000_000_000, 0, timeline="Universum", color="navy"
     )
     universum += Period("Jorden", -4_567_000_000, 0, color="lightgreen")
+    return universum
+
+
+def test_universum():
+    universum = get_universum()
     universum.save("universum.yaml")
     universum.render("universum.svg")
 
@@ -24,6 +31,12 @@ def test_jorden():
     jorden += Period("Landväxter", -470_000_000, 0, timeline="Fotosyntes")
     jorden.save("jorden.yaml")
     jorden.render("jorden.svg")
+
+    both = Column("Universum och Jorden")
+    both += get_universum()
+    both += jorden
+    both.save("universum_jorden.yaml")
+    both.render("universum_jorden.svg")
 
 
 def test_pyramid():
@@ -72,6 +85,7 @@ def test_pajer():
 
     pajer.save("pajer.yaml")
     pajer.render("pajer.svg")
+
 
 def test_pajer2():
     pajer = Row("Pajer 2", width=404)
