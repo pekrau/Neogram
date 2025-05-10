@@ -38,7 +38,7 @@ COMMON_SCHEMA_PROPERTIES = {
                 "title": "Title of pie chart, with styling.",
                 "type": "object",
                 "required": ["text"],
-                # "additionalProperties": False,
+                "additionalProperties": False,
                 "properties": {
                     "text": {"type": "string"},
                     "size": {
@@ -230,19 +230,22 @@ def retrieve(source):
     """Read and parse the YAML file given by its path or open file object.
     Return a Diagram instance.
     """
+    import schema
     if isinstance(source, (str, pathlib.Path)):
         with open(source) as infile:
             data = yaml.safe_load(infile)
     else:
         data = yaml.safe_load(source)
+    schema.validate(data)
     try:
         version = data.pop("neogram")
     except KeyError:
         raise ValueError(
-            f"YAML file must contain marker for software: 'neogram: {constants.__version__}' "
+            f"YAML file lacks marker for software: 'neogram: {constants.__version__}' "
         )
-    if version and version != constants.__version__:
-        raise ValueError(f"YAML file has wrong version {version}.")
-    if len(data) != 1:
-        raise ValueError("YAML file must contain exactly one top-level diagram.")
+    # Check version compatibility.
+    if version:
+        major, minor, micro = version.split(".")
+        if int(major) != constants.VERSION[0]:
+            raise ValueError(f"YAML file incompatible version {version}.")
     return parse(*data.popitem())

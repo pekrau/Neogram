@@ -3,6 +3,7 @@
 __all__ = ["Timelines", "Event", "Period"]
 
 import constants
+from color import *
 from diagram import *
 from dimension import *
 from path import *
@@ -102,7 +103,7 @@ class Timelines(Diagram):
                 timelines[entry.timeline] = self.height
                 self.height += constants.DEFAULT_SIZE + constants.DEFAULT_PADDING
 
-        # Add axis lines and their labels.
+        # Add time axis lines and their labels.
         self.svg += (axis := Element("g"))
         ticks = dimension.get_ticks()
         path = Path(Vector2(ticks[0].pixel, area_height)).V(self.height)
@@ -131,7 +132,7 @@ class Timelines(Diagram):
         # Add graphics for entries.
         self.svg += (graphics := Element("g"))
         for entry in self.entries:
-            graphics += entry.graphic_element(timelines, dimension)
+            graphics += entry.render_graphic(timelines, dimension)
 
         # Add entry labels after graphics, to render on top.
         self.svg += (labels := Element("g"))
@@ -139,7 +140,7 @@ class Timelines(Diagram):
         labels["stroke"] = "none"
         labels["fill"] = "black"
         for entry in self.entries:
-            labels += entry.label_element(timelines, dimension)
+            labels += entry.render_label(timelines, dimension)
 
         # Add legend labels.
         self.svg += (legends := Element("g"))
@@ -173,16 +174,18 @@ class _Entry(Entity):
     def minmax(self):
         raise NotImplementedError
 
-    def graphic_element(self, timelines, dimension):
+    def render_graphic(self, timelines, dimension):
         raise NotImplementedError
 
-    def label_element(self, timelines, dimension):
+    def render_label(self, timelines, dimension):
         raise NotImplementedError
 
     def data_as_dict(self):
         result = {"label": self.label}
         if self.timeline != self.label:
             result["timeline"] = self.timeline
+        if self.color:
+            result["color"] = self.color
         return result
 
 
@@ -199,7 +202,7 @@ class Event(_Entry):
     def minmax(self):
         return self.moment
 
-    def graphic_element(self, timelines, dimension):
+    def render_graphic(self, timelines, dimension):
         elem = Element(
             "ellipse",
             cx=utils.N(dimension.get_pixel(self.moment)),
@@ -211,7 +214,7 @@ class Event(_Entry):
         elem["fill"] = self.color or "black"
         return elem
 
-    def label_element(self, timelines, dimension):
+    def render_label(self, timelines, dimension):
         elem = Element(
             "text",
             self.label,
@@ -248,7 +251,7 @@ class Period(_Entry):
     def minmax(self):
         return (self.begin, self.end)
 
-    def graphic_element(self, timelines, dimension):
+    def render_graphic(self, timelines, dimension):
         elem = Element(
             "rect",
             x=utils.N(dimension.get_pixel(self.begin)),
@@ -259,7 +262,7 @@ class Period(_Entry):
         elem["fill"] = self.color or "white"
         return elem
 
-    def label_element(self, timelines, dimension):
+    def render_label(self, timelines, dimension):
         elem = Element(
             "text",
             self.label,
@@ -271,6 +274,8 @@ class Period(_Entry):
             ),
         )
         elem["text-anchor"] = "middle"
+        if self.color:
+            elem["fill"] = Color(self.color).best_contrast
         return elem
 
     def data_as_dict(self):

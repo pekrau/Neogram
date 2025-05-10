@@ -2,6 +2,7 @@
 
 import io
 import pathlib
+import sys
 
 import cairosvg
 import click
@@ -23,7 +24,10 @@ def topng(scale, infilepath, outfilepath):
     infilepath = pathlib.Path(infilepath)
     if not infilepath.exists():
         raise click.BadParameter("no such input file")
-    diagram = lib.retrieve(infilepath)
+    try:
+        diagram = lib.retrieve(infilepath)
+    except ValueError as error:
+        sys.exit(f"Error: {error}")
     if not outfilepath:
         outfilepath = infilepath.with_suffix(".png")
     svgfile = io.StringIO(diagram.render())

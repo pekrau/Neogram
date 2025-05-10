@@ -4,6 +4,7 @@ __all__ = ["Piechart", "Slice"]
 
 import itertools
 
+from color import *
 from degrees import *
 from diagram import *
 from path import *
@@ -83,7 +84,7 @@ class Piechart(Diagram):
             total = sum([e.value for e in self.entries])
         else:
             total = self.total
-        colors = itertools.cycle(self.DEFAULT_PALETTE)
+        palette = itertools.cycle(self.DEFAULT_PALETTE)
         radius = (constants.DEFAULT_WIDTH - constants.DEFAULT_PADDING) / 2
         x = radius + constants.DEFAULT_PADDING
         y = self.height + radius + constants.DEFAULT_PADDING
@@ -94,31 +95,21 @@ class Piechart(Diagram):
         )
         pie += Element("circle", r=utils.N(radius))
 
-        # Add slices.
-        pie += (slices := Element("g"))
-        slices["stroke"] = "black"
-        slices["stroke-width"] = 1
+        # Prepare and add slices.
         if self.start is None:
             stop = self.DEFAULT_START
         else:
             stop = Degrees(self.start) + self.DEFAULT_START
         for entry in self.entries:
-            entry.fraction = entry.value / total
             entry.start = stop
-            stop = entry.start + entry.fraction * Degrees(360)
-            p0 = Vector2.from_polar(radius, float(entry.start))
-            p1 = Vector2.from_polar(radius, float(stop))
-            lof = 1 if stop - entry.start > Degrees(180) else 0
-            slices += (
-                path := Element(
-                    "path",
-                    d=Path(Vector2(0, 0)).L(p0).A(radius, radius, 0, lof, 1, p1).Z(),
-                )
-            )
-            if entry.color:
-                path["fill"] = entry.color
-            else:
-                path["fill"] = next(colors)
+            entry.fraction = entry.value / total
+            entry.stop = entry.start + entry.fraction * Degrees(360)
+            stop = entry.stop
+        pie += (slices := Element("g"))
+        slices["stroke"] = "black"
+        slices["stroke-width"] = 1
+        for entry in self.entries:
+            slices += entry.render_graphic(radius, palette)
 
         # Add labels on top of slices.
         pie += (labels := Element("g"))
@@ -126,9 +117,7 @@ class Piechart(Diagram):
         labels["fill"] = "black"
         labels["text-anchor"] = "middle"
         for entry in self.entries:
-            middle = entry.start + 0.5 * entry.fraction * Degrees(360)
-            pos = Vector2.from_polar(0.7 * radius, float(middle))
-            labels += Element("text", entry.label, x=utils.N(pos.x), y=utils.N(pos.y))
+            labels += entry.render_label(radius)
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -151,6 +140,27 @@ class Slice(Entity):
         self.value = value
         self.label = label
         self.color = color
+
+    def render_graphic(self, radius, palette):
+        p0 = Vector2.from_polar(radius, float(self.start))
+        p1 = Vector2.from_polar(radius, float(self.stop))
+        lof = 1 if self.stop - self.start > Degrees(180) else 0
+        elem = Element(
+            "path",
+            d=Path(Vector2(0, 0)).L(p0).A(radius, radius, 0, lof, 1, p1).Z(),
+        )
+        if self.color:
+            elem["fill"] = self.background = self.color
+        else:
+            elem["fill"] = self.background = next(palette)
+        return elem
+
+    def render_label(self, radius):
+        middle = self.start + 0.5 * self.fraction * Degrees(360)
+        pos = Vector2.from_polar(0.7 * radius, float(middle))
+        elem = Element("text", self.label, x=utils.N(pos.x), y=utils.N(pos.y))
+        elem["fill"] = Color(self.background).best_contrast
+        return elem
 
     def data_as_dict(self):
         result = {"label": self.label, "value": self.value}

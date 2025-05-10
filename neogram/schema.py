@@ -64,8 +64,8 @@ def validate(instance, schema=SCHEMA):
     try:
         get_validator(schema).validate(instance)
     except jsonschema.exceptions.ValidationError as error:
-        path = "".join([f"['{p}']" for p in error.path])
-        raise ValueError(f"{error.message}\n  instance {path}:\n    {error.instance}")
+        path = ".".join( error.path)
+        raise ValueError(f"{error.message} in instance '{path}'")
 
 
 if __name__ == "__main__":

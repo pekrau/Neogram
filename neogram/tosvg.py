@@ -1,6 +1,7 @@
 "Convert Neogram YAML file to SVG."
 
 import pathlib
+import sys
 
 import click
 
@@ -15,7 +16,10 @@ def tosvg(indent, infilepath, outfilepath):
     infilepath = pathlib.Path(infilepath)
     if not infilepath.exists():
         raise click.BadParameter("no such input file")
-    diagram = lib.retrieve(infilepath)
+    try:
+        diagram = lib.retrieve(infilepath)
+    except ValueError as error:
+        sys.exit(f"Error: {error}")
     if not outfilepath:
         outfilepath = infilepath.with_suffix(".svg")
     diagram.render(outfilepath, indent=max(0, indent))

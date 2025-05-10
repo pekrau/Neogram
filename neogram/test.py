@@ -10,7 +10,7 @@ from lib import *
 def test_universum():
     universum = Timelines({"text": "Universum", "bold": True, "color": "red"}, 600)
     universum += Event("Big Bang", -13_787_000_000, timeline="Universum", color="red")
-    universum += Period("Vintergatan", -8_000_000_000, 0, timeline="Universum")
+    universum += Period("Vintergatan", -8_000_000_000, 0, timeline="Universum", color="navy")
     universum += Period("Jorden", -4_567_000_000, 0, color="lightgreen")
     universum.save("universum.yaml")
     universum.render("universum.svg")

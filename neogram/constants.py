@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 2)
+VERSION = (0, 7, 3)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
