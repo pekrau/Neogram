@@ -1,7 +1,70 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://neogram.org/schema",
+  "$defs": {
+    "title": {
+      "$anchor": "title",
+      "oneOf": [
+        {
+          "title": "Simple title of the diagram.",
+          "type": "string"
+        },
+        {
+          "title": "Title of the diagram with styling.",
+          "type": "object",
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "size": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "default": 14
+            },
+            "bold": {
+              "type": "boolean",
+              "default": false
+            },
+            "italic": {
+              "type": "boolean",
+              "default": false
+            },
+            "color": {
+              "type": "string",
+              "format": "color",
+              "default": "black"
+            },
+            "anchor": {
+              "enum": [
+                "start",
+                "middle",
+                "end"
+              ],
+              "default": "middle"
+            }
+          }
+        }
+      ]
+    },
+    "width": {
+      "title": "Width of chart, in pixels.",
+      "$anchor": "width",
+      "type": "number",
+      "default": 600,
+      "exclusiveMinimum": 0
+    }
+  },
   "type": "object",
+  "required": [
+    "neogram"
+  ],
+  "additionalProperties": false,
+  "minProperties": 2,
+  "maxProperties": 2,
   "properties": {
     "neogram": {
       "oneOf": [
@@ -15,60 +78,15 @@
     },
     "timelines": {
       "title": "Timelines having events and periods.",
+      "$anchor": "timelines",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "title": {
-          "oneOf": [
-            {
-              "title": "Title of pie chart.",
-              "type": "string"
-            },
-            {
-              "title": "Title of pie chart, with styling.",
-              "type": "object",
-              "required": [
-                "text"
-              ],
-              "properties": {
-                "text": {
-                  "type": "string"
-                },
-                "size": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "default": 14
-                },
-                "bold": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "italic": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "color": {
-                  "type": "string",
-                  "format": "color",
-                  "default": "black"
-                },
-                "anchor": {
-                  "enum": [
-                    "start",
-                    "middle",
-                    "end"
-                  ],
-                  "default": "middle"
-                }
-              }
-            }
-          ]
+          "$ref": "#title"
         },
         "width": {
-          "title": "Width of chart, in pixels.",
-          "type": "number",
-          "default": 500,
-          "exclusiveMinimum": 0
+          "$ref": "#width"
         },
         "entries": {
           "title": "Entries (events, periods) in the timelines.",
@@ -96,6 +114,10 @@
                       },
                       "timeline": {
                         "type": "string"
+                      },
+                      "color": {
+                        "type": "string",
+                        "format": "color"
                       }
                     }
                   }
@@ -126,6 +148,10 @@
                       },
                       "timeline": {
                         "type": "string"
+                      },
+                      "color": {
+                        "type": "string",
+                        "format": "color"
                       }
                     }
                   }
@@ -138,60 +164,15 @@
     },
     "piechart": {
       "title": "Pie chart with slices.",
+      "$anchor": "piechart",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "title": {
-          "oneOf": [
-            {
-              "title": "Title of pie chart.",
-              "type": "string"
-            },
-            {
-              "title": "Title of pie chart, with styling.",
-              "type": "object",
-              "required": [
-                "text"
-              ],
-              "properties": {
-                "text": {
-                  "type": "string"
-                },
-                "size": {
-                  "type": "number",
-                  "exclusiveMinimum": 0,
-                  "default": 14
-                },
-                "bold": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "italic": {
-                  "type": "boolean",
-                  "default": false
-                },
-                "color": {
-                  "type": "string",
-                  "format": "color",
-                  "default": "black"
-                },
-                "anchor": {
-                  "enum": [
-                    "start",
-                    "middle",
-                    "end"
-                  ],
-                  "default": "middle"
-                }
-              }
-            }
-          ]
+          "$ref": "#title"
         },
         "width": {
-          "title": "Width of chart, in pixels.",
-          "type": "number",
-          "default": 500,
-          "exclusiveMinimum": 0
+          "$ref": "#width"
         },
         "total": {
           "title": "Total value to relate slice values to.",
@@ -234,12 +215,39 @@
           }
         }
       }
+    },
+    "column": {
+      "title": "Diagrams stacked in a column.",
+      "$anchor": "column",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "$ref": "#title"
+        },
+        "width": {
+          "$ref": "#width"
+        },
+        "entries": {
+          "title": "Component diagrams in the column.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timelines": {
+                "$ref": "#timelines"
+              },
+              "piechart": {
+                "$ref": "#piechart"
+              },
+              "column": {
+                "$ref": "#column"
+              }
+            }
+          }
+        }
+      }
     }
-  },
-  "required": [
-    "neogram"
-  ],
-  "additionalProperties": false,
-  "minProperties": 2,
-  "maxProperties": 2
+  }
 }

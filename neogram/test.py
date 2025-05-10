@@ -1,23 +1,21 @@
 "Test diagrams."
 
-import icecream
-
-icecream.install()
-
 from lib import *
 
 
 def test_universum():
-    universum = Timelines({"text": "Universum", "bold": True, "color": "red"}, 600)
+    universum = Timelines({"text": "Universum", "bold": True, "color": "red"})
     universum += Event("Big Bang", -13_787_000_000, timeline="Universum", color="red")
-    universum += Period("Vintergatan", -8_000_000_000, 0, timeline="Universum", color="navy")
+    universum += Period(
+        "Vintergatan", -8_000_000_000, 0, timeline="Universum", color="navy"
+    )
     universum += Period("Jorden", -4_567_000_000, 0, color="lightgreen")
     universum.save("universum.yaml")
     universum.render("universum.svg")
 
 
 def test_jorden():
-    jorden = Timelines("Jorden", 600)
+    jorden = Timelines("Jorden")
     jorden += Period("Jorden", -4_567_000_000, 0)
     jorden += Event("LUCA?", -4_200_000_000, timeline="Encelliga")
     jorden += Period("Encelliga organismer", -3_480_000_000, 0, timeline="Encelliga")
@@ -29,7 +27,7 @@ def test_jorden():
 
 
 def test_pyramid():
-    pyramid = Piechart("Pyramid", start=132)
+    pyramid = Piechart("Pyramid", start=132, width=200)
     pyramid += Slice("Skuggsida", 7)
     pyramid += Slice("Solsida", 18)
     pyramid += Slice("Himmel", 70)
@@ -42,7 +40,7 @@ def test_pyramid():
 
 
 def test_dagen():
-    dagen = Piechart({"text": "Dagen", "size": 30}, total=24)
+    dagen = Piechart({"text": "Dagen", "size": 30}, total=24, width=400)
     dagen += Slice("Sova", 8, color="gray")
     dagen += Slice("Frukost", 1, color="lightgreen")
     dagen += Slice("Träna", 2, color="lightblue")
@@ -57,8 +55,28 @@ def test_dagen():
     dagen.render("dagen.svg")
 
 
+def test_pajer():
+    pajer = Column("Pajer", width=400)
+
+    pajer += (paj := Piechart("Jordgubbspaj", width=400))
+    paj += Slice("Mjöl", 7, color="white")
+    paj += Slice("Ägg", 2, color="yellow")
+    paj += Slice("Smör", 3, color="gold")
+    paj += Slice("Jordgubbe", 3, color="orangered")
+
+    pajer += (paj := Piechart("Rabarberpaj", width=200))
+    paj += Slice("Mjöl", 7, color="white")
+    paj += Slice("Ägg", 2, color="yellow")
+    paj += Slice("Smör", 3, color="gold")
+    paj += Slice("Rabarber", 3, color="green")
+
+    pajer.save("pajer.yaml")
+    pajer.render("pajer.svg")
+
+
 if __name__ == "__main__":
     test_universum()
     test_jorden()
     test_pyramid()
     test_dagen()
+    test_pajer()

@@ -19,43 +19,43 @@ class Piechart(Diagram):
 
     SCHEMA = {
         "title": "Pie chart with slices.",
+        "$anchor": "piechart",
         "type": "object",
         "additionalProperties": False,
-        "properties": utils.join(
-            COMMON_SCHEMA_PROPERTIES,
-            {
-                "total": {
-                    "title": "Total value to relate slice values to.",
-                    "type": "number",
-                    "exclusiveMinimum": 0,
-                },
-                "start": {
-                    "title": "Starting point for first slice; in degrees from top.",
-                    "type": "number",
-                },
-                "entries": {
-                    "title": "Entries (slices) in the pie chart.",
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": {
-                            "slice": {
-                                "title": "Slice representing a value.",
-                                "type": "object",
-                                "required": ["label", "value"],
-                                "additionalProperties": False,
-                                "properties": {
-                                    "label": {"type": "string"},
-                                    "value": {"type": "number"},
-                                    "color": {"type": "string", "format": "color"},
-                                },
+        "properties": {
+            "title": {"$ref": "#title"},
+            "width": {"$ref": "#width"},
+            "total": {
+                "title": "Total value to relate slice values to.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+            },
+            "start": {
+                "title": "Starting point for first slice; in degrees from top.",
+                "type": "number",
+            },
+            "entries": {
+                "title": "Entries (slices) in the pie chart.",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "slice": {
+                            "title": "Slice representing a value.",
+                            "type": "object",
+                            "required": ["label", "value"],
+                            "additionalProperties": False,
+                            "properties": {
+                                "label": {"type": "string"},
+                                "value": {"type": "number"},
+                                "color": {"type": "string", "format": "color"},
                             },
                         },
                     },
                 },
             },
-        ),
+        },
     }
 
     def __init__(
@@ -76,8 +76,16 @@ class Piechart(Diagram):
     def check_entry(self, entry):
         return isinstance(entry, Slice)
 
+    def data_as_dict(self):
+        result = super().data_as_dict()
+        if self.total is not None:
+            result["total"] = self.total
+        if self.start is not None:
+            result["start"] = self.start
+        return result
+
     def build(self):
-        "Create and set the 'svg' and 'height' attributes."
+        "Set the 'svg' and 'height' attributes."
         super().build()
 
         if self.total is None:
@@ -85,7 +93,7 @@ class Piechart(Diagram):
         else:
             total = self.total
         palette = itertools.cycle(self.DEFAULT_PALETTE)
-        radius = (constants.DEFAULT_WIDTH - constants.DEFAULT_PADDING) / 2
+        radius = (self.width - constants.DEFAULT_PADDING) / 2
         x = radius + constants.DEFAULT_PADDING
         y = self.height + radius + constants.DEFAULT_PADDING
         self.height += 2 * (radius + constants.DEFAULT_PADDING)
@@ -105,28 +113,16 @@ class Piechart(Diagram):
             entry.fraction = entry.value / total
             entry.stop = entry.start + entry.fraction * Degrees(360)
             stop = entry.stop
-        pie += (slices := Element("g"))
-        slices["stroke"] = "black"
+        pie += (slices := Element("g", stroke="black"))
         slices["stroke-width"] = 1
         for entry in self.entries:
             slices += entry.render_graphic(radius, palette)
 
         # Add labels on top of slices.
-        pie += (labels := Element("g"))
-        labels["stroke"] = "none"
-        labels["fill"] = "black"
+        pie += (labels := Element("g", stroke="none", fill="black"))
         labels["text-anchor"] = "middle"
         for entry in self.entries:
             labels += entry.render_label(radius)
-
-    def data_as_dict(self):
-        result = super().data_as_dict()
-        result["entries"] = [e.as_dict() for e in self.entries]
-        if self.total is not None:
-            result["total"] = self.total
-        if self.start is not None:
-            result["start"] = self.start
-        return result
 
 
 class Slice(Entity):
@@ -140,6 +136,12 @@ class Slice(Entity):
         self.value = value
         self.label = label
         self.color = color
+
+    def data_as_dict(self):
+        result = {"label": self.label, "value": self.value}
+        if self.color:
+            result["color"] = self.color
+        return result
 
     def render_graphic(self, radius, palette):
         p0 = Vector2.from_polar(radius, float(self.start))
@@ -162,16 +164,6 @@ class Slice(Entity):
         elem["fill"] = Color(self.background).best_contrast
         return elem
 
-    def data_as_dict(self):
-        result = {"label": self.label, "value": self.value}
-        if self.color:
-            result["color"] = self.color
-        return result
-
 
 register(Piechart)
 register(Slice)
-
-
-if __name__ == "__main__":
-    pass

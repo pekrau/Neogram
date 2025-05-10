@@ -1,5 +1,7 @@
 "Abstract Diagram and Entity classes."
 
+from icecream import ic
+
 import pathlib
 
 import yaml
@@ -27,44 +29,10 @@ class Entity:
         raise NotImplementedError
 
 
-COMMON_SCHEMA_PROPERTIES = {
-    "title": {
-        "oneOf": [
-            {
-                "title": "Title of pie chart.",
-                "type": "string",
-            },
-            {
-                "title": "Title of pie chart, with styling.",
-                "type": "object",
-                "required": ["text"],
-                "additionalProperties": False,
-                "properties": {
-                    "text": {"type": "string"},
-                    "size": {
-                        "type": "number",
-                        "exclusiveMinimum": 0,
-                        "default": constants.DEFAULT_FONT_SIZE
-                    },
-                    "bold": {"type": "boolean", "default": False},
-                    "italic": {"type": "boolean", "default": False},
-                    "color": {"type": "string", "format": "color", "default": "black"},
-                    "anchor": {"enum": ["start", "middle", "end"], "default": "middle"},
-                },
-            },
-        ],
-    },
-    "width": {
-        "title": "Width of chart, in pixels.",
-        "type": "number",
-        "default": constants.DEFAULT_WIDTH,
-        "exclusiveMinimum": 0,
-    },
-}
-
-
 class Diagram(Entity):
     "Abstract diagram."
+
+    DEFAULT_FONT_SIZE = 14
 
     def __init__(self, title=None, width=None, entries=None):
         assert title is None or isinstance(title, (str, dict))
@@ -100,8 +68,10 @@ class Diagram(Entity):
         if self.title:
             if isinstance(self.title, dict):
                 result["title"] = title = {"text": self.title["text"]}
-                
-                if (size := self.title.get("size")) is not None and size != constants.DEFAULT_FONT_SIZE:
+
+                if (
+                    size := self.title.get("size")
+                ) is not None and size != self.DEFAULT_FONT_SIZE:
                     title["size"] = size
                 if self.title.get("bold"):
                     title["bold"] = True
@@ -109,12 +79,15 @@ class Diagram(Entity):
                     title["italic"] = True
                 if (color := self.title.get("color")) is not None and color != "black":
                     title["color"] = color
-                if (anchor := self.title.get("anchor")) is not None and anchor != "middle":
+                if (
+                    anchor := self.title.get("anchor")
+                ) is not None and anchor != "middle":
                     title["anchor"] = anchor
             else:
                 result["title"] = self.title
         if self.width != constants.DEFAULT_WIDTH:
             result["width"] = self.width
+        result["entries"] = [e.as_dict() for e in self.entries]
         return result
 
     def render(self, target=None, antialias=True, indent=2):
@@ -149,7 +122,7 @@ class Diagram(Entity):
             target.write(repr(document))
 
     def build(self):
-        """Create and set the 'svg' and 'height' attributes.
+        """Set the 'svg' and 'height' attributes.
         To be extended in subclasses.
         """
         self.height = 0
@@ -157,23 +130,21 @@ class Diagram(Entity):
         self.svg["stroke"] = "black"
         self.svg["fill"] = "white"
         self.svg["font-family"] = constants.DEFAULT_FONT_FAMILY
-        self.svg["font-size"] = constants.DEFAULT_FONT_SIZE
+        self.svg["font-size"] = self.DEFAULT_FONT_SIZE
         if self.title:
             if isinstance(self.title, dict):
-                self.height += self.title.get("size") or constants.DEFAULT_FONT_SIZE
+                self.height += self.title.get("size") or self.DEFAULT_FONT_SIZE
             else:
-                self.height += constants.DEFAULT_FONT_SIZE
-            self.svg += (
-                title := Element("text", x=self.width / 2, y=self.height)
-            )
-            
+                self.height += self.DEFAULT_FONT_SIZE
+            self.svg += (title := Element("text", x=self.width / 2, y=self.height))
+
             title["stroke"] = "none"
             if isinstance(self.title, dict):
                 title += self.title["text"]
-                if (size := self.title.get("size")):
+                if size := self.title.get("size"):
                     title["font-size"] = size
                 else:
-                    size = constants.DEFAULT_FONT_SIZE
+                    size = self.DEFAULT_FONT_SIZE
                 if self.title.get("bold"):
                     title["font-weight"] = "bold"
                 if self.title.get("italic"):
@@ -181,7 +152,8 @@ class Diagram(Entity):
                 title["text-anchor"] = self.title.get("anchor") or "middle"
                 title["fill"] = self.title.get("color") or "black"
             else:
-                size = constants.DEFAULT_FONT_SIZE
+                title += self.title
+                size = self.DEFAULT_FONT_SIZE
                 title["fill"] = "black"
                 title["text-anchor"] = "middle"
             self.height += constants.DEFAULT_PADDING + constants.FONT_DESCEND * size
@@ -231,12 +203,14 @@ def retrieve(source):
     Return a Diagram instance.
     """
     import schema
+
     if isinstance(source, (str, pathlib.Path)):
         with open(source) as infile:
-            data = yaml.safe_load(infile)
+            original_data = yaml.safe_load(infile)
     else:
-        data = yaml.safe_load(source)
-    schema.validate(data)
+        original: data = yaml.safe_load(source)
+    # Perform some basic tests on a copy of the data.
+    data = original_data.copy()
     try:
         version = data.pop("neogram")
     except KeyError:
@@ -247,5 +221,11 @@ def retrieve(source):
     if version:
         major, minor, micro = version.split(".")
         if int(major) != constants.VERSION[0]:
-            raise ValueError(f"YAML file incompatible version {version}.")
+            raise ValueError(f"YAML file incompatible version {version}")
+    # Require one and only one diagram in a file.
+    if len(data) != 1:
+        raise ValueError("YAML file must contain exactly one diagram")
+    # Schema validation must be done on the original data.
+    schema.validate(original_data)
+    # The copy of the original data now contains only the item to be parsed.
     return parse(*data.popitem())

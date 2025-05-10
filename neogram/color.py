@@ -1,4 +1,4 @@
-"Color and Palette classes."
+"Color class."
 
 __all__ = ["Color"]
 

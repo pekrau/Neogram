@@ -1,4 +1,4 @@
-"Functions for schema handling."
+"Schema handling."
 
 import json
 
@@ -13,7 +13,53 @@ import lib
 SCHEMA = {
     "$schema": constants.JSONSCHEMA_VERSION,
     "$id": constants.JSONSCHEMA_ID,
+    "$defs": {
+        "title": {
+            "$anchor": "title",
+            "oneOf": [
+                {
+                    "title": "Simple title of the diagram.",
+                    "type": "string",
+                },
+                {
+                    "title": "Title of the diagram with styling.",
+                    "type": "object",
+                    "required": ["text"],
+                    "additionalProperties": False,
+                    "properties": {
+                        "text": {"type": "string"},
+                        "size": {
+                            "type": "number",
+                            "exclusiveMinimum": 0,
+                        },
+                        "bold": {"type": "boolean", "default": False},
+                        "italic": {"type": "boolean", "default": False},
+                        "color": {
+                            "type": "string",
+                            "format": "color",
+                            "default": "black",
+                        },
+                        "anchor": {
+                            "enum": ["start", "middle", "end"],
+                            "default": "middle",
+                        },
+                    },
+                },
+            ],
+        },
+        "width": {
+            "title": "Width of chart, in pixels.",
+            "$anchor": "width",
+            "type": "number",
+            "default": constants.DEFAULT_WIDTH,
+            "exclusiveMinimum": 0,
+        },
+    },
     "type": "object",
+    "required": ["neogram"],
+    "additionalProperties": False,
+    "minProperties": 2,
+    "maxProperties": 2,
     "properties": {
         "neogram": {
             "oneOf": [
@@ -23,11 +69,8 @@ SCHEMA = {
         },
         "timelines": lib.Timelines.SCHEMA,
         "piechart": lib.Piechart.SCHEMA,
+        "column": lib.Column.SCHEMA,
     },
-    "required": ["neogram"],
-    "additionalProperties": False,
-    "minProperties": 2,
-    "maxProperties": 2,
 }
 
 
@@ -60,11 +103,15 @@ def is_valid(instance, schema=SCHEMA):
     return True
 
 
-def validate(instance, schema=SCHEMA):
+def validate(instance, schema=SCHEMA, path=None):
     try:
         get_validator(schema).validate(instance)
     except jsonschema.exceptions.ValidationError as error:
-        path = ".".join( error.path)
+        if path:
+            path = [path] + list(error.path)
+        else:
+            path = list(error.path)
+        path = ".".join(path)
         raise ValueError(f"{error.message} in instance '{path}'")
 
 

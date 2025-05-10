@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 3)
+VERSION = (0, 7, 4)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -12,12 +12,11 @@ JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
 
 PRECISION = 0.0005
 
-DEFAULT_WIDTH = 500
+DEFAULT_WIDTH = 600
 DEFAULT_SIZE = 18
 DEFAULT_PADDING = 2
 DEFAULT_FONT_FAMILY = "sans-serif"
-DEFAULT_FONT_SIZE = 14
-FONT_DESCEND = 0.2
+FONT_DESCEND = 0.2              # Constant throughout.
 
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {
