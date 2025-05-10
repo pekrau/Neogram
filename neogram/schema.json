@@ -6,11 +6,11 @@
       "$anchor": "title",
       "oneOf": [
         {
-          "title": "Simple title of the diagram.",
+          "title": "Title of the diagram with default styling.",
           "type": "string"
         },
         {
-          "title": "Title of the diagram with styling.",
+          "title": "Title of the diagram with styling options..",
           "type": "object",
           "required": [
             "text"
@@ -22,8 +22,7 @@
             },
             "size": {
               "type": "number",
-              "exclusiveMinimum": 0,
-              "default": 14
+              "exclusiveMinimum": 0
             },
             "bold": {
               "type": "boolean",
@@ -228,6 +227,15 @@
         "width": {
           "$ref": "#width"
         },
+        "align": {
+          "title": "Align diagrams horizontally within the column.",
+          "enum": [
+            "left",
+            "center",
+            "right"
+          ],
+          "default": "center"
+        },
         "entries": {
           "title": "Component diagrams in the column.",
           "type": "array",
@@ -243,6 +251,54 @@
               },
               "column": {
                 "$ref": "#column"
+              },
+              "row": {
+                "$ref": "#row"
+              }
+            }
+          }
+        }
+      }
+    },
+    "row": {
+      "title": "Diagrams stacked in a row.",
+      "$anchor": "row",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "$ref": "#title"
+        },
+        "width": {
+          "$ref": "#width"
+        },
+        "align": {
+          "title": "Align diagrams vertically within the row.",
+          "enum": [
+            "bottom",
+            "center",
+            "top"
+          ],
+          "default": "center"
+        },
+        "entries": {
+          "title": "Component diagrams in the row.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timelines": {
+                "$ref": "#timelines"
+              },
+              "piechart": {
+                "$ref": "#piechart"
+              },
+              "column": {
+                "$ref": "#column"
+              },
+              "row": {
+                "$ref": "#row"
               }
             }
           }

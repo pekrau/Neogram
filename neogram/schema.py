@@ -18,11 +18,11 @@ SCHEMA = {
             "$anchor": "title",
             "oneOf": [
                 {
-                    "title": "Simple title of the diagram.",
+                    "title": "Title of the diagram with default styling.",
                     "type": "string",
                 },
                 {
-                    "title": "Title of the diagram with styling.",
+                    "title": "Title of the diagram with styling options..",
                     "type": "object",
                     "required": ["text"],
                     "additionalProperties": False,
@@ -30,7 +30,7 @@ SCHEMA = {
                         "text": {"type": "string"},
                         "size": {
                             "type": "number",
-                            "exclusiveMinimum": 0,
+                            "exclusiveMinimum": 0, #Default depends on the diagram.
                         },
                         "bold": {"type": "boolean", "default": False},
                         "italic": {"type": "boolean", "default": False},
@@ -70,6 +70,7 @@ SCHEMA = {
         "timelines": lib.Timelines.SCHEMA,
         "piechart": lib.Piechart.SCHEMA,
         "column": lib.Column.SCHEMA,
+        "row": lib.Row.SCHEMA,
     },
 }
 

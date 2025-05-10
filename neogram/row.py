@@ -1,30 +1,30 @@
-"Diagrams stacked in a column."
+"Diagrams arranged in a row."
 
-__all__ = ["Column"]
+__all__ = ["Row"]
 
 from diagram import *
 
 
-class Column(Diagram):
+class Row(Diagram):
 
     DEFAULT_FONT_SIZE = 18
     DEFAULT_ALIGN = "center"
 
     SCHEMA = {
-        "title": "Diagrams stacked in a column.",
-        "$anchor": "column",
+        "title": "Diagrams stacked in a row.",
+        "$anchor": "row",
         "type": "object",
         "additionalProperties": False,
         "properties": {
             "title": {"$ref": "#title"},
             "width": {"$ref": "#width"},
             "align": {
-                "title": "Align diagrams horizontally within the column.",
-                "enum": ["left", "center", "right"],
+                "title": "Align diagrams vertically within the row.",
+                "enum": ["bottom", "center", "top"],
                 "default": DEFAULT_ALIGN,
             },
             "entries": {
-                "title": "Component diagrams in the column.",
+                "title": "Component diagrams in the row.",
                 "type": "array",
                 "items": {
                     "type": "object",
@@ -68,20 +68,24 @@ class Column(Diagram):
         for entry in self.entries:
             entry.build()
 
+        x = 0
+        max_height = max([e.height for e in self.entries])
+
         for entry in self.entries:
             match self.align:
-                case "left":
-                    x = 0
+                case "bottom":
+                    y = self.height + max_height - entry.height
                 case "center":
-                    x = (self.width - entry.width) / 2
-                case "right":
-                    x = self.width - entry.width
+                    y = self.height + (max_height - entry.height) / 2
+                case "top":
+                    y = self.height
                 case _:
                     raise ValueError(f"invalid value for 'align': '{self.align}'")
             self.svg += Element(
-                "g", entry.svg, transform=f"translate({x}, {self.height})"
+                "g", entry.svg, transform=f"translate({x}, {y})"
             )
-            self.height += entry.height
+            x += entry.width + constants.DEFAULT_PADDING
 
+        self.height += max_height
 
-register(Column)
+register(Row)

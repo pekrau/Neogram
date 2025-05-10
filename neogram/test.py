@@ -58,11 +58,11 @@ def test_dagen():
 def test_pajer():
     pajer = Column("Pajer", width=400)
 
-    pajer += (paj := Piechart("Jordgubbspaj", width=400))
+    pajer += (paj := Piechart("Jordgubbspaj", width=200))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")
-    paj += Slice("Jordgubbe", 3, color="orangered")
+    paj += Slice("Jordgubbar", 3, color="orangered")
 
     pajer += (paj := Piechart("Rabarberpaj", width=200))
     paj += Slice("Mjöl", 7, color="white")
@@ -73,6 +73,24 @@ def test_pajer():
     pajer.save("pajer.yaml")
     pajer.render("pajer.svg")
 
+def test_pajer2():
+    pajer = Row("Pajer 2", width=404)
+
+    pajer += (paj := Piechart("Jordgubbspaj", width=200))
+    paj += Slice("Mjöl", 7, color="white")
+    paj += Slice("Ägg", 2, color="yellow")
+    paj += Slice("Smör", 3, color="gold")
+    paj += Slice("Jordgubbar", 3, color="orangered")
+
+    pajer += (paj := Piechart("Rabarberpaj", width=200))
+    paj += Slice("Mjöl", 7, color="white")
+    paj += Slice("Ägg", 2, color="yellow")
+    paj += Slice("Smör", 3, color="gold")
+    paj += Slice("Rabarber", 3, color="green")
+
+    pajer.save("pajer2.yaml")
+    pajer.render("pajer2.svg")
+
 
 if __name__ == "__main__":
     test_universum()
@@ -80,3 +98,4 @@ if __name__ == "__main__":
     test_pyramid()
     test_dagen()
     test_pajer()
+    test_pajer2()
