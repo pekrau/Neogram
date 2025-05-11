@@ -19,7 +19,7 @@ definitions = {}
 
 INDENT = "  "
 
-def make_docs(outfile):
+def make_docs():
     global definitions
 
     result = []
@@ -28,8 +28,8 @@ def make_docs(outfile):
     result.append("\n\n")
 
     result.append("The YAML file must contain the software identification marker:\n\n")
-    result.append("    neogram: version\n\n")
-    result.append(f"where `version` is either `null` or the version of the software.\n")
+    result.append("    neogram: {version}\n\n")
+    result.append(f"where `version` is either `null` or the string representing the version of the software.\n\n")
 
     if (defs := schema.SCHEMA.get("$defs")):
         for key, value in defs.items():
@@ -37,13 +37,24 @@ def make_docs(outfile):
                 definitions[anchor] = value
 
     schema.SCHEMA["properties"].pop("neogram")
+
+    result.append("## Diagrams\n\n")
     for diagram, subschema in schema.SCHEMA["properties"].items():
-        result.append(f"\n## {diagram}\n")
-        result.extend(output_schema(subschema))
-    outfile.write("".join(result) + "\n")
+        result.append(f"- [{diagram}(docs/{diagram}.md): {subschema['title']}\n\n")
+
+    with open("../README.md", "w") as outfile:
+        outfile.write("".join(result))
+
+    for diagram, subschema in schema.SCHEMA["properties"].items():
+        result = []
+        result.append(f"# {diagram}\n")
+        href = f"../docs/{diagram}.md"
+        result.extend(output_schema(subschema, href=href))
+        with open(href, "w") as outfile:
+            outfile.write("".join(result) + "\n")
 
 
-def output_schema(schema, level=0, required=False):
+def output_schema(schema, level=0, required=False, href=None):
     global definitions
 
     result = []
@@ -52,17 +63,19 @@ def output_schema(schema, level=0, required=False):
     if level == 0:
         result.append(f"\n{prefix}{schema['title']}\n\n")
 
-    if required:
-        result.append(f"{prefix}- *required*\n")
     if ref := schema.get("$ref"):
         try:
             schema = definitions[ref[1:]]
             if schema.get("_has_been_output"):
-                result.append(f"{prefix}  - *definition*: See elsewhere.\n")
+                result.append(f"{prefix}  - *definition*: See elsewhere. {href}\n")
                 return result
             schema["_has_been_output"] = True
+            schema["_href"] = href
         except KeyError:
             result.append(f"{prefix}- *definition*: See elsewhere.\n")
+
+    if required:
+        result.append(f"{prefix}- *required*\n")
 
     if type := schema.get("type"):
         match type:
@@ -72,6 +85,7 @@ def output_schema(schema, level=0, required=False):
                 if anchor := schema.get("$anchor"):
                     definitions[anchor] = schema
                     schema["_has_been_output"] = True
+                    schema["_href"] = href
                 required = set(schema.get("required") or [])
                 for key, subschema in schema["properties"].items():
                     if title := subschema.get("title"):
@@ -130,7 +144,4 @@ def output_schema(schema, level=0, required=False):
 
 
 if __name__ == "__main__":
-    # import sys
-    # make_docs(sys.stdout)
-    with open("../README.md", "w") as outfile:
-        make_docs(outfile)
+    make_docs()

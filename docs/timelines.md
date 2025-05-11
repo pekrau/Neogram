@@ -1,0 +1,72 @@
+# timelines
+
+Timelines having events and periods.
+
+- **title**:
+  - Alternative 1: Title of the diagram with default styling.
+    - *type*: string
+  - Alternative 2: Title of the diagram with styling options.
+    - *type*: mapping
+    - **text**: Text of title.
+      - *required*
+      - *type*: string
+    - **size**: Size of font in title.
+      - *type*: float
+      - *exclusiveMinimum*: 0
+    - **bold**: Text in bold.
+      - *type*: boolean
+      - *default*: false
+    - **italic**: Text in italics.
+      - *type*: boolean
+      - *default*: false
+    - **color**: Color of text.
+      - *type*: string
+      - *format*: color
+      - *default*: 'black'
+    - **anchor**: Anchor of title text.
+      - *one of*: 'start', 'middle', 'end'
+      - *default*: 'middle'
+- **width**: Width of chart, in pixels.
+  - *type*: float
+  - *exclusiveMinimum*: 0
+  - *default*: 600
+- **legend**: Display legend.
+  - *type*: boolean
+  - *default*: true
+- **entries**: Entries in the timelines.
+  - *type*: sequence
+  - *items*:
+    - Option 1
+      - *type*: mapping
+      - **event**: Event at a moment in time.
+        - *type*: mapping
+        - **label**:
+          - *required*
+          - *type*: string
+        - **moment**:
+          - *required*
+          - *type*: float
+        - **timeline**:
+          - *type*: string
+        - **color**:
+          - *type*: string
+          - *format*: color
+    - Option 2
+      - *type*: mapping
+      - **period**: Period of time.
+        - *type*: mapping
+        - **label**:
+          - *required*
+          - *type*: string
+        - **begin**:
+          - *required*
+          - *type*: float
+        - **end**:
+          - *required*
+          - *type*: float
+        - **timeline**:
+          - *type*: string
+        - **color**:
+          - *type*: string
+          - *format*: color
+
