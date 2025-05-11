@@ -13,6 +13,7 @@ import lib
 SCHEMA = {
     "$schema": constants.JSONSCHEMA_VERSION,
     "$id": constants.JSONSCHEMA_ID,
+    "title": "YAML specification for diagrams of different kinds.",
     "$defs": {
         "title": {
             "$anchor": "title",
@@ -22,24 +23,38 @@ SCHEMA = {
                     "type": "string",
                 },
                 {
-                    "title": "Title of the diagram with styling options..",
+                    "title": "Title of the diagram with styling options.",
                     "type": "object",
                     "required": ["text"],
                     "additionalProperties": False,
                     "properties": {
-                        "text": {"type": "string"},
+                        "text": {
+                            "title": "Text of title.",
+                            "type": "string",
+                        },
                         "size": {
+                            "title": "Size of font in title.",
                             "type": "number",
                             "exclusiveMinimum": 0,  # Default depends on the diagram.
                         },
-                        "bold": {"type": "boolean", "default": False},
-                        "italic": {"type": "boolean", "default": False},
+                        "bold": {
+                            "title": "Text in bold.",
+                            "type": "boolean",
+                            "default": False,
+                        },
+                        "italic": {
+                            "title": "Text in italics.",
+                            "type": "boolean",
+                            "default": False,
+                        },
                         "color": {
+                            "title": "Color of text.",
                             "type": "string",
                             "format": "color",
                             "default": "black",
                         },
                         "anchor": {
+                            "title": "Anchor of title text.",
                             "enum": ["start", "middle", "end"],
                             "default": "middle",
                         },
@@ -55,9 +70,16 @@ SCHEMA = {
     "maxProperties": 2,
     "properties": {
         "neogram": {
+            "title": "Identitification marker for the YAML file.",
             "oneOf": [
-                {"const": None},
-                {"type": "string"},
+                {
+                    "title": "Version of the Neogram sofware.",
+                    "type": "string",
+                },
+                {
+                    "title": "Unspecified version; no check will be performed.",
+                    "const": None,
+                },
             ],
         },
         "timelines": lib.Timelines.SCHEMA,

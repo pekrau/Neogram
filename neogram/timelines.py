@@ -28,7 +28,11 @@ class Timelines(Diagram):
                 "default": DEFAULT_WIDTH,
                 "exclusiveMinimum": 0,
             },
-            "legend": {"type": "boolean", "default": False},
+            "legend": {
+                "title": "Display legend.",
+                "type": "boolean",
+                "default": True,
+            },
             "entries": {
                 "title": "Entries (events, periods) in the timelines.",
                 "type": "array",

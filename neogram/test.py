@@ -71,7 +71,7 @@ def test_dagen():
 def test_pajer():
     pajer = Column("Pajer")
 
-    pajer += (paj := Piechart("Jordgubbspaj"))
+    pajer += (paj := Piechart("Jordgubbspaj", diameter=100))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")
@@ -90,7 +90,7 @@ def test_pajer():
 def test_pajer2():
     pajer = Row("Pajer 2")
 
-    pajer += (paj := Piechart("Jordgubbspaj"))
+    pajer += (paj := Piechart("Jordgubbspaj", diameter=300))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")

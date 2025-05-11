@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://neogram.org/schema",
+  "title": "YAML specification for diagrams of different kinds.",
   "$defs": {
     "title": {
       "$anchor": "title",
@@ -10,7 +11,7 @@
           "type": "string"
         },
         {
-          "title": "Title of the diagram with styling options..",
+          "title": "Title of the diagram with styling options.",
           "type": "object",
           "required": [
             "text"
@@ -18,26 +19,32 @@
           "additionalProperties": false,
           "properties": {
             "text": {
+              "title": "Text of title.",
               "type": "string"
             },
             "size": {
+              "title": "Size of font in title.",
               "type": "number",
               "exclusiveMinimum": 0
             },
             "bold": {
+              "title": "Text in bold.",
               "type": "boolean",
               "default": false
             },
             "italic": {
+              "title": "Text in italics.",
               "type": "boolean",
               "default": false
             },
             "color": {
+              "title": "Color of text.",
               "type": "string",
               "format": "color",
               "default": "black"
             },
             "anchor": {
+              "title": "Anchor of title text.",
               "enum": [
                 "start",
                 "middle",
@@ -59,12 +66,15 @@
   "maxProperties": 2,
   "properties": {
     "neogram": {
+      "title": "Identity marker for the YAML file.",
       "oneOf": [
         {
-          "const": null
+          "title": "Version of the Neogram sofware.",
+          "type": "string"
         },
         {
-          "type": "string"
+          "title": "Unspecified version; avoids the version check.",
+          "const": null
         }
       ]
     },
@@ -84,8 +94,9 @@
           "exclusiveMinimum": 0
         },
         "legend": {
+          "title": "Display legend.",
           "type": "boolean",
-          "default": false
+          "default": true
         },
         "entries": {
           "title": "Entries (events, periods) in the timelines.",
@@ -162,7 +173,7 @@
       }
     },
     "piechart": {
-      "title": "Pie chart with slices.",
+      "title": "Pie chart containing slices.",
       "$anchor": "piechart",
       "type": "object",
       "additionalProperties": false,
@@ -261,7 +272,7 @@
       }
     },
     "row": {
-      "title": "Diagrams stacked in a row.",
+      "title": "Diagrams arranged in a row.",
       "$anchor": "row",
       "type": "object",
       "additionalProperties": false,
