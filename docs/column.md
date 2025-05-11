@@ -3,7 +3,7 @@
 Diagrams stacked in a column.
 
 - **title**:
-    - *definition*: See elsewhere. None
+    - *definition*: See [here](None)
 - **align**: Align diagrams horizontally within the column.
   - *one of*: 'left', 'center', 'right'
   - *default*: 'center'
@@ -12,11 +12,11 @@ Diagrams stacked in a column.
   - *items*:
     - *type*: mapping
     - **timelines**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](timelines.md)
     - **piechart**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](piechart.md)
     - **column**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](column.md)
     - **row**:
       - *definition*: See elsewhere.
 

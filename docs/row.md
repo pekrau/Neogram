@@ -3,7 +3,7 @@
 Diagrams arranged in a row.
 
 - **title**:
-    - *definition*: See elsewhere. None
+    - *definition*: See [here](None)
 - **align**: Align diagrams vertically within the row.
   - *one of*: 'bottom', 'center', 'top'
   - *default*: 'center'
@@ -12,11 +12,11 @@ Diagrams arranged in a row.
   - *items*:
     - *type*: mapping
     - **timelines**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](timelines.md)
     - **piechart**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](piechart.md)
     - **column**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](column.md)
     - **row**:
-        - *definition*: See elsewhere. None
+        - *definition*: See [here](row.md)
 

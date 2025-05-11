@@ -48,9 +48,9 @@ def make_docs():
     for diagram, subschema in schema.SCHEMA["properties"].items():
         result = []
         result.append(f"# {diagram}\n")
-        href = f"../docs/{diagram}.md"
+        href = f"{diagram}.md"
         result.extend(output_schema(subschema, href=href))
-        with open(href, "w") as outfile:
+        with open(f"../docs/{href}", "w") as outfile:
             outfile.write("".join(result) + "\n")
 
 
@@ -67,7 +67,7 @@ def output_schema(schema, level=0, required=False, href=None):
         try:
             schema = definitions[ref[1:]]
             if schema.get("_has_been_output"):
-                result.append(f"{prefix}  - *definition*: See elsewhere. {href}\n")
+                result.append(f"{prefix}  - *definition*: See [here]({schema['_href']})\n")
                 return result
             schema["_has_been_output"] = True
             schema["_href"] = href

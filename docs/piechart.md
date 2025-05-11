@@ -3,7 +3,7 @@
 Pie chart containing slices.
 
 - **title**:
-    - *definition*: See elsewhere. None
+    - *definition*: See [here](None)
 - **diameter**: Diameter of the pie chart, in pixels.
   - *type*: float
   - *exclusiveMinimum*: 0
