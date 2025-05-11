@@ -8,6 +8,8 @@ The YAML file must contain the software identification marker:
 
 where `version` is either `null` or the version of the software.
 
+[Link to test](docs/test.md)
+
 ## timelines
 
 Timelines having events and periods.
