@@ -29,7 +29,7 @@ def make_docs(outfile):
 
     result.append("The YAML file must contain the software identification marker:\n\n")
     result.append("    neogram: version\n\n")
-    result.append(f"where `version` is either `null` or the version of the software.\n\n")
+    result.append(f"where `version` is either `null` or the version of the software.\n")
 
     if (defs := schema.SCHEMA.get("$defs")):
         for key, value in defs.items():
@@ -38,7 +38,7 @@ def make_docs(outfile):
 
     schema.SCHEMA["properties"].pop("neogram")
     for diagram, subschema in schema.SCHEMA["properties"].items():
-        result.append(f"## {diagram}\n")
+        result.append(f"\n## {diagram}\n")
         result.extend(output_schema(subschema))
     outfile.write("".join(result) + "\n")
 
@@ -48,10 +48,10 @@ def output_schema(schema, level=0, required=False):
 
     result = []
     prefix = INDENT * level
-    try:
-        result.append(f"\n{prefix}{schema['title']}\n")
-    except KeyError:
-        pass
+
+    if level == 0:
+        result.append(f"\n{prefix}{schema['title']}\n\n")
+
     if required:
         result.append(f"{prefix}- *required*\n")
     if ref := schema.get("$ref"):
@@ -74,10 +74,13 @@ def output_schema(schema, level=0, required=False):
                     schema["_has_been_output"] = True
                 required = set(schema.get("required") or [])
                 for key, subschema in schema["properties"].items():
-                    result.append(f"{prefix}- **{key}**\n")
+                    if title := subschema.get("title"):
+                        result.append(f"{prefix}- **{key}**: {title}\n")
+                    else:
+                        result.append(f"{prefix}- **{key}**:\n")
                     result.extend(output_schema(subschema, level+1, key in required))
             case "array":
-                result.append(f"{prefix}- *items*:")
+                result.append(f"{prefix}- *items*:\n")
                 result.extend(output_schema(schema["items"], level+1))
             case "integer" | "number":
                 result.append(f"{prefix}- *type*: {term(type)}\n")
@@ -92,7 +95,7 @@ def output_schema(schema, level=0, required=False):
                 result.append(f"{prefix}- *type*: {term(type)}\n")
 
     elif enum := schema.get("enum"):
-        result.append(f"{prefix}- enum:")
+        result.append(f"{prefix}- enum:\n")
         for value in enum:
             if isinstance(value, str):
                 value = f"'{value}'"
@@ -101,13 +104,13 @@ def output_schema(schema, level=0, required=False):
     elif oneof := schema.get("oneOf"):
         result.append(f"{prefix}- One of:\n")
         for number, subschema in enumerate(oneof):
-            result.append(f"{prefix}  - Alternative {number+1}:\n")
+            result.append(f"{prefix}  - Alternative {number+1}: {subschema['title']}\n")
             result.extend(output_schema(subschema, level+2))
 
     elif anyof := schema.get("anyOf"):
         result.append(f"{prefix}- Any of:\n")
         for number, subschema in enumerate(anyof):
-            result.append(f"{prefix}  - Option {number+1}:\n")
+            result.append(f"{prefix}  - Option {number+1}\n")
             result.extend(output_schema(subschema, level+2))
 
     if (format := schema.get("format")):

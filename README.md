@@ -11,184 +11,154 @@ where `version` is either `null` or the version of the software.
 ## timelines
 
 Timelines having events and periods.
-- **title**
+
+- **title**:
   - One of:
-    - Alternative 1:
-
-      Title of the diagram with default styling.
+    - Alternative 1: Title of the diagram with default styling.
       - *type*: string
-    - Alternative 2:
-
-      Title of the diagram with styling options.
+    - Alternative 2: Title of the diagram with styling options.
       - *type*: mapping
-      - **text**
-
-        Text of title.
+      - **text**: Text of title.
         - *required*
         - *type*: string
-      - **size**
-
-        Size of font in title.
+      - **size**: Size of font in title.
         - *type*: float
         - *exclusiveMinimum*: 0
-      - **bold**
-
-        Text in bold.
+      - **bold**: Text in bold.
         - *type*: boolean
         - *default*: false
-      - **italic**
-
-        Text in italics.
+      - **italic**: Text in italics.
         - *type*: boolean
         - *default*: false
-      - **color**
-
-        Color of text.
+      - **color**: Color of text.
         - *type*: string
         - *format*: color
         - *default*: 'black'
-      - **anchor**
-
-        Anchor of title text.
-        - enum:          - 'start'
+      - **anchor**: Anchor of title text.
+        - enum:
+          - 'start'
           - 'middle'
           - 'end'
         - *default*: 'middle'
-- **width**
-
-  Width of chart, in pixels.
+- **width**: Width of chart, in pixels.
   - *type*: float
   - *exclusiveMinimum*: 0
   - *default*: 600
-- **legend**
-
-  Display legend.
+- **legend**: Display legend.
   - *type*: boolean
   - *default*: true
-- **entries**
-
-  Entries (events, periods) in the timelines.
-  - *items*:    - Any of:
-      - Option 1:
+- **entries**: Entries (events, periods) in the timelines.
+  - *items*:
+    - Any of:
+      - Option 1
         - *type*: mapping
-        - **event**
-
-          Event at a moment in time.
+        - **event**: Event at a moment in time.
           - *type*: mapping
-          - **label**
+          - **label**:
             - *required*
             - *type*: string
-          - **moment**
+          - **moment**:
             - *required*
             - *type*: float
-          - **timeline**
+          - **timeline**:
             - *type*: string
-          - **color**
+          - **color**:
             - *type*: string
             - *format*: color
-      - Option 2:
+      - Option 2
         - *type*: mapping
-        - **period**
-
-          Period of time.
+        - **period**: Period of time.
           - *type*: mapping
-          - **label**
+          - **label**:
             - *required*
             - *type*: string
-          - **begin**
+          - **begin**:
             - *required*
             - *type*: float
-          - **end**
+          - **end**:
             - *required*
             - *type*: float
-          - **timeline**
+          - **timeline**:
             - *type*: string
-          - **color**
+          - **color**:
             - *type*: string
             - *format*: color
+
 ## piechart
 
 Pie chart containing slices.
-- **title**
-    - *definition*: See elsewhere.
-- **diameter**
 
-  Diameter of the pie chart, in pixels.
+- **title**:
+    - *definition*: See elsewhere.
+- **diameter**: Diameter of the pie chart, in pixels.
   - *type*: float
   - *exclusiveMinimum*: 0
   - *default*: 200
-- **total**
-
-  Total value to relate slice values to.
+- **total**: Total value to relate slice values to.
   - *type*: float
   - *exclusiveMinimum*: 0
-- **start**
-
-  Starting point for first slice; in degrees from top.
+- **start**: Starting point for first slice; in degrees from top.
   - *type*: float
-- **entries**
-
-  Entries (slices) in the pie chart.
-  - *items*:    - *type*: mapping
-    - **slice**
-
-      Slice representing a value.
+- **entries**: Entries (slices) in the pie chart.
+  - *items*:
+    - *type*: mapping
+    - **slice**: Slice representing a value.
       - *type*: mapping
-      - **label**
+      - **label**:
         - *required*
         - *type*: string
-      - **value**
+      - **value**:
         - *required*
         - *type*: float
-      - **color**
+      - **color**:
         - *type*: string
         - *format*: color
+
 ## column
 
 Diagrams stacked in a column.
-- **title**
-    - *definition*: See elsewhere.
-- **align**
 
-  Align diagrams horizontally within the column.
-  - enum:    - 'left'
+- **title**:
+    - *definition*: See elsewhere.
+- **align**: Align diagrams horizontally within the column.
+  - enum:
+    - 'left'
     - 'center'
     - 'right'
   - *default*: 'center'
-- **entries**
-
-  Component diagrams in the column.
-  - *items*:    - *type*: mapping
-    - **timelines**
+- **entries**: Component diagrams in the column.
+  - *items*:
+    - *type*: mapping
+    - **timelines**:
         - *definition*: See elsewhere.
-    - **piechart**
+    - **piechart**:
         - *definition*: See elsewhere.
-    - **column**
+    - **column**:
         - *definition*: See elsewhere.
-    - **row**
+    - **row**:
       - *definition*: See elsewhere.
+
 ## row
 
 Diagrams arranged in a row.
-- **title**
-    - *definition*: See elsewhere.
-- **align**
 
-  Align diagrams vertically within the row.
-  - enum:    - 'bottom'
+- **title**:
+    - *definition*: See elsewhere.
+- **align**: Align diagrams vertically within the row.
+  - enum:
+    - 'bottom'
     - 'center'
     - 'top'
   - *default*: 'center'
-- **entries**
-
-  Component diagrams in the row.
-  - *items*:    - *type*: mapping
-    - **timelines**
+- **entries**: Component diagrams in the row.
+  - *items*:
+    - *type*: mapping
+    - **timelines**:
         - *definition*: See elsewhere.
-    - **piechart**
+    - **piechart**:
         - *definition*: See elsewhere.
-    - **column**
+    - **column**:
         - *definition*: See elsewhere.
-    - **row**
+    - **row**:
         - *definition*: See elsewhere.
 
