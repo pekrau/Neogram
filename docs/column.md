@@ -3,7 +3,7 @@
 Diagrams stacked in a column.
 
 - **title**:
-    - *definition*: See [here](None)
+    - *definition*: See [here](timelines.md)
 - **align**: Align diagrams horizontally within the column.
   - *one of*: 'left', 'center', 'right'
   - *default*: 'center'

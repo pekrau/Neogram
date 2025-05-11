@@ -3,7 +3,7 @@
 Diagrams arranged in a row.
 
 - **title**:
-    - *definition*: See [here](None)
+    - *definition*: See [here](timelines.md)
 - **align**: Align diagrams vertically within the row.
   - *one of*: 'bottom', 'center', 'top'
   - *default*: 'center'

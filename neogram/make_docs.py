@@ -92,11 +92,13 @@ def output_schema(schema, level=0, required=False, href=None):
                         result.append(f"{prefix}- **{key}**: {title}\n")
                     else:
                         result.append(f"{prefix}- **{key}**:\n")
-                    result.extend(output_schema(subschema, level+1, key in required))
+                    result.extend(output_schema(subschema, level+1,
+                                                required=key in required,
+                                                href=href))
             case "array":
                 result.append(f"{prefix}- *type*: {term(type)}\n")
                 result.append(f"{prefix}- *items*:\n")
-                result.extend(output_schema(schema["items"], level+1))
+                result.extend(output_schema(schema["items"], level+1, href=href))
             case "integer" | "number":
                 result.append(f"{prefix}- *type*: {term(type)}\n")
                 for constraint in ("minimum", "exclusiveMinimum",
@@ -120,12 +122,12 @@ def output_schema(schema, level=0, required=False, href=None):
     elif oneof := schema.get("oneOf"):
         for number, subschema in enumerate(oneof):
             result.append(f"{prefix}- Alternative {number+1}: {subschema['title']}\n")
-            result.extend(output_schema(subschema, level+1))
+            result.extend(output_schema(subschema, level+1, href=href))
 
     elif anyof := schema.get("anyOf"):
         for number, subschema in enumerate(anyof):
             result.append(f"{prefix}- Option {number+1}\n")
-            result.extend(output_schema(subschema, level+1))
+            result.extend(output_schema(subschema, level+1, href=href))
 
     if (format := schema.get("format")):
         result.append(f"{prefix}- *format*: {format}\n")
