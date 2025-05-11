@@ -102,16 +102,14 @@ def output_schema(schema, level=0, required=False):
             result.append(f"{prefix}  - {value}\n")
 
     elif oneof := schema.get("oneOf"):
-        result.append(f"{prefix}- One of:\n")
         for number, subschema in enumerate(oneof):
-            result.append(f"{prefix}  - Alternative {number+1}: {subschema['title']}\n")
-            result.extend(output_schema(subschema, level+2))
+            result.append(f"{prefix}- Alternative {number+1}: {subschema['title']}\n")
+            result.extend(output_schema(subschema, level+1))
 
     elif anyof := schema.get("anyOf"):
-        result.append(f"{prefix}- Any of:\n")
         for number, subschema in enumerate(anyof):
-            result.append(f"{prefix}  - Option {number+1}\n")
-            result.extend(output_schema(subschema, level+2))
+            result.append(f"{prefix}- Option {number+1}\n")
+            result.extend(output_schema(subschema, level+1))
 
     if (format := schema.get("format")):
         result.append(f"{prefix}- *format*: {format}\n")

@@ -34,11 +34,12 @@ class Timelines(Diagram):
                 "default": True,
             },
             "entries": {
-                "title": "Entries (events, periods) in the timelines.",
+                "title": "Entries in the timelines.",
                 "type": "array",
                 "items": {
                     "anyOf": [
                         {
+                            "title": "Event specification in the timeline.",
                             "type": "object",
                             "additionalProperties": False,
                             "properties": {
@@ -57,6 +58,7 @@ class Timelines(Diagram):
                             },
                         },
                         {
+                            "title": "Period specification in the timeline.",
                             "type": "object",
                             "additionalProperties": False,
                             "properties": {
