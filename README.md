@@ -34,10 +34,7 @@ Timelines having events and periods.
       - *format*: color
       - *default*: 'black'
     - **anchor**: Anchor of title text.
-      - enum:
-        - 'start'
-        - 'middle'
-        - 'end'
+      - *one of*: 'start', 'middle', 'end'
       - *default*: 'middle'
 - **width**: Width of chart, in pixels.
   - *type*: float
@@ -47,6 +44,7 @@ Timelines having events and periods.
   - *type*: boolean
   - *default*: true
 - **entries**: Entries in the timelines.
+  - *type*: sequence
   - *items*:
     - Option 1
       - *type*: mapping
@@ -98,6 +96,7 @@ Pie chart containing slices.
 - **start**: Starting point for first slice; in degrees from top.
   - *type*: float
 - **entries**: Entries (slices) in the pie chart.
+  - *type*: sequence
   - *items*:
     - *type*: mapping
     - **slice**: Slice representing a value.
@@ -119,12 +118,10 @@ Diagrams stacked in a column.
 - **title**:
     - *definition*: See elsewhere.
 - **align**: Align diagrams horizontally within the column.
-  - enum:
-    - 'left'
-    - 'center'
-    - 'right'
+  - *one of*: 'left', 'center', 'right'
   - *default*: 'center'
 - **entries**: Component diagrams in the column.
+  - *type*: sequence
   - *items*:
     - *type*: mapping
     - **timelines**:
@@ -143,12 +140,10 @@ Diagrams arranged in a row.
 - **title**:
     - *definition*: See elsewhere.
 - **align**: Align diagrams vertically within the row.
-  - enum:
-    - 'bottom'
-    - 'center'
-    - 'top'
+  - *one of*: 'bottom', 'center', 'top'
   - *default*: 'center'
 - **entries**: Component diagrams in the row.
+  - *type*: sequence
   - *items*:
     - *type*: mapping
     - **timelines**:

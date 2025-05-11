@@ -80,6 +80,7 @@ def output_schema(schema, level=0, required=False):
                         result.append(f"{prefix}- **{key}**:\n")
                     result.extend(output_schema(subschema, level+1, key in required))
             case "array":
+                result.append(f"{prefix}- *type*: {term(type)}\n")
                 result.append(f"{prefix}- *items*:\n")
                 result.extend(output_schema(schema["items"], level+1))
             case "integer" | "number":
@@ -95,11 +96,12 @@ def output_schema(schema, level=0, required=False):
                 result.append(f"{prefix}- *type*: {term(type)}\n")
 
     elif enum := schema.get("enum"):
-        result.append(f"{prefix}- enum:\n")
+        values = []
         for value in enum:
             if isinstance(value, str):
                 value = f"'{value}'"
-            result.append(f"{prefix}  - {value}\n")
+            values.append(value)
+        result.append(f"{prefix}- *one of*: {', '.join(values)}\n")
 
     elif oneof := schema.get("oneOf"):
         for number, subschema in enumerate(oneof):
