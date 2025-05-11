@@ -40,7 +40,7 @@ def make_docs():
 
     result.append("## Diagrams\n\n")
     for diagram, subschema in schema.SCHEMA["properties"].items():
-        result.append(f"- [{diagram}(docs/{diagram}.md): {subschema['title']}\n\n")
+        result.append(f"- [{diagram}](docs/{diagram}.md): {subschema['title']}\n\n")
 
     with open("../README.md", "w") as outfile:
         outfile.write("".join(result))
