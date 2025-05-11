@@ -11,13 +11,12 @@ class Column(Diagram):
     DEFAULT_ALIGN = "center"
 
     SCHEMA = {
-        "title": "Diagrams stacked in a column.",
+        "title": __doc__,
         "$anchor": "column",
         "type": "object",
         "additionalProperties": False,
         "properties": {
             "title": {"$ref": "#title"},
-            "width": {"$ref": "#width"},
             "align": {
                 "title": "Align diagrams horizontally within the column.",
                 "enum": ["left", "center", "right"],
@@ -43,11 +42,10 @@ class Column(Diagram):
     def __init__(
         self,
         title=None,
-        width=None,
         entries=None,
         align=None,
     ):
-        super().__init__(title=title, width=width, entries=entries)
+        super().__init__(title=title, entries=entries)
         assert align is None or isinstance(align, str)
 
         self.align = align or self.DEFAULT_ALIGN
@@ -63,10 +61,12 @@ class Column(Diagram):
 
     def build(self):
         "Set the 'svg' and 'height' attributes."
-        super().build()
-
         for entry in self.entries:
             entry.build()
+
+        self.width = max([e.width for e in self.entries])
+
+        super().build()
 
         for entry in self.entries:
             match self.align:

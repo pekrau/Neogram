@@ -11,13 +11,12 @@ class Row(Diagram):
     DEFAULT_ALIGN = "center"
 
     SCHEMA = {
-        "title": "Diagrams stacked in a row.",
+        "title": __doc__,
         "$anchor": "row",
         "type": "object",
         "additionalProperties": False,
         "properties": {
             "title": {"$ref": "#title"},
-            "width": {"$ref": "#width"},
             "align": {
                 "title": "Align diagrams vertically within the row.",
                 "enum": ["bottom", "center", "top"],
@@ -43,11 +42,10 @@ class Row(Diagram):
     def __init__(
         self,
         title=None,
-        width=None,
         entries=None,
         align=None,
     ):
-        super().__init__(title=title, width=width, entries=entries)
+        super().__init__(title=title, entries=entries)
         assert align is None or isinstance(align, str)
 
         self.align = align or self.DEFAULT_ALIGN
@@ -63,10 +61,12 @@ class Row(Diagram):
 
     def build(self):
         "Set the 'svg' and 'height' attributes."
-        super().build()
-
         for entry in self.entries:
             entry.build()
+
+        self.width = sum([e.width for e in self.entries])
+
+        super().build()
 
         x = 0
         max_height = max([e.height for e in self.entries])

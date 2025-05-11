@@ -13,14 +13,21 @@ import utils
 class Timelines(Diagram):
     "Timelines having events and periods."
 
+    DEFAULT_WIDTH = 600
+
     SCHEMA = {
-        "title": "Timelines having events and periods.",
+        "title": __doc__,
         "$anchor": "timelines",
         "type": "object",
         "additionalProperties": False,
         "properties": {
             "title": {"$ref": "#title"},
-            "width": {"$ref": "#width"},
+            "width": {
+                "title": "Width of chart, in pixels.",
+                "type": "number",
+                "default": DEFAULT_WIDTH,
+                "exclusiveMinimum": 0,
+            },
             "legend": {"type": "boolean", "default": False},
             "entries": {
                 "title": "Entries (events, periods) in the timelines.",
@@ -73,13 +80,15 @@ class Timelines(Diagram):
     def __init__(
         self,
         title=None,
-        width=None,
         entries=None,
+        width=None,
         legend=None,
     ):
-        super().__init__(title=title, width=width, entries=entries)
+        super().__init__(title=title, entries=entries)
+        assert width is None or (isinstance(width, (int, float)) and width > 0)
         assert legend is None or isinstance(legend, bool)
 
+        self.width = width or self.DEFAULT_WIDTH
         self.legend = True if legend is None else legend
 
     def check_entry(self, entry):
@@ -87,6 +96,8 @@ class Timelines(Diagram):
 
     def data_as_dict(self):
         result = super().data_as_dict()
+        if self.width != self.DEFAULT_WIDTH:
+            result["width"] = self.width
         if self.legend is not None and not self.legend:
             result["legend"] = False
         return result

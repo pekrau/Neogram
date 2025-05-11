@@ -14,17 +14,23 @@ import utils
 class Piechart(Diagram):
     "Pie chart containing slices."
 
+    DEFAULT_DIAMETER = 200
     DEFAULT_START = Degrees(-90)
     DEFAULT_PALETTE = ["#4c78a8", "#9ecae9", "#f58518"]
 
     SCHEMA = {
-        "title": "Pie chart with slices.",
+        "title": __doc__,
         "$anchor": "piechart",
         "type": "object",
         "additionalProperties": False,
         "properties": {
             "title": {"$ref": "#title"},
-            "width": {"$ref": "#width"},
+            "diameter": {
+                "title": "Diameter of the pie chart, in pixels.",
+                "type": "number",
+                "default": DEFAULT_DIAMETER,
+                "exclusiveMinimum": 0,
+            },
             "total": {
                 "title": "Total value to relate slice values to.",
                 "type": "number",
@@ -61,15 +67,17 @@ class Piechart(Diagram):
     def __init__(
         self,
         title=None,
-        width=None,
         entries=None,
+        diameter=None,
         total=None,
         start=None,
     ):
-        super().__init__(title=title, width=width, entries=entries)
+        super().__init__(title=title, entries=entries)
+        assert diameter is None or (isinstance(diameter, (int, float)) and diameter > 0)
         assert total is None or isinstance(total, (int, float))
         assert start is None or isinstance(start, (int, float))
 
+        self.diameter = diameter or self.DEFAULT_DIAMETER
         self.total = total
         self.start = start
 
@@ -78,6 +86,8 @@ class Piechart(Diagram):
 
     def data_as_dict(self):
         result = super().data_as_dict()
+        if self.diameter != self.DEFAULT_DIAMETER:
+            result["diameter"] = self.diameter
         if self.total is not None:
             result["total"] = self.total
         if self.start is not None:
@@ -86,6 +96,9 @@ class Piechart(Diagram):
 
     def build(self):
         "Set the 'svg' and 'height' attributes."
+        # XXX add line width if and when implemented
+        self.width = self.diameter + 2 * constants.DEFAULT_PADDING
+
         super().build()
 
         if self.total is None:
@@ -93,10 +106,10 @@ class Piechart(Diagram):
         else:
             total = self.total
         palette = itertools.cycle(self.DEFAULT_PALETTE)
-        radius = (self.width - constants.DEFAULT_PADDING) / 2
+        radius = self.diameter / 2
         x = radius + constants.DEFAULT_PADDING
         y = self.height + radius + constants.DEFAULT_PADDING
-        self.height += 2 * (radius + constants.DEFAULT_PADDING)
+        self.height += self.diameter + 2 * constants.DEFAULT_PADDING
 
         self.svg += (
             pie := Element("g", transform=f"translate({utils.N(x)}, {utils.N(y)})")

@@ -34,13 +34,11 @@ class Diagram(Entity):
 
     DEFAULT_FONT_SIZE = 14
 
-    def __init__(self, title=None, width=None, entries=None):
+    def __init__(self, title=None, entries=None):
         assert title is None or isinstance(title, (str, dict))
-        assert width is None or (isinstance(width, (int, float)) and width > 0)
         assert entries is None or isinstance(entries, (tuple, list))
 
         self.title = title
-        self.width = width or constants.DEFAULT_WIDTH
         self.height = 0
         self.entries = []
         if entries:
@@ -85,8 +83,6 @@ class Diagram(Entity):
                     title["anchor"] = anchor
             else:
                 result["title"] = self.title
-        if self.width != constants.DEFAULT_WIDTH:
-            result["width"] = self.width
         result["entries"] = [e.as_dict() for e in self.entries]
         return result
 
@@ -122,13 +118,13 @@ class Diagram(Entity):
             target.write(repr(document))
 
     def build(self):
-        """Set the 'svg' and 'height' attributes.
+        """Create the SVG elements in the 'svg' attribute.
+        Requires that the 'width' attribute has been set. Sets the width' attributes.
         To be extended in subclasses.
         """
+        assert hasattr(self, "width")
         self.height = 0
-        self.svg = Element("g")
-        self.svg["stroke"] = "black"
-        self.svg["fill"] = "white"
+        self.svg = Element("g", stroke="black", fill="white")
         self.svg["font-family"] = constants.DEFAULT_FONT_FAMILY
         self.svg["font-size"] = self.DEFAULT_FONT_SIZE
         if self.title:

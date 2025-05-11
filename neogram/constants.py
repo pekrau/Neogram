@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 6)
+VERSION = (0, 7, 7)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -12,7 +12,6 @@ JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
 
 PRECISION = 0.0005
 
-DEFAULT_WIDTH = 600
 DEFAULT_SIZE = 18
 DEFAULT_PADDING = 2
 DEFAULT_FONT_FAMILY = "sans-serif"

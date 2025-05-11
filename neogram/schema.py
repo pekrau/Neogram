@@ -47,13 +47,6 @@ SCHEMA = {
                 },
             ],
         },
-        "width": {
-            "title": "Width of chart, in pixels.",
-            "$anchor": "width",
-            "type": "number",
-            "default": constants.DEFAULT_WIDTH,
-            "exclusiveMinimum": 0,
-        },
     },
     "type": "object",
     "required": ["neogram"],

@@ -40,7 +40,7 @@ def test_jorden():
 
 
 def test_pyramid():
-    pyramid = Piechart("Pyramid", start=132, width=200)
+    pyramid = Piechart("Pyramid", start=132)
     pyramid += Slice("Skuggsida", 7)
     pyramid += Slice("Solsida", 18)
     pyramid += Slice("Himmel", 70)
@@ -53,7 +53,7 @@ def test_pyramid():
 
 
 def test_dagen():
-    dagen = Piechart({"text": "Dagen", "size": 30}, total=24, width=400)
+    dagen = Piechart({"text": "Dagen", "size": 30}, total=24, diameter=400)
     dagen += Slice("Sova", 8, color="gray")
     dagen += Slice("Frukost", 1, color="lightgreen")
     dagen += Slice("Träna", 2, color="lightblue")
@@ -69,15 +69,15 @@ def test_dagen():
 
 
 def test_pajer():
-    pajer = Column("Pajer", width=400)
+    pajer = Column("Pajer")
 
-    pajer += (paj := Piechart("Jordgubbspaj", width=200))
+    pajer += (paj := Piechart("Jordgubbspaj"))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")
     paj += Slice("Jordgubbar", 3, color="orangered")
 
-    pajer += (paj := Piechart("Rabarberpaj", width=200))
+    pajer += (paj := Piechart("Rabarberpaj"))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")
@@ -88,15 +88,15 @@ def test_pajer():
 
 
 def test_pajer2():
-    pajer = Row("Pajer 2", width=404)
+    pajer = Row("Pajer 2")
 
-    pajer += (paj := Piechart("Jordgubbspaj", width=200))
+    pajer += (paj := Piechart("Jordgubbspaj"))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")
     paj += Slice("Jordgubbar", 3, color="orangered")
 
-    pajer += (paj := Piechart("Rabarberpaj", width=200))
+    pajer += (paj := Piechart("Rabarberpaj"))
     paj += Slice("Mjöl", 7, color="white")
     paj += Slice("Ägg", 2, color="yellow")
     paj += Slice("Smör", 3, color="gold")
