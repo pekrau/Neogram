@@ -13,7 +13,7 @@ import lib
 SCHEMA = {
     "$schema": constants.JSONSCHEMA_VERSION,
     "$id": constants.JSONSCHEMA_ID,
-    "title": "YAML specification for diagrams of different kinds.",
+    "title": "Generate SVG for diagrams of different kinds from YAML specification.",
     "$defs": {
         "title": {
             "$anchor": "title",

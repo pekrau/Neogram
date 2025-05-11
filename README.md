@@ -1,6 +1,6 @@
 # Neogram 0.7.8
 
-YAML specification for diagrams of different kinds.
+Generate SVG for diagrams of different kinds from YAML specification.
 
 The YAML file must contain the software identification marker:
 
