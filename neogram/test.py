@@ -12,7 +12,12 @@ def get_universe(legend=True):
         "Milky Way galaxy", -8_000_000_000, 0, timeline="Universe", color="navy"
     )
     universe += Period("Earth", -4_567_000_000, 0, color="lightgreen")
-    universe += Event("Here", -12_000_000_000, timeline="markers", marker="none")
+    universe += Event(
+        "Here",
+        {"value": -12_000_000_000, "error": 600_000_000},
+        timeline="markers",
+        marker="none",
+    )
     universe += Event(
         "Circle",
         -10_000_000_000,
@@ -57,11 +62,17 @@ def get_universe(legend=True):
 def get_earth(legend=True):
     earth = Timelines("Earth", legend=legend)
     earth += Period("Earth", -4_567_000_000, 0)
-    earth += Period("Archean",
-                    {"value": -4_000_000_000, "low": -4_100_000_000},
-                    {"value": -2_500_000_000, "error": 200_000_000})
+    earth += Period(
+        "Archean",
+        {"value": -4_000_000_000, "low": -4_100_000_000, "high": -3_950_000_000},
+        {"value": -2_500_000_000, "error": 200_000_000},
+        color="lime",
+        fuzzy_marker="gradient",
+    )
     earth += Event("LUCA?", -4_200_000_000, timeline="Unicellular")
-    earth += Period("Unicellular organisms", -3_480_000_000, 0, timeline="Unicellular")
+    earth += Period("Unicellular organisms",
+                    {"value": -3_480_000_000, "low": -4_200_000_000},
+                     0, timeline="Unicellular", fuzzy_marker="gradient")
     earth += Period("Eukaryotes", -1_650_000_000, 0)
     earth += Period("Photosynthesis", -3_400_000_000, 0)
     earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis")

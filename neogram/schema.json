@@ -81,15 +81,6 @@
           "title": "Symmetrical error around the central value.",
           "type": "number",
           "exclusiveMinimum": 0
-        },
-        "marker": {
-          "title": "Marker to display fuzziness.",
-          "enum": [
-            "error",
-            "gradient",
-            "taper"
-          ],
-          "default": "error"
         }
       }
     }
@@ -201,6 +192,11 @@
                           "center",
                           "right"
                         ]
+                      },
+                      "fuzzy_marker": {
+                        "title": "Use error bar marker for fuzzy number.",
+                        "type": "boolean",
+                        "default": true
                       }
                     }
                   }
@@ -260,6 +256,16 @@
                         "type": "string",
                         "format": "color",
                         "default": "white"
+                      },
+                      "fuzzy_marker": {
+                        "title": "Marker to use for fuzzy number.",
+                        "enum": [
+                          "error",
+                          "gradient",
+                          "taper",
+                          "none"
+                        ],
+                        "default": "error"
                       }
                     }
                   }

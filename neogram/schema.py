@@ -86,11 +86,6 @@ SCHEMA = {
                     "type": "number",
                     "exclusiveMinimum": 0,
                 },
-                "marker": {
-                    "title": "Marker to display fuzziness.",
-                    "enum": constants.FUZZY_MARKERS,
-                    "default": constants.ERROR,
-                },
             },
         },
     },

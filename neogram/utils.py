@@ -1,6 +1,7 @@
 "Various utility functions."
 
 import constants
+import itertools
 
 
 def N(x):
@@ -29,3 +30,17 @@ def get_text_length(text, font, size, italic=False, bold=False):
         key = "n"
     total = sum([widths.get(c, widths["default"])[key] for c in text])
     return total * size / 100
+
+
+def get_unique(id="id"):
+    count = itertools.count(1)
+    while True:
+        yield f"{id}{next(count)}"
+
+unique_id = get_unique()
+
+
+if __name__ == "__main__":
+    print(next(unique_id))
+    print(next(unique_id))
+    print(next(unique_id))

@@ -1,4 +1,4 @@
-# Neogram 0.7.11
+# Neogram 0.7.12
 
 Generate SVG for diagrams of different kinds from YAML specification.
 

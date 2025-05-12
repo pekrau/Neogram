@@ -9,6 +9,7 @@ from degrees import *
 from diagram import *
 from path import *
 import utils
+from vector2 import *
 
 
 class Piechart(Diagram):
@@ -190,22 +191,22 @@ class Slice(Entity):
         p0 = Vector2.from_polar(radius, float(self.start))
         p1 = Vector2.from_polar(radius, float(self.stop))
         lof = 1 if self.stop - self.start > Degrees(180) else 0
-        elem = Element(
+        result = Element(
             "path",
-            d=Path(Vector2(0, 0)).L(p0).A(radius, radius, 0, lof, 1, p1).Z(),
+            d=Path(0, 0).L(p0.x, p0.y).A(radius, radius, 0, lof, 1, p1.x, p1.y).Z(),
         )
         if self.color:
-            elem["fill"] = self.background = self.color
+            result["fill"] = self.background = self.color
         else:
-            elem["fill"] = self.background = next(palette)
-        return elem
+            result["fill"] = self.background = next(palette)
+        return result
 
     def render_label(self, radius):
         middle = self.start + 0.5 * self.fraction * Degrees(360)
         pos = Vector2.from_polar(0.7 * radius, float(middle))
-        elem = Element("text", self.label, x=utils.N(pos.x), y=utils.N(pos.y))
-        elem["fill"] = Color(self.background).best_contrast
-        return elem
+        result = Element("text", self.label, x=utils.N(pos.x), y=utils.N(pos.y))
+        result["fill"] = Color(self.background).best_contrast
+        return result
 
 
 register(Piechart)

@@ -66,9 +66,6 @@ Timelines having events and periods.
             - **error**: Symmetrical error around the central value.
               - *type*: float
               - *exclusiveMinimum*: 0
-            - **marker**: Marker to display fuzziness.
-              - *one of*: 'error', 'gradient', 'taper'
-              - *default*: 'error'
         - **timeline**: Timeline to place the event in.
           - *type*: string
         - **marker**: Marker for event.
@@ -80,6 +77,9 @@ Timelines having events and periods.
           - *default*: 'black'
         - **placement**: Placement of event label.
           - *one of*: 'left', 'center', 'right'
+        - **fuzzy_marker**: Use error bar marker for fuzzy number.
+          - *type*: boolean
+          - *default*: true
     - Option 2
       - *type*: mapping
       - **period**: Period of time.
@@ -105,6 +105,9 @@ Timelines having events and periods.
           - *type*: string
           - *format*: color
           - *default*: 'white'
+        - **fuzzy_marker**: Marker to use for fuzzy number.
+          - *one of*: 'error', 'gradient', 'taper', 'none'
+          - *default*: 'error'
 ## Examples
 
 ### universe
@@ -112,7 +115,7 @@ Timelines having events and periods.
 ![universe SVG](universe.svg)
 
 ```yaml
-neogram: 0.7.11
+neogram: 0.7.12
 timelines:
   title:
     text: Universe
@@ -139,7 +142,9 @@ timelines:
   - event:
       label: Here
       timeline: markers
-      instant: -12000000000
+      instant:
+        value: -12000000000
+        error: 600000000
       marker: none
   - event:
       label: Circle
@@ -183,7 +188,7 @@ timelines:
 ![earth SVG](earth.svg)
 
 ```yaml
-neogram: 0.7.11
+neogram: 0.7.12
 timelines:
   title: Earth
   entries:
@@ -193,12 +198,15 @@ timelines:
       end: 0
   - period:
       label: Archean
+      color: lime
       begin:
         value: -4000000000
         low: -4100000000
+        high: -3950000000
       end:
         value: -2500000000
         error: 200000000
+      fuzzy_marker: gradient
   - event:
       label: LUCA?
       timeline: Unicellular
@@ -206,8 +214,11 @@ timelines:
   - period:
       label: Unicellular organisms
       timeline: Unicellular
-      begin: -3480000000
+      begin:
+        value: -3480000000
+        low: -4200000000
       end: 0
+      fuzzy_marker: gradient
   - period:
       label: Eukaryotes
       begin: -1650000000
@@ -227,7 +238,7 @@ timelines:
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.11
+neogram: 0.7.12
 column:
   title: Universe and Earth
   entries:
@@ -257,7 +268,9 @@ column:
       - event:
           label: Here
           timeline: markers
-          instant: -12000000000
+          instant:
+            value: -12000000000
+            error: 600000000
           marker: none
       - event:
           label: Circle
@@ -303,12 +316,15 @@ column:
           end: 0
       - period:
           label: Archean
+          color: lime
           begin:
             value: -4000000000
             low: -4100000000
+            high: -3950000000
           end:
             value: -2500000000
             error: 200000000
+          fuzzy_marker: gradient
       - event:
           label: LUCA?
           timeline: Unicellular
@@ -316,8 +332,11 @@ column:
       - period:
           label: Unicellular organisms
           timeline: Unicellular
-          begin: -3480000000
+          begin:
+            value: -3480000000
+            low: -4200000000
           end: 0
+          fuzzy_marker: gradient
       - period:
           label: Eukaryotes
           begin: -1650000000

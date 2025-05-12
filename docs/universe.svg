@@ -3,7 +3,7 @@
   <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
     <text x="300.0" y="18" stroke="none" font-size="18" font-weight="bold" text-anchor="middle" fill="purple">Universe</text>
     <g>
-      <path d="M 0 23.600 V 89.6 M 85.714 23.600 V 89.6 M 171.429 23.600 V 89.6 M 257.143 23.600 V 89.6 M 342.857 23.600 V 89.6 M 428.571 23.600 V 89.6 M 514.286 23.600 V 89.6 M 600 23.600 V 89.6 M 0 23.600 H 600 M 0 89.600 H 600" />
+      <path d="M 0 23.600 V 89.600 M 85.714 23.600 V 89.600 M 171.429 23.600 V 89.600 M 257.143 23.600 V 89.600 M 342.857 23.600 V 89.600 M 428.571 23.600 V 89.600 M 514.286 23.600 V 89.600 M 600 23.600 V 89.600 M 0 23.600 H 600 M 0 89.600 H 600" />
       <g text-anchor="middle" stroke="none" fill="black">
         <text x="0" y="107.600" text-anchor="start">-14</text>
         <text x="85.714" y="107.600">-12</text>
@@ -17,15 +17,25 @@
     </g>
     <g>
       <ellipse cx="9.129" cy="34.600" rx="3.6" ry="9.0" stroke="none" fill="red" />
-      <rect x="257.143" y="25.600" width="342.857" height="18" fill="navy" />
-      <rect x="404.271" y="47.600" width="195.729" height="18" fill="lightgreen" />
-      <g stroke="none" fill="black" />
+      <g>
+        <rect x="257.143" y="25.600" width="342.857" height="18" fill="navy" />
+      </g>
+      <g>
+        <rect x="404.271" y="47.600" width="195.729" height="18" fill="lightgreen" />
+      </g>
+      <g>
+        <g stroke="black">
+          <path d="M 60 74.100 v 9 m 0 -4.500 H 85.714" />
+          <path d="M 111.429 74.100 v 9 m 0 -4.500 H 85.714" />
+        </g>
+        <g stroke="none" fill="black" />
+      </g>
       <circle cx="171.429" cy="78.600" r="9.0" stroke="none" fill="cyan" />
       <ellipse cx="257.143" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="blue" />
       <g>
         <g stroke="black">
-          <path d="M 321.429 74.100 v 9 m 0 -4.500 H 342.86" />
-          <path d="M 385.714 74.100 v 9 m 0 -4.500 H 342.86" />
+          <path d="M 321.429 74.100 v 9 m 0 -4.500 H 342.857" />
+          <path d="M 385.714 74.100 v 9 m 0 -4.500 H 342.857" />
         </g>
         <rect x="333.857" y="69.600" width="18" height="18" stroke="none" fill="orange" />
       </g>

@@ -1,4 +1,4 @@
-neogram: 0.7.11
+neogram: 0.7.12
 timelines:
   title:
     text: Universe
@@ -25,7 +25,9 @@ timelines:
   - event:
       label: Here
       timeline: markers
-      instant: -12000000000
+      instant:
+        value: -12000000000
+        error: 600000000
       marker: none
   - event:
       label: Circle

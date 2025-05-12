@@ -32,7 +32,7 @@ Diagrams stacked in a column.
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.11
+neogram: 0.7.12
 column:
   title: Universe and Earth
   entries:
@@ -62,7 +62,9 @@ column:
       - event:
           label: Here
           timeline: markers
-          instant: -12000000000
+          instant:
+            value: -12000000000
+            error: 600000000
           marker: none
       - event:
           label: Circle
@@ -108,12 +110,15 @@ column:
           end: 0
       - period:
           label: Archean
+          color: lime
           begin:
             value: -4000000000
             low: -4100000000
+            high: -3950000000
           end:
             value: -2500000000
             error: 200000000
+          fuzzy_marker: gradient
       - event:
           label: LUCA?
           timeline: Unicellular
@@ -121,8 +126,11 @@ column:
       - period:
           label: Unicellular organisms
           timeline: Unicellular
-          begin: -3480000000
+          begin:
+            value: -3480000000
+            low: -4200000000
           end: 0
+          fuzzy_marker: gradient
       - period:
           label: Eukaryotes
           begin: -1650000000
@@ -142,7 +150,7 @@ column:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.7.11
+neogram: 0.7.12
 column:
   title: Pies in column
   entries:

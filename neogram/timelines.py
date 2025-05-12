@@ -88,6 +88,11 @@ class Timelines(Diagram):
                                             "title": "Placement of event label.",
                                             "enum": constants.HORIZONTAL_ALIGN,
                                         },
+                                        "fuzzy_marker": {
+                                            "title": "Use error bar marker for fuzzy number.",
+                                            "type": "boolean",
+                                            "default": True,
+                                        },
                                     },
                                 },
                             },
@@ -142,6 +147,11 @@ class Timelines(Diagram):
                                             "type": "string",
                                             "format": "color",
                                             "default": "white",
+                                        },
+                                        "fuzzy_marker": {
+                                            "title": "Marker to use for fuzzy number.",
+                                            "enum": constants.FUZZY_MARKERS,
+                                            "default": constants.ERROR,
                                         },
                                     },
                                 },
@@ -204,11 +214,11 @@ class Timelines(Diagram):
         # Add time axis lines and their labels.
         self.svg += (axis := Element("g"))
         ticks = dimension.get_ticks()
-        path = Path(Vector2(ticks[0].pixel, area_height)).V(self.height)
+        path = Path(ticks[0].pixel, area_height).V(self.height)
         for tick in ticks[1:]:
-            path.M(Vector2(tick.pixel, area_height)).V(self.height)
-        path.M(Vector2(ticks[0].pixel, area_height)).H(self.width)
-        path.M(Vector2(ticks[0].pixel, self.height)).H(self.width)
+            path.M(tick.pixel, area_height).V(self.height)
+        path.M(ticks[0].pixel, area_height).H(self.width)
+        path.M(ticks[0].pixel, self.height).H(self.width)
         axis += Element("path", d=path)
         axis += (labels := Element("g"))
         labels["text-anchor"] = "middle"
@@ -297,34 +307,28 @@ class _Entry(Entity):
         assert isinstance(instant, dict)
         x = dimension.get_pixel(instant["value"])
         result = Element("g", stroke="black")
-        try:
-            try:                # If 'low' is given, then ignore 'error'.
-                xlow = dimension.get_pixel(instant["low"])
-            except KeyError:
-                xlow = dimension.get_pixel(instant["value"] - instant["error"])
-            result += Element(
-                "path",
-                d=Path(Vector2(xlow, timelines[self.timeline] + 0.25 * constants.DEFAULT_SIZE))
-                .v(0.5 * constants.DEFAULT_SIZE)
-                .m(Vector2(0, -0.25 * constants.DEFAULT_SIZE))
-                .H(x),
-            )
+        try:  # If 'low' is given, then ignore 'error'.
+            xlow = dimension.get_pixel(instant["low"])
         except KeyError:
-            pass
-        try:
-            try:                # If 'high' is given, then ignore 'error'.
-                xhigh = dimension.get_pixel(instant["high"])
-            except KeyError:
-                xhigh = dimension.get_pixel(instant["value"] + instant["error"])
-            result += Element(
-                "path",
-                d=Path(Vector2(xhigh, timelines[self.timeline] + 0.25 * constants.DEFAULT_SIZE))
-                .v(0.5 * constants.DEFAULT_SIZE)
-                .m(Vector2(0, -0.25 * constants.DEFAULT_SIZE))
-                .H(x),
-            )
+            xlow = dimension.get_pixel(instant["value"] - instant.get("error", 0))
+        result += Element(
+            "path",
+            d=Path(xlow, timelines[self.timeline] + 0.25 * constants.DEFAULT_SIZE)
+            .v(0.5 * constants.DEFAULT_SIZE)
+            .m(0, -0.25 * constants.DEFAULT_SIZE)
+            .H(x),
+        )
+        try:  # If 'high' is given, then ignore 'error'.
+            xhigh = dimension.get_pixel(instant["high"])
         except KeyError:
-            pass
+            xhigh = dimension.get_pixel(instant["value"] + instant.get("error", 0))
+        result += Element(
+            "path",
+            d=Path(xhigh, timelines[self.timeline] + 0.25 * constants.DEFAULT_SIZE)
+            .v(0.5 * constants.DEFAULT_SIZE)
+            .m(0, -0.25 * constants.DEFAULT_SIZE)
+            .H(x),
+        )
         return result
 
 
@@ -334,16 +338,25 @@ class Event(_Entry):
     DEFAULT_MARKER = constants.ELLIPSE
 
     def __init__(
-        self, label, instant, timeline=None, marker=None, color=None, placement=None
+        self,
+        label,
+        instant,
+        timeline=None,
+        marker=None,
+        color=None,
+        placement=None,
+        fuzzy_marker=None,
     ):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(instant, (int, float, dict))
         assert marker is None or marker in constants.MARKERS
         assert placement is None or placement in constants.HORIZONTAL_ALIGN
+        assert fuzzy_marker is None or isinstance(fuzzy_marker, bool)
 
         self.instant = instant
         self.marker = marker or self.DEFAULT_MARKER
         self.placement = placement
+        self.fuzzy_marker = fuzzy_marker is None or fuzzy_marker
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -352,6 +365,8 @@ class Event(_Entry):
             result["marker"] = self.marker
         if self.placement:
             result["placement"] = self.placement
+        if not self.fuzzy_marker:
+            result["fuzzy_marker"] = False
         return result
 
     @property
@@ -399,12 +414,10 @@ class Event(_Entry):
             case constants.PYRAMID:
                 self.label_x_offset = constants.DEFAULT_SIZE / 2
                 path = (
-                    Path(Vector2(x, timelines[self.timeline]))
+                    Path(x, timelines[self.timeline])
                     .L(
-                        Vector2(
-                            x - constants.DEFAULT_SIZE / 2,
-                            timelines[self.timeline] + constants.DEFAULT_SIZE,
-                        )
+                        x - constants.DEFAULT_SIZE / 2,
+                        timelines[self.timeline] + constants.DEFAULT_SIZE,
                     )
                     .h(constants.DEFAULT_SIZE)
                     .Z()
@@ -413,12 +426,10 @@ class Event(_Entry):
             case constants.TRIANGLE:
                 self.label_x_offset = constants.DEFAULT_SIZE / 2
                 path = (
-                    Path(Vector2(x, timelines[self.timeline] + constants.DEFAULT_SIZE))
+                    Path(x, timelines[self.timeline] + constants.DEFAULT_SIZE)
                     .L(
-                        Vector2(
-                            x - constants.DEFAULT_SIZE / 2,
-                            timelines[self.timeline],
-                        )
+                        x - constants.DEFAULT_SIZE / 2,
+                        timelines[self.timeline],
                     )
                     .h(constants.DEFAULT_SIZE)
                     .Z()
@@ -431,17 +442,19 @@ class Event(_Entry):
         elem["fill"] = self.color or "black"
 
         # Get error bars if fuzzy value; place below marker itself.
-        if isinstance(self.instant, dict):
+        if self.fuzzy_marker and isinstance(self.instant, dict):
             elem = Element(
-                "g",
-                self.render_graphic_error(self.instant, timelines, dimension),
-                elem)
+                "g", self.render_graphic_error(self.instant, timelines, dimension), elem
+            )
         return elem
 
     def render_label(self, timelines, dimension):
         if not self.label:
             return None
-        x = dimension.get_pixel(self.instant)
+        if isinstance(self.instant, dict):
+            x = dimension.get_pixel(self.instant["value"])
+        else:
+            x = dimension.get_pixel(self.instant)
         match self.placement:
             case None:
                 if self.marker == constants.NONE:
@@ -474,18 +487,24 @@ class Event(_Entry):
 class Period(_Entry):
     "Period of time in a timeline."
 
-    def __init__(self, label, begin, end, timeline=None, color=None):
+    DEFAULT_FUZZY_MARKER = constants.ERROR
+
+    def __init__(self, label, begin, end, timeline=None, color=None, fuzzy_marker=None):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(begin, (int, float, dict))
         assert isinstance(end, (int, float, dict))
+        assert fuzzy_marker is None or isinstance(fuzzy_marker, str)
 
         self.begin = begin
         self.end = end
+        self.fuzzy_marker = fuzzy_marker or self.DEFAULT_FUZZY_MARKER
 
     def data_as_dict(self):
         result = super().data_as_dict()
         result["begin"] = self.begin
         result["end"] = self.end
+        if self.fuzzy_marker != self.DEFAULT_FUZZY_MARKER:
+            result["fuzzy_marker"] = self.fuzzy_marker
         return result
 
     @property
@@ -501,45 +520,186 @@ class Period(_Entry):
         return (low, high)
 
     def render_graphic(self, timelines, dimension):
-        if isinstance(self.begin, dict):
-            begin = self.begin["value"]
-        else:
-            begin = self.begin
-        if isinstance(self.end, dict):
-            end = self.end["value"]
-        else:
-            end = self.end
-        elem = Element(
-            "rect",
-            x=utils.N(dimension.get_pixel(begin)),
-            y=utils.N(timelines[self.timeline]),
-            width=utils.N(dimension.get_width(begin, end)),
-            height=constants.DEFAULT_SIZE,
-        )
-        elem["fill"] = self.color or "white"
+        # Simple case: do not show fuzzy values, or no fuzzy values.
+        if (
+            self.fuzzy_marker == constants.NONE
+            and not isinstance(self.begin, dict)
+            and not isinstance(self.end, dict)
+        ):
+            result = Element(
+                "rect",
+                x=utils.N(dimension.get_pixel(self.begin)),
+                y=utils.N(timelines[self.timeline]),
+                width=utils.N(dimension.get_width(self.begin, self.end)),
+                height=constants.DEFAULT_SIZE,
+            )
+            result["fill"] = self.color or "white"
 
-        # Handle fuzzy value(s).
-        errors = Element("g")
-        if isinstance(self.begin, dict):
-            match self.begin.get("marker"):
-                case constants.ERROR | None:
-                    errors += self.render_graphic_error(self.begin, timelines, dimension)
-                case constants.GRADIENT:
-                    raise NotImplementedError
-                case constants.TAPER:
-                    raise NotImplementedError
-        if isinstance(self.end, dict):
-            match self.end.get("marker"):
-                case constants.ERROR | None:
-                    errors += self.render_graphic_error(self.end, timelines, dimension)
-                case constants.GRADIENT:
-                    raise NotImplementedError
-                case constants.TAPER:
-                    raise NotImplementedError
-        if len(errors):
-            return Element("g", elem, errors)
+        # Fuzzy value(s) to be shown.
         else:
-            return elem
+            if isinstance(self.begin, dict):
+                begin = self.begin["value"]
+            else:
+                begin = self.begin
+            if isinstance(self.end, dict):
+                end = self.end["value"]
+            else:
+                end = self.end
+
+            # Graphics depends on how to show fuzzy values.
+            result = Element("g")
+            y = timelines[self.timeline]
+            match self.fuzzy_marker:
+
+                case constants.ERROR:
+                    result += Element(
+                        "rect",
+                        x=utils.N(dimension.get_pixel(begin)),
+                        y=utils.N(y),
+                        width=utils.N(dimension.get_width(begin, end)),
+                        height=constants.DEFAULT_SIZE,
+                        fill=self.color or "white",
+                    )
+                    if isinstance(self.begin, dict):
+                        result += self.render_graphic_error(
+                            self.begin, timelines, dimension
+                        )
+                    if isinstance(self.end, dict):
+                        result += self.render_graphic_error(
+                            self.end, timelines, dimension
+                        )
+
+                case constants.GRADIENT:
+                    if isinstance(self.begin, dict):
+                        try:  # If 'low' is given, then ignore 'error'.
+                            x1 = dimension.get_pixel(self.begin["low"])
+                        except KeyError:
+                            x1 = dimension.get_pixel(begin - self.begin.get("error", 0))
+                        try:  # If 'high' is given, then ignore 'error'.
+                            x2 = dimension.get_pixel(self.begin["high"])
+                        except KeyError:
+                            x2 = dimension.get_pixel(begin + self.begin.get("error", 0))
+                    else:
+                        x1 = x2 = dimension.get_pixel(begin)
+                    if isinstance(self.end, dict):
+                        try:  # If 'low' is given, then ignore 'error'.
+                            x3 = dimension.get_pixel(self.end["low"])
+                        except KeyError:
+                            x3 = dimension.get_pixel(end - self.end.get("error", 0))
+                        try:  # If 'high' is given, then ignore 'error'.
+                            x4 = dimension.get_pixel(self.end["high"])
+                        except KeyError:
+                            x4 = dimension.get_pixel(end + self.end.get("error", 0))
+                    else:
+                        x3 = x4 = dimension.get_pixel(end)
+
+                    # The fuzzy regions overlap.
+                    if x2 >= x3:
+                        x2 = (x2 + x3) / 2
+                        x3 = x2
+
+                    # The constant-color part of the period.
+                    if x2 < x3:
+                        # The filled rectangle.
+                        result += Element(
+                            "rect",
+                            x=x2,
+                            y=utils.N(y),
+                            width=utils.N(x3 - x2),
+                            height=constants.DEFAULT_SIZE,
+                            stroke="none",
+                            fill=self.color or "white"
+                        )
+                        # The lines at the long edges of the filled rectangle.
+                        result += Element(
+                            "path",
+                            d=Path(x2, y)
+                            .H(x3)
+                            .m(0, constants.DEFAULT_SIZE)
+                            .H(x2),
+                            stroke="black",
+                        )
+                    # The left gradient of the period.
+                    if x1 < x2:
+                        result += (defs := Element("defs"))
+                        # The gradient-filled rectangle.
+                        id1 = next(utils.unique_id)
+                        defs += (fill1 := Element("linearGradient", id=id1))
+                        fill1 += (stop := Element("stop", offset=0))
+                        stop["stop-color"] = self.color or "white"
+                        stop["stop-opacity"] = 0
+                        fill1 += (stop := Element("stop", offset=1))
+                        stop["stop-color"] = self.color or "white"
+                        stop["stop-opacity"] = 1
+                        result += Element(
+                            "rect",
+                            x=x1,
+                            y=utils.N(y),
+                            width=utils.N(x2 - x1),
+                            height=constants.DEFAULT_SIZE,
+                            stroke="none",
+                            fill=f"url(#{id1})",
+                        )
+                        # The lines at the long edges of the filled rectangle.
+                        id2 = next(utils.unique_id)
+                        defs += (stroke1 := Element("linearGradient", id=id2))
+                        stroke1 += (stop := Element("stop", offset=0))
+                        stop["stop-color"] = "black"
+                        stop["stop-opacity"] = 0
+                        stroke1 += (stop := Element("stop", offset=1))
+                        stop["stop-color"] = "black"
+                        stop["stop-opacity"] = 1
+                        result += Element(
+                            "path",
+                            d=Path(x1, y)
+                            .H(x2)
+                            .m(0, constants.DEFAULT_SIZE)
+                            .H(x1),
+                            stroke=f"url(#{id2})",
+                        )
+
+                    # The right gradient of the period.
+                    if x3 < x4:
+                        result += (defs := Element("defs"))
+                        id3 = next(utils.unique_id)
+                        defs += (fill2 := Element("linearGradient", id=id3))
+                        fill2 += (stop := Element("stop", offset=0))
+                        stop["stop-color"] = self.color or "white"
+                        stop["stop-opacity"] = 1
+                        fill2 += (stop := Element("stop", offset=1))
+                        stop["stop-color"] = self.color or "white"
+                        stop["stop-opacity"] = 0
+                        # The gradient-filled rectangle.
+                        result += Element(
+                            "rect",
+                            x=x3,
+                            y=utils.N(y),
+                            width=utils.N(x4 - x3),
+                            height=constants.DEFAULT_SIZE,
+                            stroke="none",
+                            fill=f"url(#{id3})",
+                        )
+                        # The lines at the long edges of the filled rectangle.
+                        id4 = next(utils.unique_id)
+                        defs += (stroke2 := Element("linearGradient", id=id4))
+                        stroke2 += (stop := Element("stop", offset=0))
+                        stop["stop-color"] = "black"
+                        stop["stop-opacity"] = 1
+                        stroke2 += (stop := Element("stop", offset=1))
+                        stop["stop-color"] = "black"
+                        stop["stop-opacity"] = 0
+                        result += Element(
+                            "path",
+                            d=Path(x3, y)
+                            .H(x4)
+                            .m(0, constants.DEFAULT_SIZE)
+                            .H(x3),
+                            stroke=f"url(#{id4})",
+                        )
+
+                case constants.TAPER:
+                    raise NotImplementedError
+        return result
 
     def render_label(self, timelines, dimension):
         if not self.label:

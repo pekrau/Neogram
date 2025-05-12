@@ -6,7 +6,7 @@
       <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
         <text x="300.0" y="18" stroke="none" font-size="18" font-weight="bold" text-anchor="middle" fill="purple">Universe</text>
         <g>
-          <path d="M 66.220 23.600 V 89.6 M 142.474 23.600 V 89.6 M 218.729 23.600 V 89.6 M 294.983 23.600 V 89.6 M 371.237 23.600 V 89.6 M 447.491 23.600 V 89.6 M 523.746 23.600 V 89.6 M 600 23.600 V 89.6 M 66.220 23.600 H 600 M 66.220 89.600 H 600" />
+          <path d="M 66.220 23.600 V 89.600 M 142.474 23.600 V 89.600 M 218.729 23.600 V 89.600 M 294.983 23.600 V 89.600 M 371.237 23.600 V 89.600 M 447.491 23.600 V 89.600 M 523.746 23.600 V 89.600 M 600 23.600 V 89.600 M 66.220 23.600 H 600 M 66.220 89.600 H 600" />
           <g text-anchor="middle" stroke="none" fill="black">
             <text x="66.220" y="107.600" text-anchor="start">-14</text>
             <text x="142.474" y="107.600">-12</text>
@@ -20,15 +20,25 @@
         </g>
         <g>
           <ellipse cx="74.341" cy="34.600" rx="3.6" ry="9.0" stroke="none" fill="red" />
-          <rect x="294.983" y="25.600" width="305.017" height="18" fill="navy" />
-          <rect x="425.873" y="47.600" width="174.127" height="18" fill="lightgreen" />
-          <g stroke="none" fill="black" />
+          <g>
+            <rect x="294.983" y="25.600" width="305.017" height="18" fill="navy" />
+          </g>
+          <g>
+            <rect x="425.873" y="47.600" width="174.127" height="18" fill="lightgreen" />
+          </g>
+          <g>
+            <g stroke="black">
+              <path d="M 119.598 74.100 v 9 m 0 -4.500 H 142.474" />
+              <path d="M 165.351 74.100 v 9 m 0 -4.500 H 142.474" />
+            </g>
+            <g stroke="none" fill="black" />
+          </g>
           <circle cx="218.729" cy="78.600" r="9.0" stroke="none" fill="cyan" />
           <ellipse cx="294.983" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="blue" />
           <g>
             <g stroke="black">
-              <path d="M 352.174 74.100 v 9 m 0 -4.500 H 371.24" />
-              <path d="M 409.364 74.100 v 9 m 0 -4.500 H 371.24" />
+              <path d="M 352.174 74.100 v 9 m 0 -4.500 H 371.237" />
+              <path d="M 409.364 74.100 v 9 m 0 -4.500 H 371.237" />
             </g>
             <rect x="362.237" y="69.600" width="18" height="18" stroke="none" fill="orange" />
           </g>
@@ -56,7 +66,7 @@
       <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
         <text x="300.0" y="14" stroke="none" fill="black" text-anchor="middle">Earth</text>
         <g>
-          <path d="M 110.040 18.800 V 128.8 M 208.032 18.800 V 128.8 M 306.024 18.800 V 128.8 M 404.016 18.800 V 128.8 M 502.008 18.800 V 128.8 M 600 18.800 V 128.8 M 110.040 18.800 H 600 M 110.040 128.800 H 600" />
+          <path d="M 110.040 18.800 V 128.800 M 208.032 18.800 V 128.800 M 306.024 18.800 V 128.800 M 404.016 18.800 V 128.800 M 502.008 18.800 V 128.800 M 600 18.800 V 128.800 M 110.040 18.800 H 600 M 110.040 128.800 H 600" />
           <g text-anchor="middle" stroke="none" fill="black">
             <text x="110.040" y="146.800" text-anchor="start">-5</text>
             <text x="208.032" y="146.800">-4</text>
@@ -67,28 +77,67 @@
           </g>
         </g>
         <g>
-          <rect x="152.471" y="20.800" width="447.529" height="18" fill="white" />
           <g>
-            <rect x="208.032" y="42.800" width="146.988" height="18" fill="white" />
-            <g>
-              <g stroke="black">
-                <path d="M 198.233 47.300 v 9 m 0 -4.500 H 208.03" />
-              </g>
-              <g stroke="black">
-                <path d="M 335.422 47.300 v 9 m 0 -4.500 H 355.02" />
-                <path d="M 374.618 47.300 v 9 m 0 -4.500 H 355.02" />
-              </g>
-            </g>
+            <rect x="152.471" y="20.800" width="447.529" height="18" fill="white" />
+          </g>
+          <g>
+            <rect x="212.9316" y="42.800" width="122.490" height="18" stroke="none" fill="lime" />
+            <path d="M 212.932 42.800 H 335.422 m 0 18 H 212.932" stroke="black" />
+            <defs>
+              <linearGradient id="id7">
+                <stop offset="0" stop-color="lime" stop-opacity="0" />
+                <stop offset="1" stop-color="lime" stop-opacity="1" />
+              </linearGradient>
+              <linearGradient id="id8">
+                <stop offset="0" stop-color="black" stop-opacity="0" />
+                <stop offset="1" stop-color="black" stop-opacity="1" />
+              </linearGradient>
+            </defs>
+            <rect x="198.2328" y="42.800" width="14.699" height="18" stroke="none" fill="url(#id7)" />
+            <path d="M 198.233 42.800 H 212.932 m 0 18 H 198.233" stroke="url(#id8)" />
+            <defs>
+              <linearGradient id="id9">
+                <stop offset="0" stop-color="lime" stop-opacity="1" />
+                <stop offset="1" stop-color="lime" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="id10">
+                <stop offset="0" stop-color="black" stop-opacity="1" />
+                <stop offset="1" stop-color="black" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+            <rect x="335.4216" y="42.800" width="39.197" height="18" stroke="none" fill="url(#id9)" />
+            <path d="M 335.422 42.800 H 374.618 m 0 18 H 335.422" stroke="url(#id10)" />
           </g>
           <ellipse cx="188.434" cy="73.800" rx="3.6" ry="9.0" stroke="none" fill="black" />
-          <rect x="258.988" y="64.800" width="341.012" height="18" fill="white" />
-          <rect x="438.313" y="86.800" width="161.687" height="18" fill="white" />
-          <rect x="266.827" y="108.800" width="333.173" height="18" fill="white" />
-          <rect x="553.944" y="108.800" width="46.056" height="18" fill="white" />
+          <g>
+            <rect x="258.98784" y="64.800" width="341.012" height="18" stroke="none" fill="white" />
+            <path d="M 258.988 64.800 H 600 m 0 18 H 258.988" stroke="black" />
+            <defs>
+              <linearGradient id="id11">
+                <stop offset="0" stop-color="white" stop-opacity="0" />
+                <stop offset="1" stop-color="white" stop-opacity="1" />
+              </linearGradient>
+              <linearGradient id="id12">
+                <stop offset="0" stop-color="black" stop-opacity="0" />
+                <stop offset="1" stop-color="black" stop-opacity="1" />
+              </linearGradient>
+            </defs>
+            <rect x="188.4336" y="64.800" width="70.554" height="18" stroke="none" fill="url(#id11)" />
+            <path d="M 188.434 64.800 H 258.988 m 0 18 H 188.434" stroke="url(#id12)" />
+          </g>
+          <g>
+            <rect x="438.313" y="86.800" width="161.687" height="18" fill="white" />
+          </g>
+          <g>
+            <rect x="266.827" y="108.800" width="333.173" height="18" fill="white" />
+          </g>
+          <g>
+            <rect x="553.944" y="108.800" width="46.056" height="18" fill="white" />
+          </g>
         </g>
         <g text-anchor="middle" stroke="none" fill="black">
           <text x="377.235" y="34" text-anchor="middle">Earth</text>
-          <text x="282.526" y="56" text-anchor="middle">Archean</text>
+          <text x="282.526" y="56" text-anchor="middle" fill="black">Archean</text>
           <text x="194.034" y="78" text-anchor="start">LUCA?</text>
           <text x="430.494" y="78" text-anchor="middle">Unicellular organisms</text>
           <text x="520.157" y="100" text-anchor="middle">Eukaryotes</text>
