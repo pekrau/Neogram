@@ -8,16 +8,16 @@
         <g transform="translate(152, 170.800)">
           <circle r="150" />
           <g stroke="black" stroke-width="1">
-            <path d="M 0 0 L 0 -150 A 150 150 0 0 1 31.187 146.722 Z" fill="tomato" />
-            <path d="M 0 0 L 31.187 146.722 A 150 150 0 0 1 -88.168 121.353 Z" fill="darkviolet" />
-            <path d="M 0 0 L -88.168 121.353 A 150 150 0 0 1 -142.658 -46.353 Z" fill="deeppink" />
-            <path d="M 0 0 L -142.658 -46.353 A 150 150 0 0 1 0 -150 Z" fill="deepskyblue" />
+            <path d="M 0 0 L 0 -150 A 150 150 0 0 1 31.187 146.722 Z" fill="white" />
+            <path d="M 0 0 L 31.187 146.722 A 150 150 0 0 1 -88.168 121.353 Z" fill="yellow" />
+            <path d="M 0 0 L -88.168 121.353 A 150 150 0 0 1 -142.658 -46.353 Z" fill="gold" />
+            <path d="M 0 0 L -142.658 -46.353 A 150 150 0 0 1 0 -150 Z" fill="red" />
           </g>
           <g stroke="none" fill="black" text-anchor="middle">
-            <text x="104.425" y="-10.975" fill="white">Flour</text>
-            <text x="-21.831" y="102.705" fill="white">Eggs</text>
-            <text x="-99.861" y="32.447" fill="white">Butter</text>
-            <text x="-61.717" y="-84.947" fill="black">Strawberries</text>
+            <text x="104.425" y="-10.975" fill="black">Flour</text>
+            <text x="-21.831" y="102.705" fill="black">Eggs</text>
+            <text x="-99.861" y="32.447" fill="black">Butter</text>
+            <text x="-61.717" y="-84.947" fill="white">Strawberries</text>
           </g>
         </g>
       </g>

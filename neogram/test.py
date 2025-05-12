@@ -147,7 +147,8 @@ def test_cpies():
 def test_rpies():
     pajer = Row("Pies in row")
 
-    pajer += (paj := Piechart("Strawberry pie", diameter=300))
+    pajer += (paj := Piechart("Strawberry pie", diameter=300,
+                              palette= ["white", "yellow", "gold", "red"]))
     paj += Slice("Flour", 7)
     paj += Slice("Eggs", 2)
     paj += Slice("Butter", 3)

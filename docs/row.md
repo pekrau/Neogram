@@ -27,6 +27,11 @@ row:
           label: Strawberries
           value: 3
       diameter: 300
+      palette:
+      - white
+      - yellow
+      - gold
+      - red
   - piechart:
       title: Rhubarb pie
       entries:
