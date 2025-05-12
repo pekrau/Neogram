@@ -366,7 +366,7 @@ class Event(_Entry):
                     x += self.label_x_offset + constants.DEFAULT_PADDING
                     anchor = "start"
             case constants.LEFT:
-                x -= (self.label_x_offset + constants.DEFAULT_PADDING)
+                x -= self.label_x_offset + constants.DEFAULT_PADDING
                 anchor = "end"
             case constants.CENTER:
                 anchor = "middle"

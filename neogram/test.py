@@ -14,16 +14,36 @@ def get_universum():
     universum += Period("Jorden", -4_567_000_000, 0, color="lightgreen")
     universum += Event("Here", -12_000_000_000, timeline="markers", marker="none")
     universum += Event(
-        "Circle", -10_000_000_000, timeline="markers", marker="circle", color="cyan", placement="left"
+        "Circle",
+        -10_000_000_000,
+        timeline="markers",
+        marker="circle",
+        color="cyan",
+        placement="left",
     )
     universum += Event(
-        "Ellipse", -8_000_000_000, timeline="markers", marker="ellipse", color="blue", placement="left"
+        "Ellipse",
+        -8_000_000_000,
+        timeline="markers",
+        marker="ellipse",
+        color="blue",
+        placement="left",
     )
     universum += Event(
-        "Square", -6_000_000_000, timeline="markers", marker="square", color="orange", placement="left"
+        "Square",
+        -6_000_000_000,
+        timeline="markers",
+        marker="square",
+        color="orange",
+        placement="left",
     )
     universum += Event(
-        "Pyramid", -4_000_000_000, timeline="markers", marker="pyramid", color="gold", placement="center"
+        "Pyramid",
+        -4_000_000_000,
+        timeline="markers",
+        marker="pyramid",
+        color="gold",
+        placement="center",
     )
     universum += Event(
         "Triangle",
@@ -64,7 +84,7 @@ def test_jorden():
 
 
 def test_pyramid():
-    pyramid = Piechart("Pyramid", start=132)
+    pyramid = Piechart("Pyramid", start=132, palette=["#4c78a8", "#9ecae9", "#f58518"])
     pyramid += Slice("Skuggsida", 7)
     pyramid += Slice("Solsida", 18)
     pyramid += Slice("Himmel", 70)
@@ -124,10 +144,10 @@ def test_rpajer():
     pajer = Row("Pajer row")
 
     pajer += (paj := Piechart("Jordgubbspaj", diameter=300))
-    paj += Slice("Mjöl", 7, color="white")
-    paj += Slice("Ägg", 2, color="yellow")
-    paj += Slice("Smör", 3, color="gold")
-    paj += Slice("Jordgubbar", 3, color="orangered")
+    paj += Slice("Mjöl", 7)
+    paj += Slice("Ägg", 2)
+    paj += Slice("Smör", 3)
+    paj += Slice("Jordgubbar", 3)
 
     pajer += (paj := Piechart("Rabarberpaj"))
     paj += Slice("Mjöl", 7, color="white")
@@ -141,6 +161,7 @@ def test_rpajer():
     pajer2 = retrieve("rpajer.yaml")
     assert pajer == pajer2
     assert pajer.render() == pajer2.render()
+
 
 if __name__ == "__main__":
     test_universum()

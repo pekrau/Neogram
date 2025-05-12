@@ -16,7 +16,15 @@ class Piechart(Diagram):
 
     DEFAULT_DIAMETER = 200
     DEFAULT_START = Degrees(-90)
-    DEFAULT_PALETTE = ["#4c78a8", "#9ecae9", "#f58518"]
+    # See: https://austingil.com/css-named-colors/#bold
+    DEFAULT_PALETTE = [
+        "tomato",
+        "darkviolet",
+        "deeppink",
+        "deepskyblue",
+        "gold",
+        "yellowgreen",
+    ]
 
     SCHEMA = {
         "title": __doc__,
@@ -39,6 +47,16 @@ class Piechart(Diagram):
             "start": {
                 "title": "Starting point for first slice; in degrees from top.",
                 "type": "number",
+            },
+            "palette": {
+                "title": "Palette for slice colors.",
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "title": "Color in palette.",
+                    "type": "string",
+                    "format": "color",
+                },
             },
             "entries": {
                 "title": "Entries (slices) in the pie chart.",
@@ -82,15 +100,18 @@ class Piechart(Diagram):
         diameter=None,
         total=None,
         start=None,
+        palette=None,
     ):
         super().__init__(title=title, entries=entries)
         assert diameter is None or (isinstance(diameter, (int, float)) and diameter > 0)
         assert total is None or isinstance(total, (int, float))
         assert start is None or isinstance(start, (int, float))
+        assert palette is None or isinstance(palette, (tuple, list))
 
         self.diameter = diameter or self.DEFAULT_DIAMETER
         self.total = total
         self.start = start
+        self.palette = palette or self.DEFAULT_PALETTE
 
     def check_entry(self, entry):
         return isinstance(entry, Slice)
@@ -103,6 +124,8 @@ class Piechart(Diagram):
             result["total"] = self.total
         if self.start is not None:
             result["start"] = self.start
+        if self.palette != self.DEFAULT_PALETTE:
+            result["palette"] = self.palette
         return result
 
     def build(self):
@@ -116,7 +139,7 @@ class Piechart(Diagram):
             total = sum([e.value for e in self.entries])
         else:
             total = self.total
-        palette = itertools.cycle(self.DEFAULT_PALETTE)
+        palette = itertools.cycle(self.palette)
         radius = self.diameter / 2
         x = radius + constants.DEFAULT_PADDING
         y = self.height + radius + constants.DEFAULT_PADDING

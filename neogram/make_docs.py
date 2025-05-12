@@ -112,6 +112,8 @@ def output_schema(schema, level=0, required=False, href=None):
                     "exclusiveMinimum",
                     "maximum",
                     "exclusiveMaximum",
+                    "minItems",
+                    "maxItems",
                 ):
                     try:
                         value = schema[constraint]

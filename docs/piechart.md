@@ -13,6 +13,11 @@ Pie chart containing slices.
   - *exclusiveMinimum*: 0
 - **start**: Starting point for first slice; in degrees from top.
   - *type*: float
+- **palette**: Palette for slice colors.
+  - *type*: sequence
+  - *items*:
+    - *type*: string
+    - *format*: color
 - **entries**: Entries (slices) in the pie chart.
   - *type*: sequence
   - *items*:
