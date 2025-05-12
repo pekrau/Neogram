@@ -58,7 +58,16 @@ class Timelines(Diagram):
                                         },
                                         "instant": {
                                             "title": "Time of the event.",
-                                            "type": "number",
+                                            "oneOf": [
+                                                {
+                                                    "title": "Exact time.",
+                                                    "type": "number",
+                                                },
+                                                {
+                                                    "title": "Imprecise time.",
+                                                    "$ref": "#fuzzy_number",
+                                                },
+                                            ],
                                         },
                                         "timeline": {
                                             "title": "Timeline to place the event in.",
@@ -100,11 +109,29 @@ class Timelines(Diagram):
                                         },
                                         "begin": {
                                             "title": "Starting time of the period.",
-                                            "type": "number",
+                                            "oneOf": [
+                                                {
+                                                    "title": "Exact time.",
+                                                    "type": "number",
+                                                },
+                                                {
+                                                    "title": "Imprecise time.",
+                                                    "$ref": "#fuzzy_number",
+                                                },
+                                            ],
                                         },
                                         "end": {
-                                            "title": "Ending tile of the period.",
-                                            "type": "number",
+                                            "title": "Ending time of the period.",
+                                            "oneOf": [
+                                                {
+                                                    "title": "Exact time.",
+                                                    "type": "number",
+                                                },
+                                                {
+                                                    "title": "Imprecise time.",
+                                                    "$ref": "#fuzzy_number",
+                                                },
+                                            ],
                                         },
                                         "timeline": {
                                             "title": "Timeline to place the period in.",
@@ -265,6 +292,41 @@ class _Entry(Entity):
     def render_label(self, timelines, dimension):
         raise NotImplementedError
 
+    def render_graphic_error(self, instant, timelines, dimension):
+        "Get the error bars for the fuzzy instant."
+        assert isinstance(instant, dict)
+        x = dimension.get_pixel(instant["value"])
+        result = Element("g", stroke="black")
+        try:
+            try:                # If 'low' is given, then ignore 'error'.
+                xlow = dimension.get_pixel(instant["low"])
+            except KeyError:
+                xlow = dimension.get_pixel(instant["value"] - instant["error"])
+            result += Element(
+                "path",
+                d=Path(Vector2(xlow, timelines[self.timeline] + 0.25 * constants.DEFAULT_SIZE))
+                .v(0.5 * constants.DEFAULT_SIZE)
+                .m(Vector2(0, -0.25 * constants.DEFAULT_SIZE))
+                .H(x),
+            )
+        except KeyError:
+            pass
+        try:
+            try:                # If 'high' is given, then ignore 'error'.
+                xhigh = dimension.get_pixel(instant["high"])
+            except KeyError:
+                xhigh = dimension.get_pixel(instant["value"] + instant["error"])
+            result += Element(
+                "path",
+                d=Path(Vector2(xhigh, timelines[self.timeline] + 0.25 * constants.DEFAULT_SIZE))
+                .v(0.5 * constants.DEFAULT_SIZE)
+                .m(Vector2(0, -0.25 * constants.DEFAULT_SIZE))
+                .H(x),
+            )
+        except KeyError:
+            pass
+        return result
+
 
 class Event(_Entry):
     "Event at a given instant in a timeline."
@@ -275,7 +337,7 @@ class Event(_Entry):
         self, label, instant, timeline=None, marker=None, color=None, placement=None
     ):
         super().__init__(label=label, timeline=timeline, color=color)
-        assert isinstance(instant, (int, float))
+        assert isinstance(instant, (int, float, dict))
         assert marker is None or marker in constants.MARKERS
         assert placement is None or placement in constants.HORIZONTAL_ALIGN
 
@@ -294,10 +356,19 @@ class Event(_Entry):
 
     @property
     def minmax(self):
-        return self.instant
+        if isinstance(self.instant, dict):
+            return (
+                self.instant.get("low", self.instant["value"]),
+                self.instant.get("high", self.instant["value"]),
+            )
+        else:
+            return self.instant
 
     def render_graphic(self, timelines, dimension):
-        x = dimension.get_pixel(self.instant)
+        if isinstance(self.instant, dict):
+            x = dimension.get_pixel(self.instant["value"])
+        else:
+            x = dimension.get_pixel(self.instant)
         match self.marker:
             case constants.CIRCLE:
                 self.label_x_offset = constants.DEFAULT_SIZE / 2
@@ -358,6 +429,13 @@ class Event(_Entry):
                 elem = Element("g")
         elem["stroke"] = "none"
         elem["fill"] = self.color or "black"
+
+        # Get error bars if fuzzy value; place below marker itself.
+        if isinstance(self.instant, dict):
+            elem = Element(
+                "g",
+                self.render_graphic_error(self.instant, timelines, dimension),
+                elem)
         return elem
 
     def render_label(self, timelines, dimension):
@@ -398,8 +476,8 @@ class Period(_Entry):
 
     def __init__(self, label, begin, end, timeline=None, color=None):
         super().__init__(label=label, timeline=timeline, color=color)
-        assert isinstance(begin, (int, float))
-        assert isinstance(end, (int, float))
+        assert isinstance(begin, (int, float, dict))
+        assert isinstance(end, (int, float, dict))
 
         self.begin = begin
         self.end = end
@@ -412,26 +490,72 @@ class Period(_Entry):
 
     @property
     def minmax(self):
-        return (self.begin, self.end)
+        if isinstance(self.begin, dict):
+            low = self.begin.get("low", self.begin["value"])
+        else:
+            low = self.begin
+        if isinstance(self.end, dict):
+            high = self.end.get("high", self.end["value"])
+        else:
+            high = self.end
+        return (low, high)
 
     def render_graphic(self, timelines, dimension):
+        if isinstance(self.begin, dict):
+            begin = self.begin["value"]
+        else:
+            begin = self.begin
+        if isinstance(self.end, dict):
+            end = self.end["value"]
+        else:
+            end = self.end
         elem = Element(
             "rect",
-            x=utils.N(dimension.get_pixel(self.begin)),
+            x=utils.N(dimension.get_pixel(begin)),
             y=utils.N(timelines[self.timeline]),
-            width=utils.N(dimension.get_width(self.begin, self.end)),
+            width=utils.N(dimension.get_width(begin, end)),
             height=constants.DEFAULT_SIZE,
         )
         elem["fill"] = self.color or "white"
-        return elem
+
+        # Handle fuzzy value(s).
+        errors = Element("g")
+        if isinstance(self.begin, dict):
+            match self.begin.get("marker"):
+                case constants.ERROR | None:
+                    errors += self.render_graphic_error(self.begin, timelines, dimension)
+                case constants.GRADIENT:
+                    raise NotImplementedError
+                case constants.TAPER:
+                    raise NotImplementedError
+        if isinstance(self.end, dict):
+            match self.end.get("marker"):
+                case constants.ERROR | None:
+                    errors += self.render_graphic_error(self.end, timelines, dimension)
+                case constants.GRADIENT:
+                    raise NotImplementedError
+                case constants.TAPER:
+                    raise NotImplementedError
+        if len(errors):
+            return Element("g", elem, errors)
+        else:
+            return elem
 
     def render_label(self, timelines, dimension):
         if not self.label:
             return None
+        if isinstance(self.begin, dict):
+            begin = self.begin["value"]
+        else:
+            begin = self.begin
+        if isinstance(self.end, dict):
+            end = self.end["value"]
+        else:
+            end = self.end
         elem = Element(
             "text",
             self.label,
-            x=utils.N(dimension.get_pixel((self.begin + self.end) / 2) + 1),
+            x=utils.N(dimension.get_pixel((begin + end) / 2) + 1),
             y=utils.N(
                 timelines[self.timeline]
                 + (constants.DEFAULT_SIZE + self.DEFAULT_FONT_SIZE) / 2

@@ -55,17 +55,22 @@ def make_docs():
 
     for diagram, subschema in schema.SCHEMA["properties"].items():
         result = []
-        result.append(f"# {diagram}\n")
-        result.append("\n## Examples\n\n")
+        result.append(f"# {diagram}\n\n")
+        result.append("- [Specification](#specification)\n")
+        result.append("- [Examples](#examples)\n")
+        for test in TESTS[diagram]:
+            result.append(f"  - [{test}](#{test})\n")
+        result.append("\n")
+        result.append("## Specification")
+        href = f"{diagram}.md"
+        result.extend(output_schema(subschema, href=href))
+        result.append("## Examples\n\n")
         for test in TESTS[diagram]:
             result.append(f"### {test}\n\n")
             result.append(f"![{test} SVG]({test}.svg)\n\n")
             with open(f"../docs/{test}.yaml") as infile:
                 code = infile.read()
             result.append(f"```yaml\n{code}```\n")
-        result.append("## Specification")
-        href = f"{diagram}.md"
-        result.extend(output_schema(subschema, href=href))
         with open(f"../docs/{href}", "w") as outfile:
             outfile.write("".join(result) + "\n")
 

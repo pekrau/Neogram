@@ -1,5 +1,29 @@
 # row
 
+- [Specification](#specification)
+- [Examples](#examples)
+  - [rpies](#rpies)
+
+## Specification
+Diagrams arranged in a row.
+
+- **title**: Title of the column diagram.
+    - *definition*: See [here](timelines.md)
+- **align**: Align diagrams vertically within the row.
+  - *one of*: 'bottom', 'middle', 'top'
+  - *default*: 'middle'
+- **entries**: Component diagrams in the row.
+  - *type*: sequence
+  - *items*:
+    - *type*: mapping
+    - **timelines**:
+        - *definition*: See [here](timelines.md)
+    - **piechart**:
+        - *definition*: See [here](piechart.md)
+    - **column**:
+        - *definition*: See [here](column.md)
+    - **row**:
+        - *definition*: See [here](row.md)
 ## Examples
 
 ### rpies
@@ -7,7 +31,7 @@
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 row:
   title: Pies in row
   entries:
@@ -54,24 +78,4 @@ row:
       - gold
       - red
 ```
-## Specification
-Diagrams arranged in a row.
-
-- **title**: Title of the column diagram.
-    - *definition*: See [here](timelines.md)
-- **align**: Align diagrams vertically within the row.
-  - *one of*: 'bottom', 'middle', 'top'
-  - *default*: 'middle'
-- **entries**: Component diagrams in the row.
-  - *type*: sequence
-  - *items*:
-    - *type*: mapping
-    - **timelines**:
-        - *definition*: See [here](timelines.md)
-    - **piechart**:
-        - *definition*: See [here](piechart.md)
-    - **column**:
-        - *definition*: See [here](column.md)
-    - **row**:
-        - *definition*: See [here](row.md)
 

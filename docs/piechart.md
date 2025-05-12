@@ -1,5 +1,48 @@
 # piechart
 
+- [Specification](#specification)
+- [Examples](#examples)
+  - [pyramid](#pyramid)
+  - [day](#day)
+  - [cpies](#cpies)
+  - [rpies](#rpies)
+
+## Specification
+Pie chart containing slices.
+
+- **title**: Title of the pie chart diagram.
+    - *definition*: See [here](timelines.md)
+- **diameter**: Diameter of the pie chart, in pixels.
+  - *type*: float
+  - *exclusiveMinimum*: 0
+  - *default*: 200
+- **total**: Total value to relate slice values to.
+  - *type*: float
+  - *exclusiveMinimum*: 0
+- **start**: Starting point for first slice; in degrees from top.
+  - *type*: float
+- **palette**: Palette for slice colors.
+  - *type*: sequence
+  - *items*:
+    - *type*: string
+    - *format*: color
+  - *default*: ['tomato', 'darkviolet', 'deeppink', 'deepskyblue', 'gold', 'yellowgreen']
+- **entries**: Entries (slices) in the pie chart.
+  - *type*: sequence
+  - *items*:
+    - *type*: mapping
+    - **slice**: Slice representing a value.
+      - *type*: mapping
+      - **label**: Description of the value.
+        - *required*
+        - *type*: string
+      - **value**: The value shown by the slice.
+        - *required*
+        - *type*: float
+        - *exclusiveMinimum*: 0
+      - **color**: Color of the slice. Use palette if not defined.
+        - *type*: string
+        - *format*: color
 ## Examples
 
 ### pyramid
@@ -7,7 +50,7 @@
 ![pyramid SVG](pyramid.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 piechart:
   title: Pyramid
   entries:
@@ -31,7 +74,7 @@ piechart:
 ![day SVG](day.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 piechart:
   title:
     text: Day
@@ -85,7 +128,7 @@ piechart:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 column:
   title: Pies in column
   entries:
@@ -134,7 +177,7 @@ column:
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 row:
   title: Pies in row
   entries:
@@ -181,40 +224,4 @@ row:
       - gold
       - red
 ```
-## Specification
-Pie chart containing slices.
-
-- **title**: Title of the pie chart diagram.
-    - *definition*: See [here](timelines.md)
-- **diameter**: Diameter of the pie chart, in pixels.
-  - *type*: float
-  - *exclusiveMinimum*: 0
-  - *default*: 200
-- **total**: Total value to relate slice values to.
-  - *type*: float
-  - *exclusiveMinimum*: 0
-- **start**: Starting point for first slice; in degrees from top.
-  - *type*: float
-- **palette**: Palette for slice colors.
-  - *type*: sequence
-  - *items*:
-    - *type*: string
-    - *format*: color
-  - *default*: ['tomato', 'darkviolet', 'deeppink', 'deepskyblue', 'gold', 'yellowgreen']
-- **entries**: Entries (slices) in the pie chart.
-  - *type*: sequence
-  - *items*:
-    - *type*: mapping
-    - **slice**: Slice representing a value.
-      - *type*: mapping
-      - **label**: Description of the value.
-        - *required*
-        - *type*: string
-      - **value**: The value represented by the slice.
-        - *required*
-        - *type*: float
-        - *exclusiveMinimum*: 0
-      - **color**: Color of the slice. Use palette if not defined.
-        - *type*: string
-        - *format*: color
 

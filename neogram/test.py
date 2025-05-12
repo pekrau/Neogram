@@ -31,7 +31,7 @@ def get_universe(legend=True):
     )
     universe += Event(
         "",
-        -6_000_000_000,
+        {"value": -6_000_000_000, "low": -6_500_000_000, "high": -5_000_000_000},
         timeline="markers",
         marker="square",
         color="orange",
@@ -58,6 +58,9 @@ def get_earth(legend=True):
     earth = Timelines("Earth", legend=legend)
     earth += Period("Earth", -4_567_000_000, 0)
     earth += Event("LUCA?", -4_200_000_000, timeline="Encelliga")
+    earth += Period("Archean",
+                    {"value": -4_000_000_000, "low": -4_100_000_000},
+                    {"value": -2_500_000_000, "error": 200_000_000})
     earth += Period("Unicellular organisms", -3_480_000_000, 0, timeline="Unicellular")
     earth += Period("Eukaryotes", -1_650_000_000, 0)
     earth += Period("Photosynthesis", -3_400_000_000, 0)

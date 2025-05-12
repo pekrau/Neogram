@@ -71,7 +71,7 @@ class Piechart(Diagram):
                                     "type": "string",
                                 },
                                 "value": {
-                                    "title": "The value represented by the slice.",
+                                    "title": "The value shown by the slice.",
                                     "type": "number",
                                     "exclusiveMinimum": 0,
                                 },

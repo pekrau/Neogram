@@ -1,4 +1,4 @@
-neogram: 0.7.10
+neogram: 0.7.11
 timelines:
   title:
     text: Universe
@@ -44,7 +44,10 @@ timelines:
       label: ''
       timeline: markers
       color: orange
-      instant: -6000000000
+      instant:
+        value: -6000000000
+        low: -6500000000
+        high: -5000000000
       marker: square
   - event:
       label: Pyramid

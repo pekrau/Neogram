@@ -1,5 +1,30 @@
 # column
 
+- [Specification](#specification)
+- [Examples](#examples)
+  - [universe_earth](#universe_earth)
+  - [cpies](#cpies)
+
+## Specification
+Diagrams stacked in a column.
+
+- **title**: Title of the column diagram.
+    - *definition*: See [here](timelines.md)
+- **align**: Align diagrams horizontally within the column.
+  - *one of*: 'left', 'center', 'right'
+  - *default*: 'center'
+- **entries**: Component diagrams in the column.
+  - *type*: sequence
+  - *items*:
+    - *type*: mapping
+    - **timelines**:
+        - *definition*: See [here](timelines.md)
+    - **piechart**:
+        - *definition*: See [here](piechart.md)
+    - **column**:
+        - *definition*: See [here](column.md)
+    - **row**:
+      - *definition*: See elsewhere.
 ## Examples
 
 ### universe_earth
@@ -106,7 +131,7 @@ column:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 column:
   title: Pies in column
   entries:
@@ -150,24 +175,4 @@ column:
           value: 3
           color: green
 ```
-## Specification
-Diagrams stacked in a column.
-
-- **title**: Title of the column diagram.
-    - *definition*: See [here](timelines.md)
-- **align**: Align diagrams horizontally within the column.
-  - *one of*: 'left', 'center', 'right'
-  - *default*: 'center'
-- **entries**: Component diagrams in the column.
-  - *type*: sequence
-  - *items*:
-    - *type*: mapping
-    - **timelines**:
-        - *definition*: See [here](timelines.md)
-    - **piechart**:
-        - *definition*: See [here](piechart.md)
-    - **column**:
-        - *definition*: See [here](column.md)
-    - **row**:
-      - *definition*: See elsewhere.
 

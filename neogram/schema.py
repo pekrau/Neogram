@@ -62,6 +62,37 @@ SCHEMA = {
                 },
             ],
         },
+        "fuzzy_number": {
+            "$anchor": "fuzzy_number",
+            "type": "object",
+            "required": ["value"],
+            "additionalProperties": False,
+            "minProperties": 2,
+            "properties": {
+                "value": {
+                    "title": "Central value for the fuzzy number.",
+                    "type": "number",
+                },
+                "low": {
+                    "title": "Low value for the fuzzy number.",
+                    "type": "number",
+                },
+                "high": {
+                    "title": "High value for the fuzzy number.",
+                    "type": "number",
+                },
+                "error": {
+                    "title": "Symmetrical error around the central value.",
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                },
+                "marker": {
+                    "title": "Marker to display fuzziness.",
+                    "enum": constants.FUZZY_MARKERS,
+                    "default": constants.ERROR,
+                },
+            },
+        },
     },
     "type": "object",
     "required": ["neogram"],

@@ -55,6 +55,43 @@
           }
         }
       ]
+    },
+    "fuzzy_number": {
+      "$anchor": "fuzzy_number",
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false,
+      "minProperties": 2,
+      "properties": {
+        "value": {
+          "title": "Central value for the fuzzy number.",
+          "type": "number"
+        },
+        "low": {
+          "title": "Low value for the fuzzy number.",
+          "type": "number"
+        },
+        "high": {
+          "title": "High value for the fuzzy number.",
+          "type": "number"
+        },
+        "error": {
+          "title": "Symmetrical error around the central value.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "marker": {
+          "title": "Marker to display fuzziness.",
+          "enum": [
+            "error",
+            "gradient",
+            "taper"
+          ],
+          "default": "error"
+        }
+      }
     }
   },
   "type": "object",
@@ -124,7 +161,16 @@
                       },
                       "instant": {
                         "title": "Time of the event.",
-                        "type": "number"
+                        "oneOf": [
+                          {
+                            "title": "Exact time.",
+                            "type": "number"
+                          },
+                          {
+                            "title": "Imprecise time.",
+                            "$ref": "#fuzzy_number"
+                          }
+                        ]
                       },
                       "timeline": {
                         "title": "Timeline to place the event in.",
@@ -181,11 +227,29 @@
                       },
                       "begin": {
                         "title": "Starting time of the period.",
-                        "type": "number"
+                        "oneOf": [
+                          {
+                            "title": "Exact time.",
+                            "type": "number"
+                          },
+                          {
+                            "title": "Imprecise time.",
+                            "$ref": "#fuzzy_number"
+                          }
+                        ]
                       },
                       "end": {
-                        "title": "Ending tile of the period.",
-                        "type": "number"
+                        "title": "Ending time of the period.",
+                        "oneOf": [
+                          {
+                            "title": "Exact time.",
+                            "type": "number"
+                          },
+                          {
+                            "title": "Imprecise time.",
+                            "$ref": "#fuzzy_number"
+                          }
+                        ]
                       },
                       "timeline": {
                         "title": "Timeline to place the period in.",
@@ -270,7 +334,7 @@
                     "type": "string"
                   },
                   "value": {
-                    "title": "The value represented by the slice.",
+                    "title": "The value shown by the slice.",
                     "type": "number",
                     "exclusiveMinimum": 0
                   },
