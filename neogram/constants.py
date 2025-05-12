@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 8)
+VERSION = (0, 7, 9)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -16,6 +16,24 @@ DEFAULT_SIZE = 18
 DEFAULT_PADDING = 2
 DEFAULT_FONT_FAMILY = "sans-serif"
 FONT_DESCEND = 0.2  # Constant throughout.
+
+BOTTOM = "bottom"
+MIDDLE = "middle"
+TOP = "top"
+VERTICAL_ALIGN = [BOTTOM, MIDDLE, TOP]
+
+LEFT = "left"
+CENTER = "center"
+RIGHT = "right"
+HORIZONTAL_ALIGN = [LEFT, CENTER, RIGHT]
+
+CIRCLE = "circle"
+ELLIPSE = "ellipse"
+SQUARE = "square"
+PYRAMID = "pyramid"
+TRIANGLE = "triangle"
+NONE = "none"
+MARKERS = [CIRCLE, ELLIPSE, SQUARE, PYRAMID, TRIANGLE, NONE]
 
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {

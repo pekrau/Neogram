@@ -162,7 +162,7 @@ class Diagram(Entity):
 
         data = {"neogram": constants.__version__}
         data.update(self.as_dict())
-        schema.validate(data)
+        assert schema.is_valid(data)
         if isinstance(target, (str, pathlib.Path)):
             with open(target, "w") as outfile:
                 yaml.dump(data, outfile, allow_unicode=True, sort_keys=False)

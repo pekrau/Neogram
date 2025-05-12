@@ -38,35 +38,42 @@ Timelines having events and periods.
   - *items*:
     - Option 1
       - *type*: mapping
-      - **event**: Event at a moment in time.
+      - **event**: Event at an instant in time.
         - *type*: mapping
-        - **label**:
+        - **label**: Description of the event.
           - *required*
           - *type*: string
-        - **moment**:
+        - **instant**: Time of the event.
           - *required*
           - *type*: float
-        - **timeline**:
+        - **timeline**: Timeline to place the event in.
           - *type*: string
-        - **color**:
+        - **marker**: Marker for event.
+          - *one of*: 'circle', 'ellipse', 'square', 'pyramid', 'triangle', 'none'
+          - *default*: 'ellipse'
+        - **color**: Color of the event marker.
           - *type*: string
           - *format*: color
+          - *default*: 'black'
+        - **placement**: Placement of event label.
+          - *one of*: 'left', 'center', 'right'
     - Option 2
       - *type*: mapping
       - **period**: Period of time.
         - *type*: mapping
-        - **label**:
+        - **label**: Description of the period.
           - *required*
           - *type*: string
-        - **begin**:
+        - **begin**: Starting time of the period.
           - *required*
           - *type*: float
-        - **end**:
+        - **end**: Ending tile of the period.
           - *required*
           - *type*: float
-        - **timeline**:
+        - **timeline**: Timeline to place the period in.
           - *type*: string
-        - **color**:
+        - **color**: Color of the period graphic.
           - *type*: string
           - *format*: color
+          - *default*: 'white'
 

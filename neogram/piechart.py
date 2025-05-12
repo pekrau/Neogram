@@ -53,9 +53,20 @@ class Piechart(Diagram):
                             "required": ["label", "value"],
                             "additionalProperties": False,
                             "properties": {
-                                "label": {"type": "string"},
-                                "value": {"type": "number"},
-                                "color": {"type": "string", "format": "color"},
+                                "label": {
+                                    "title": "Description of the value.",
+                                    "type": "string",
+                                },
+                                "value": {
+                                    "title": "The value represented by the slice.",
+                                    "type": "number",
+                                    "exclusiveMinimum": 0,
+                                },
+                                "color": {
+                                    "title": "Color of the slice. Use palette if not defined.",
+                                    "type": "string",
+                                    "format": "color",
+                                },
                             },
                         },
                     },

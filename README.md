@@ -1,4 +1,4 @@
-# Neogram 0.7.8
+# Neogram 0.7.9
 
 Generate SVG for diagrams of different kinds from YAML specification.
 
@@ -6,7 +6,7 @@ The YAML file must contain the software identification marker:
 
     neogram: {version}
 
-where `version` is either `null` or the string representing the version of the software.
+where `{version}` is either `null` or the string representing the version of the software.
 
 ## Diagrams
 

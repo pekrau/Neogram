@@ -6,10 +6,8 @@ import constants
 import schema
 
 
-TERMS = {"array":"sequence",
-         "object": "mapping",
-         "number": "float"
-         }
+TERMS = {"array": "sequence", "object": "mapping", "number": "float"}
+
 
 def term(v):
     return TERMS.get(v, v)
@@ -18,6 +16,7 @@ def term(v):
 definitions = {}
 
 INDENT = "  "
+
 
 def make_docs():
     global definitions
@@ -29,9 +28,11 @@ def make_docs():
 
     result.append("The YAML file must contain the software identification marker:\n\n")
     result.append("    neogram: {version}\n\n")
-    result.append(f"where `version` is either `null` or the string representing the version of the software.\n\n")
+    result.append(
+        f"where `{{version}}` is either `null` or the string representing the version of the software.\n\n"
+    )
 
-    if (defs := schema.SCHEMA.get("$defs")):
+    if defs := schema.SCHEMA.get("$defs"):
         for key, value in defs.items():
             if anchor := value.get("$anchor"):
                 definitions[anchor] = value
@@ -67,11 +68,14 @@ def output_schema(schema, level=0, required=False, href=None):
         try:
             schema = definitions[ref[1:]]
             if schema.get("_has_been_output"):
-                result.append(f"{prefix}  - *definition*: See [here]({schema['_href']})\n")
+                result.append(
+                    f"{prefix}  - *definition*: See [here]({schema['_href']})\n"
+                )
                 return result
             schema["_has_been_output"] = True
             schema["_href"] = href
         except KeyError:
+            # XXX This can be solved only by pre-processing the anchors.
             result.append(f"{prefix}- *definition*: See elsewhere.\n")
 
     if required:
@@ -92,17 +96,23 @@ def output_schema(schema, level=0, required=False, href=None):
                         result.append(f"{prefix}- **{key}**: {title}\n")
                     else:
                         result.append(f"{prefix}- **{key}**:\n")
-                    result.extend(output_schema(subschema, level+1,
-                                                required=key in required,
-                                                href=href))
+                    result.extend(
+                        output_schema(
+                            subschema, level + 1, required=key in required, href=href
+                        )
+                    )
             case "array":
                 result.append(f"{prefix}- *type*: {term(type)}\n")
                 result.append(f"{prefix}- *items*:\n")
-                result.extend(output_schema(schema["items"], level+1, href=href))
+                result.extend(output_schema(schema["items"], level + 1, href=href))
             case "integer" | "number":
                 result.append(f"{prefix}- *type*: {term(type)}\n")
-                for constraint in ("minimum", "exclusiveMinimum",
-                                   "maximum", "exclusiveMaximum"):
+                for constraint in (
+                    "minimum",
+                    "exclusiveMinimum",
+                    "maximum",
+                    "exclusiveMaximum",
+                ):
                     try:
                         value = schema[constraint]
                         result.append(f"{prefix}- *{constraint}*: {value}\n")
@@ -122,14 +132,14 @@ def output_schema(schema, level=0, required=False, href=None):
     elif oneof := schema.get("oneOf"):
         for number, subschema in enumerate(oneof):
             result.append(f"{prefix}- Alternative {number+1}: {subschema['title']}\n")
-            result.extend(output_schema(subschema, level+1, href=href))
+            result.extend(output_schema(subschema, level + 1, href=href))
 
     elif anyof := schema.get("anyOf"):
         for number, subschema in enumerate(anyof):
             result.append(f"{prefix}- Option {number+1}\n")
-            result.extend(output_schema(subschema, level+1, href=href))
+            result.extend(output_schema(subschema, level + 1, href=href))
 
-    if (format := schema.get("format")):
+    if format := schema.get("format"):
         result.append(f"{prefix}- *format*: {format}\n")
 
     try:

@@ -127,7 +127,7 @@ def validate(instance, schema=SCHEMA, path=None):
             path = [path] + list(error.path)
         else:
             path = list(error.path)
-        path = ".".join(path)
+        path = ".".join([str(p) for p in path])
         raise ValueError(f"{error.message} in instance '{path}'")
 
 

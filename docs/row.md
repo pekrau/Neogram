@@ -5,8 +5,8 @@ Diagrams arranged in a row.
 - **title**:
     - *definition*: See [here](timelines.md)
 - **align**: Align diagrams vertically within the row.
-  - *one of*: 'bottom', 'center', 'top'
-  - *default*: 'center'
+  - *one of*: 'bottom', 'middle', 'top'
+  - *default*: 'middle'
 - **entries**: Component diagrams in the row.
   - *type*: sequence
   - *items*:

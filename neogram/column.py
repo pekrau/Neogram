@@ -8,7 +8,7 @@ from diagram import *
 class Column(Diagram):
 
     DEFAULT_FONT_SIZE = 18
-    DEFAULT_ALIGN = "center"
+    DEFAULT_ALIGN = constants.CENTER
 
     SCHEMA = {
         "title": __doc__,
@@ -19,7 +19,7 @@ class Column(Diagram):
             "title": {"$ref": "#title"},
             "align": {
                 "title": "Align diagrams horizontally within the column.",
-                "enum": ["left", "center", "right"],
+                "enum": constants.HORIZONTAL_ALIGN,
                 "default": DEFAULT_ALIGN,
             },
             "entries": {
@@ -46,7 +46,9 @@ class Column(Diagram):
         align=None,
     ):
         super().__init__(title=title, entries=entries)
-        assert align is None or isinstance(align, str)
+        assert align is None or (
+            isinstance(align, str) and align in constants.HORIZONTAL_ALIGN
+        )
 
         self.align = align or self.DEFAULT_ALIGN
 
@@ -70,14 +72,12 @@ class Column(Diagram):
 
         for entry in self.entries:
             match self.align:
-                case "left":
+                case constants.LEFT:
                     x = 0
-                case "center":
+                case constants.CENTER:
                     x = (self.width - entry.width) / 2
-                case "right":
+                case constants.RIGHT:
                     x = self.width - entry.width
-                case _:
-                    raise ValueError(f"invalid value for 'align': '{self.align}'")
             self.svg += Element(
                 "g", entry.svg, transform=f"translate({x}, {self.height})"
             )

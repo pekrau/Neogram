@@ -44,15 +44,38 @@ class Timelines(Diagram):
                             "additionalProperties": False,
                             "properties": {
                                 "event": {
-                                    "title": "Event at a moment in time.",
+                                    "title": "Event at an instant in time.",
                                     "type": "object",
-                                    "required": ["label", "moment"],
+                                    "required": ["label", "instant"],
                                     "additionalProperties": False,
                                     "properties": {
-                                        "label": {"type": "string"},
-                                        "moment": {"type": "number"},
-                                        "timeline": {"type": "string"},
-                                        "color": {"type": "string", "format": "color"},
+                                        "label": {
+                                            "title": "Description of the event.",
+                                            "type": "string",
+                                        },
+                                        "instant": {
+                                            "title": "Time of the event.",
+                                            "type": "number",
+                                        },
+                                        "timeline": {
+                                            "title": "Timeline to place the event in.",
+                                            "type": "string",
+                                        },
+                                        "marker": {
+                                            "title": "Marker for event.",
+                                            "enum": constants.MARKERS,
+                                            "default": constants.ELLIPSE,
+                                        },
+                                        "color": {
+                                            "title": "Color of the event marker.",
+                                            "type": "string",
+                                            "format": "color",
+                                            "default": "black",
+                                        },
+                                        "placement": {
+                                            "title": "Placement of event label.",
+                                            "enum": constants.HORIZONTAL_ALIGN,
+                                        },
                                     },
                                 },
                             },
@@ -68,11 +91,28 @@ class Timelines(Diagram):
                                     "required": ["label", "begin", "end"],
                                     "additionalProperties": False,
                                     "properties": {
-                                        "label": {"type": "string"},
-                                        "begin": {"type": "number"},
-                                        "end": {"type": "number"},
-                                        "timeline": {"type": "string"},
-                                        "color": {"type": "string", "format": "color"},
+                                        "label": {
+                                            "title": "Description of the period.",
+                                            "type": "string",
+                                        },
+                                        "begin": {
+                                            "title": "Starting time of the period.",
+                                            "type": "number",
+                                        },
+                                        "end": {
+                                            "title": "Ending tile of the period.",
+                                            "type": "number",
+                                        },
+                                        "timeline": {
+                                            "title": "Timeline to place the period in.",
+                                            "type": "string",
+                                        },
+                                        "color": {
+                                            "title": "Color of the period graphic.",
+                                            "type": "string",
+                                            "format": "color",
+                                            "default": "white",
+                                        },
                                     },
                                 },
                             },
@@ -223,49 +263,123 @@ class _Entry(Entity):
 
 
 class Event(_Entry):
-    "Event at a given moment in a timeline."
+    "Event at a given instant in a timeline."
 
-    def __init__(self, label, moment, timeline=None, color=None):
+    DEFAULT_MARKER = constants.ELLIPSE
+
+    def __init__(
+        self, label, instant, timeline=None, marker=None, color=None, placement=None
+    ):
         super().__init__(label=label, timeline=timeline, color=color)
-        assert isinstance(moment, (int, float))
+        assert isinstance(instant, (int, float))
+        assert marker is None or marker in constants.MARKERS
+        assert placement is None or placement in constants.HORIZONTAL_ALIGN
 
-        self.moment = moment
+        self.instant = instant
+        self.marker = marker or self.DEFAULT_MARKER
+        self.placement = placement
 
     def data_as_dict(self):
         result = super().data_as_dict()
-        result["moment"] = self.moment
+        result["instant"] = self.instant
         return result
 
     @property
     def minmax(self):
-        return self.moment
+        return self.instant
 
     def render_graphic(self, timelines, dimension):
-        elem = Element(
-            "ellipse",
-            cx=utils.N(dimension.get_pixel(self.moment)),
-            cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
-            rx=constants.DEFAULT_SIZE / 5,
-            ry=constants.DEFAULT_SIZE / 2,
-        )
+        x = dimension.get_pixel(self.instant)
+        match self.marker:
+            case constants.CIRCLE:
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+                elem = Element(
+                    "circle",
+                    cx=utils.N(x),
+                    cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
+                    r=constants.DEFAULT_SIZE / 2,
+                )
+            case constants.ELLIPSE:
+                self.label_x_offset = constants.DEFAULT_SIZE / 5
+                elem = Element(
+                    "ellipse",
+                    cx=utils.N(x),
+                    cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
+                    rx=constants.DEFAULT_SIZE / 5,
+                    ry=constants.DEFAULT_SIZE / 2,
+                )
+            case constants.SQUARE:
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+                elem = Element(
+                    "rect",
+                    x=utils.N(x - constants.DEFAULT_SIZE / 2),
+                    y=utils.N(timelines[self.timeline]),
+                    width=utils.N(constants.DEFAULT_SIZE),
+                    height=utils.N(constants.DEFAULT_SIZE),
+                )
+            case constants.PYRAMID:
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+                path = (
+                    Path(Vector2(x, timelines[self.timeline]))
+                    .L(
+                        Vector2(
+                            x - constants.DEFAULT_SIZE / 2,
+                            timelines[self.timeline] + constants.DEFAULT_SIZE,
+                        )
+                    )
+                    .h(constants.DEFAULT_SIZE)
+                    .Z()
+                )
+                elem = Element("path", d=path)
+            case constants.TRIANGLE:
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+                path = (
+                    Path(Vector2(x, timelines[self.timeline] + constants.DEFAULT_SIZE))
+                    .L(
+                        Vector2(
+                            x - constants.DEFAULT_SIZE / 2,
+                            timelines[self.timeline],
+                        )
+                    )
+                    .h(constants.DEFAULT_SIZE)
+                    .Z()
+                )
+                elem = Element("path", d=path)
+            case constants.NONE:
+                self.label_x_offset = 0
+                elem = Element("g")
         elem["stroke"] = "none"
         elem["fill"] = self.color or "black"
         return elem
 
     def render_label(self, timelines, dimension):
+        x = dimension.get_pixel(self.instant)
+        match self.placement:
+            case None:
+                if self.marker == constants.NONE:
+                    anchor = "middle"
+                else:
+                    x += self.label_x_offset + constants.DEFAULT_PADDING
+                    anchor = "start"
+            case constants.LEFT:
+                x -= (self.label_x_offset + constants.DEFAULT_PADDING)
+                anchor = "end"
+            case constants.CENTER:
+                anchor = "middle"
+            case constants.RIGHT:
+                x += self.label_x_offset + constants.DEFAULT_PADDING
+                anchor = "start"
         elem = Element(
             "text",
             self.label,
-            x=utils.N(
-                dimension.get_pixel(self.moment) + constants.DEFAULT_SIZE / 5 + 1
-            ),
+            x=utils.N(x),
             y=utils.N(
                 timelines[self.timeline]
                 + (constants.DEFAULT_SIZE + self.DEFAULT_FONT_SIZE) / 2
                 - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
             ),
         )
-        elem["text-anchor"] = "start"
+        elem["text-anchor"] = anchor
         return elem
 
 

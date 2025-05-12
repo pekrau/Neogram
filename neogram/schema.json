@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://neogram.org/schema",
-  "title": "YAML specification for diagrams of different kinds.",
+  "title": "Generate SVG for diagrams of different kinds from YAML specification.",
   "$defs": {
     "title": {
       "$anchor": "title",
@@ -66,14 +66,14 @@
   "maxProperties": 2,
   "properties": {
     "neogram": {
-      "title": "Identity marker for the YAML file.",
+      "title": "Identitification marker for the YAML file.",
       "oneOf": [
         {
           "title": "Version of the Neogram sofware.",
           "type": "string"
         },
         {
-          "title": "Unspecified version; avoids the version check.",
+          "title": "Unspecified version; no check will be performed.",
           "const": null
         }
       ]
@@ -99,41 +99,68 @@
           "default": true
         },
         "entries": {
-          "title": "Entries (events, periods) in the timelines.",
+          "title": "Entries in the timelines.",
           "type": "array",
           "items": {
             "anyOf": [
               {
+                "title": "Event specification in the timeline.",
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
                   "event": {
-                    "title": "Event at a moment in time.",
+                    "title": "Event at an instant in time.",
                     "type": "object",
                     "required": [
                       "label",
-                      "moment"
+                      "instant"
                     ],
                     "additionalProperties": false,
                     "properties": {
                       "label": {
+                        "title": "Description of the event.",
                         "type": "string"
                       },
-                      "moment": {
+                      "instant": {
+                        "title": "Time of the event.",
                         "type": "number"
                       },
                       "timeline": {
+                        "title": "Timeline to place the event in.",
                         "type": "string"
                       },
+                      "marker": {
+                        "title": "Marker for event.",
+                        "enum": [
+                          "circle",
+                          "ellipse",
+                          "square",
+                          "pyramid",
+                          "triangle",
+                          "none"
+                        ],
+                        "default": "ellipse"
+                      },
                       "color": {
+                        "title": "Color of the event marker.",
                         "type": "string",
-                        "format": "color"
+                        "format": "color",
+                        "default": "black"
+                      },
+                      "placement": {
+                        "title": "Placement of event label.",
+                        "enum": [
+                          "left",
+                          "center",
+                          "right"
+                        ]
                       }
                     }
                   }
                 }
               },
               {
+                "title": "Period specification in the timeline.",
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
@@ -148,20 +175,26 @@
                     "additionalProperties": false,
                     "properties": {
                       "label": {
+                        "title": "Description of the period.",
                         "type": "string"
                       },
                       "begin": {
+                        "title": "Starting time of the period.",
                         "type": "number"
                       },
                       "end": {
+                        "title": "Ending tile of the period.",
                         "type": "number"
                       },
                       "timeline": {
+                        "title": "Timeline to place the period in.",
                         "type": "string"
                       },
                       "color": {
+                        "title": "Color of the period graphic.",
                         "type": "string",
-                        "format": "color"
+                        "format": "color",
+                        "default": "white"
                       }
                     }
                   }
@@ -213,12 +246,16 @@
                 "additionalProperties": false,
                 "properties": {
                   "label": {
+                    "title": "Description of the value.",
                     "type": "string"
                   },
                   "value": {
-                    "type": "number"
+                    "title": "The value represented by the slice.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
                   },
                   "color": {
+                    "title": "Color of the slice. Use palette if not defined.",
                     "type": "string",
                     "format": "color"
                   }
@@ -284,10 +321,10 @@
           "title": "Align diagrams vertically within the row.",
           "enum": [
             "bottom",
-            "center",
+            "middle",
             "top"
           ],
-          "default": "center"
+          "default": "middle"
         },
         "entries": {
           "title": "Component diagrams in the row.",

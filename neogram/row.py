@@ -8,7 +8,7 @@ from diagram import *
 class Row(Diagram):
 
     DEFAULT_FONT_SIZE = 18
-    DEFAULT_ALIGN = "center"
+    DEFAULT_ALIGN = constants.MIDDLE
 
     SCHEMA = {
         "title": __doc__,
@@ -19,7 +19,7 @@ class Row(Diagram):
             "title": {"$ref": "#title"},
             "align": {
                 "title": "Align diagrams vertically within the row.",
-                "enum": ["bottom", "center", "top"],
+                "enum": constants.VERTICAL_ALIGN,
                 "default": DEFAULT_ALIGN,
             },
             "entries": {
@@ -46,7 +46,9 @@ class Row(Diagram):
         align=None,
     ):
         super().__init__(title=title, entries=entries)
-        assert align is None or isinstance(align, str)
+        assert align is None or (
+            isinstance(align, str) and align in constants.VERTICAL_ALIGN
+        )
 
         self.align = align or self.DEFAULT_ALIGN
 
@@ -73,14 +75,12 @@ class Row(Diagram):
 
         for entry in self.entries:
             match self.align:
-                case "bottom":
+                case constants.BOTTOM:
                     y = self.height + max_height - entry.height
-                case "center":
+                case constants.MIDDLE:
                     y = self.height + (max_height - entry.height) / 2
-                case "top":
+                case constants.TOP:
                     y = self.height
-                case _:
-                    raise ValueError(f"invalid value for 'align': '{self.align}'")
             self.svg += Element("g", entry.svg, transform=f"translate({x}, {y})")
             x += entry.width + constants.DEFAULT_PADDING
 

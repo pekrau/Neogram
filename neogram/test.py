@@ -12,6 +12,26 @@ def get_universum():
         "Vintergatan", -8_000_000_000, 0, timeline="Universum", color="navy"
     )
     universum += Period("Jorden", -4_567_000_000, 0, color="lightgreen")
+    universum += Event("Here", -12_000_000_000, timeline="markers", marker="none")
+    universum += Event(
+        "Circle", -10_000_000_000, timeline="markers", marker="circle", color="cyan", placement="left"
+    )
+    universum += Event(
+        "Ellipse", -8_000_000_000, timeline="markers", marker="ellipse", color="blue", placement="left"
+    )
+    universum += Event(
+        "Square", -6_000_000_000, timeline="markers", marker="square", color="orange", placement="left"
+    )
+    universum += Event(
+        "Pyramid", -4_000_000_000, timeline="markers", marker="pyramid", color="gold", placement="center"
+    )
+    universum += Event(
+        "Triangle",
+        -2_000_000_000,
+        timeline="markers",
+        marker="triangle",
+        color="purple",
+    )
     return universum
 
 

@@ -19,13 +19,14 @@ Pie chart containing slices.
     - *type*: mapping
     - **slice**: Slice representing a value.
       - *type*: mapping
-      - **label**:
+      - **label**: Description of the value.
         - *required*
         - *type*: string
-      - **value**:
+      - **value**: The value represented by the slice.
         - *required*
         - *type*: float
-      - **color**:
+        - *exclusiveMinimum*: 0
+      - **color**: Color of the slice. Use palette if not defined.
         - *type*: string
         - *format*: color
 
