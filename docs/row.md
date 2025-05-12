@@ -1,25 +1,5 @@
 # row
 
-Diagrams arranged in a row.
-
-- **title**: Title of the column diagram.
-    - *definition*: See [here](timelines.md)
-- **align**: Align diagrams vertically within the row.
-  - *one of*: 'bottom', 'middle', 'top'
-  - *default*: 'middle'
-- **entries**: Component diagrams in the row.
-  - *type*: sequence
-  - *items*:
-    - *type*: mapping
-    - **timelines**:
-        - *definition*: See [here](timelines.md)
-    - **piechart**:
-        - *definition*: See [here](piechart.md)
-    - **column**:
-        - *definition*: See [here](column.md)
-    - **row**:
-        - *definition*: See [here](row.md)
-
 ## Examples
 
 ### rpies
@@ -67,4 +47,24 @@ row:
           value: 3
           color: green
 ```
+## Specification
+Diagrams arranged in a row.
+
+- **title**: Title of the column diagram.
+    - *definition*: See [here](timelines.md)
+- **align**: Align diagrams vertically within the row.
+  - *one of*: 'bottom', 'middle', 'top'
+  - *default*: 'middle'
+- **entries**: Component diagrams in the row.
+  - *type*: sequence
+  - *items*:
+    - *type*: mapping
+    - **timelines**:
+        - *definition*: See [here](timelines.md)
+    - **piechart**:
+        - *definition*: See [here](piechart.md)
+    - **column**:
+        - *definition*: See [here](column.md)
+    - **row**:
+        - *definition*: See [here](row.md)
 
