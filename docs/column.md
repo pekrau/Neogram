@@ -32,7 +32,7 @@ Diagrams stacked in a column.
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.10
+neogram: 0.7.11
 column:
   title: Universe and Earth
   entries:
@@ -81,7 +81,10 @@ column:
           label: ''
           timeline: markers
           color: orange
-          instant: -6000000000
+          instant:
+            value: -6000000000
+            low: -6500000000
+            high: -5000000000
           marker: square
       - event:
           label: Pyramid
@@ -103,9 +106,17 @@ column:
           label: Earth
           begin: -4567000000
           end: 0
+      - period:
+          label: Archean
+          begin:
+            value: -4000000000
+            low: -4100000000
+          end:
+            value: -2500000000
+            error: 200000000
       - event:
           label: LUCA?
-          timeline: Encelliga
+          timeline: Unicellular
           instant: -4200000000
       - period:
           label: Unicellular organisms

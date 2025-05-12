@@ -179,6 +179,7 @@ if __name__ == "__main__":
     os.chdir("../docs")
     test_universe()
     test_earth()
+    test_universe_earth()
     test_pyramid()
     test_day()
     test_cpies()

@@ -25,7 +25,13 @@
           <g stroke="none" fill="black" />
           <circle cx="218.729" cy="78.600" r="9.0" stroke="none" fill="cyan" />
           <ellipse cx="294.983" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="blue" />
-          <rect x="362.237" y="69.600" width="18" height="18" stroke="none" fill="orange" />
+          <g>
+            <g stroke="black">
+              <path d="M 352.174 74.100 v 9 m 0 -4.500 H 371.24" />
+              <path d="M 409.364 74.100 v 9 m 0 -4.500 H 371.24" />
+            </g>
+            <rect x="362.237" y="69.600" width="18" height="18" stroke="none" fill="orange" />
+          </g>
           <path d="M 447.491 69.600 L 438.491 87.600 h 18 Z" stroke="none" fill="gold" />
           <path d="M 523.746 87.600 L 514.746 69.600 h 18 Z" stroke="none" fill="purple" />
         </g>
@@ -62,7 +68,19 @@
         </g>
         <g>
           <rect x="152.471" y="20.800" width="447.529" height="18" fill="white" />
-          <ellipse cx="188.434" cy="51.800" rx="3.6" ry="9.0" stroke="none" fill="black" />
+          <g>
+            <rect x="208.032" y="42.800" width="146.988" height="18" fill="white" />
+            <g>
+              <g stroke="black">
+                <path d="M 198.233 47.300 v 9 m 0 -4.500 H 208.03" />
+              </g>
+              <g stroke="black">
+                <path d="M 335.422 47.300 v 9 m 0 -4.500 H 355.02" />
+                <path d="M 374.618 47.300 v 9 m 0 -4.500 H 355.02" />
+              </g>
+            </g>
+          </g>
+          <ellipse cx="188.434" cy="73.800" rx="3.6" ry="9.0" stroke="none" fill="black" />
           <rect x="258.988" y="64.800" width="341.012" height="18" fill="white" />
           <rect x="438.313" y="86.800" width="161.687" height="18" fill="white" />
           <rect x="266.827" y="108.800" width="333.173" height="18" fill="white" />
@@ -70,7 +88,8 @@
         </g>
         <g text-anchor="middle" stroke="none" fill="black">
           <text x="377.235" y="34" text-anchor="middle">Earth</text>
-          <text x="194.034" y="56" text-anchor="start">LUCA?</text>
+          <text x="282.526" y="56" text-anchor="middle">Archean</text>
+          <text x="194.034" y="78" text-anchor="start">LUCA?</text>
           <text x="430.494" y="78" text-anchor="middle">Unicellular organisms</text>
           <text x="520.157" y="100" text-anchor="middle">Eukaryotes</text>
           <text x="434.414" y="122" text-anchor="middle">Photosynthesis</text>
@@ -78,7 +97,7 @@
         </g>
         <g stroke="none" fill="black">
           <text x="2" y="34">Earth</text>
-          <text x="2" y="56">Encelliga</text>
+          <text x="2" y="56">Archean</text>
           <text x="2" y="78">Unicellular</text>
           <text x="2" y="100">Eukaryotes</text>
           <text x="2" y="122">Photosynthesis</text>
