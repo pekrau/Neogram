@@ -27,7 +27,7 @@ row:
           label: Strawberries
           value: 3
       diameter: 300
-      palette:
+      palette: &id001
       - white
       - yellow
       - gold
@@ -38,19 +38,17 @@ row:
       - slice:
           label: Flour
           value: 7
-          color: white
       - slice:
           label: Eggs
           value: 2
-          color: yellow
       - slice:
           label: Butter
           value: 3
-          color: gold
       - slice:
           label: Rhubarb
           value: 3
           color: green
+      palette: *id001
 ```
 ## Specification
 Diagrams arranged in a row.

@@ -211,7 +211,7 @@ class Timelines(Diagram):
         labels["stroke"] = "none"
         labels["fill"] = "black"
         for entry in self.entries:
-            if (label := entry.render_label(timelines, dimension)):
+            if label := entry.render_label(timelines, dimension):
                 labels += label
 
         # Add legend labels.

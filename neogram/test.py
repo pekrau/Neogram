@@ -64,6 +64,7 @@ def get_earth(legend=True):
     earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis")
     return earth
 
+
 def test_universe():
     universe = get_universe(legend=False)
     universe.save("universe.yaml")
@@ -78,6 +79,7 @@ def test_earth():
     earth = get_earth()
     earth.save("earth.yaml")
     earth.render("earth.svg")
+
 
 def test_universe_earth():
     both = Column("Universe and Earth")
@@ -147,17 +149,17 @@ def test_cpies():
 def test_rpies():
     pajer = Row("Pies in row")
 
-    pajer += (paj := Piechart("Strawberry pie", diameter=300,
-                              palette= ["white", "yellow", "gold", "red"]))
+    palette = ["white", "yellow", "gold", "red"]
+    pajer += (paj := Piechart("Strawberry pie", diameter=300, palette=palette))
     paj += Slice("Flour", 7)
     paj += Slice("Eggs", 2)
     paj += Slice("Butter", 3)
     paj += Slice("Strawberries", 3)
 
-    pajer += (paj := Piechart("Rhubarb pie"))
-    paj += Slice("Flour", 7, color="white")
-    paj += Slice("Eggs", 2, color="yellow")
-    paj += Slice("Butter", 3, color="gold")
+    pajer += (paj := Piechart("Rhubarb pie", palette=palette))
+    paj += Slice("Flour", 7)
+    paj += Slice("Eggs", 2)
+    paj += Slice("Butter", 3)
     paj += Slice("Rhubarb", 3, color="green")
 
     pajer.save("rpies.yaml")
@@ -170,6 +172,7 @@ def test_rpies():
 
 if __name__ == "__main__":
     import os
+
     os.chdir("../docs")
     test_universe()
     test_earth()
