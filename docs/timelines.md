@@ -191,10 +191,6 @@ timelines:
       label: Earth
       begin: -4567000000
       end: 0
-  - event:
-      label: LUCA?
-      timeline: Encelliga
-      instant: -4200000000
   - period:
       label: Archean
       begin:
@@ -203,6 +199,10 @@ timelines:
       end:
         value: -2500000000
         error: 200000000
+  - event:
+      label: LUCA?
+      timeline: Unicellular
+      instant: -4200000000
   - period:
       label: Unicellular organisms
       timeline: Unicellular
