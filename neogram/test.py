@@ -40,6 +40,10 @@ def test_universum():
     universum.save("universum.yaml")
     universum.render("universum.svg")
 
+    universum2 = retrieve("universum.yaml")
+    assert universum == universum2
+    assert universum.render() == universum2.render()
+
 
 def test_jorden():
     jorden = Timelines("Jorden")
@@ -84,12 +88,17 @@ def test_dagen():
     dagen += Slice("Middag", 1, color="lightgreen")
     dagen += Slice("TV", 3, color="orange")
     dagen += Slice("Läsa", 2, color="navy")
+
     dagen.save("dagen.yaml")
     dagen.render("dagen.svg")
 
+    dagen2 = retrieve("dagen.yaml")
+    assert dagen == dagen2
+    assert dagen.render() == dagen2.render()
 
-def test_pajer():
-    pajer = Column("Pajer")
+
+def test_cpajer():
+    pajer = Column("Pajer column")
 
     pajer += (paj := Piechart("Jordgubbspaj", diameter=100))
     paj += Slice("Mjöl", 7, color="white")
@@ -103,12 +112,16 @@ def test_pajer():
     paj += Slice("Smör", 3, color="gold")
     paj += Slice("Rabarber", 3, color="green")
 
-    pajer.save("pajer.yaml")
-    pajer.render("pajer.svg")
+    pajer.save("cpajer.yaml")
+    pajer.render("cpajer.svg")
+
+    pajer2 = retrieve("cpajer.yaml")
+    assert pajer == pajer2
+    assert pajer.render() == pajer2.render()
 
 
-def test_pajer2():
-    pajer = Row("Pajer 2")
+def test_rpajer():
+    pajer = Row("Pajer row")
 
     pajer += (paj := Piechart("Jordgubbspaj", diameter=300))
     paj += Slice("Mjöl", 7, color="white")
@@ -122,14 +135,17 @@ def test_pajer2():
     paj += Slice("Smör", 3, color="gold")
     paj += Slice("Rabarber", 3, color="green")
 
-    pajer.save("pajer2.yaml")
-    pajer.render("pajer2.svg")
+    pajer.save("rpajer.yaml")
+    pajer.render("rpajer.svg")
 
+    pajer2 = retrieve("rpajer.yaml")
+    assert pajer == pajer2
+    assert pajer.render() == pajer2.render()
 
 if __name__ == "__main__":
     test_universum()
     test_jorden()
     test_pyramid()
     test_dagen()
-    test_pajer()
-    test_pajer2()
+    test_cpajer()
+    test_rpajer()

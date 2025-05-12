@@ -282,6 +282,10 @@ class Event(_Entry):
     def data_as_dict(self):
         result = super().data_as_dict()
         result["instant"] = self.instant
+        if self.marker != self.DEFAULT_MARKER:
+            result["marker"] = self.marker
+        if self.placement:
+            result["placement"] = self.placement
         return result
 
     @property
