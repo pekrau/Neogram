@@ -18,6 +18,7 @@ Pie chart containing slices.
   - *items*:
     - *type*: string
     - *format*: color
+  - *default*: ['tomato', 'darkviolet', 'deeppink', 'deepskyblue', 'gold', 'yellowgreen']
 - **entries**: Entries (slices) in the pie chart.
   - *type*: sequence
   - *items*:

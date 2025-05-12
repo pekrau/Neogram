@@ -57,6 +57,7 @@ class Piechart(Diagram):
                     "type": "string",
                     "format": "color",
                 },
+                "default": DEFAULT_PALETTE,
             },
             "entries": {
                 "title": "Entries (slices) in the pie chart.",
