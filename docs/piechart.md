@@ -154,7 +154,7 @@ row:
           label: Strawberries
           value: 3
       diameter: 300
-      palette: &id001
+      palette:
       - white
       - yellow
       - gold
@@ -175,7 +175,11 @@ row:
           label: Rhubarb
           value: 3
           color: green
-      palette: *id001
+      palette:
+      - white
+      - yellow
+      - gold
+      - red
 ```
 ## Specification
 Pie chart containing slices.

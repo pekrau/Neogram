@@ -106,7 +106,8 @@ class Piechart(Diagram):
         self.diameter = diameter or self.DEFAULT_DIAMETER
         self.total = total
         self.start = start
-        self.palette = palette or constants.DEFAULT_PALETTE
+        # Create a copy of the palette, for safety and for YAML output.
+        self.palette = list(palette or constants.DEFAULT_PALETTE)
 
     def check_entry(self, entry):
         return isinstance(entry, Slice)
