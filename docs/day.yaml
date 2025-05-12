@@ -1,0 +1,48 @@
+neogram: 0.7.10
+piechart:
+  title:
+    text: Day
+    size: 30
+  entries:
+  - slice:
+      label: Sleep
+      value: 8
+      color: gray
+  - slice:
+      label: Breakfast
+      value: 1
+      color: lightgreen
+  - slice:
+      label: Gym
+      value: 2
+      color: lightblue
+  - slice:
+      label: Read
+      value: 1
+      color: navy
+  - slice:
+      label: Lunch
+      value: 1
+      color: lightgreen
+  - slice:
+      label: Shuteye
+      value: 0.4
+      color: gray
+  - slice:
+      label: Write
+      value: 4.6
+      color: pink
+  - slice:
+      label: Dinner
+      value: 1
+      color: lightgreen
+  - slice:
+      label: TV
+      value: 3
+      color: orange
+  - slice:
+      label: Read
+      value: 2
+      color: navy
+  diameter: 400
+  total: 24

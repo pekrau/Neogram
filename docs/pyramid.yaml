@@ -1,0 +1,18 @@
+neogram: 0.7.10
+piechart:
+  title: Pyramid
+  entries:
+  - slice:
+      label: Shadow
+      value: 7
+  - slice:
+      label: Sunny
+      value: 18
+  - slice:
+      label: Sky
+      value: 70
+  start: 132
+  palette:
+  - '#4c78a8'
+  - '#9ecae9'
+  - '#f58518'

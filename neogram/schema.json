@@ -3,15 +3,15 @@
   "$id": "https://neogram.org/schema",
   "title": "Generate SVG for diagrams of different kinds from YAML specification.",
   "$defs": {
-    "title": {
-      "$anchor": "title",
+    "text": {
+      "$anchor": "text",
       "oneOf": [
         {
-          "title": "Title of the diagram with default styling.",
+          "title": "Text with default styling.",
           "type": "string"
         },
         {
-          "title": "Title of the diagram with styling options.",
+          "title": "Text with styling options.",
           "type": "object",
           "required": [
             "text"
@@ -19,21 +19,21 @@
           "additionalProperties": false,
           "properties": {
             "text": {
-              "title": "Text of title.",
+              "title": "The text to display.",
               "type": "string"
             },
             "size": {
-              "title": "Size of font in title.",
+              "title": "Size of font.",
               "type": "number",
               "exclusiveMinimum": 0
             },
             "bold": {
-              "title": "Text in bold.",
+              "title": "Bold font.",
               "type": "boolean",
               "default": false
             },
             "italic": {
-              "title": "Text in italics.",
+              "title": "Italics font.",
               "type": "boolean",
               "default": false
             },
@@ -44,7 +44,7 @@
               "default": "black"
             },
             "anchor": {
-              "title": "Anchor of title text.",
+              "title": "Anchor of text.",
               "enum": [
                 "start",
                 "middle",
@@ -73,7 +73,7 @@
           "type": "string"
         },
         {
-          "title": "Unspecified version; no check will be performed.",
+          "title": "Unspecified version; no check performed.",
           "const": null
         }
       ]
@@ -85,7 +85,8 @@
       "additionalProperties": false,
       "properties": {
         "title": {
-          "$ref": "#title"
+          "title": "Title of the timelines diagram.",
+          "$ref": "#text"
         },
         "width": {
           "title": "Width of chart, in pixels.",
@@ -212,7 +213,8 @@
       "additionalProperties": false,
       "properties": {
         "title": {
-          "$ref": "#title"
+          "title": "Title of the pie chart diagram.",
+          "$ref": "#text"
         },
         "diameter": {
           "title": "Diameter of the pie chart, in pixels.",
@@ -291,7 +293,8 @@
       "additionalProperties": false,
       "properties": {
         "title": {
-          "$ref": "#title"
+          "title": "Title of the column diagram.",
+          "$ref": "#text"
         },
         "align": {
           "title": "Align diagrams horizontally within the column.",
@@ -333,7 +336,8 @@
       "additionalProperties": false,
       "properties": {
         "title": {
-          "$ref": "#title"
+          "title": "Title of the column diagram.",
+          "$ref": "#text"
         },
         "align": {
           "title": "Align diagrams vertically within the row.",

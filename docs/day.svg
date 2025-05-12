@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="405" height="443" viewBox="0 0 405 443" transform="translate(0.5, 0.5)">
+  <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+    <text x="202.0" y="30" stroke="none" font-size="30" text-anchor="middle" fill="black">Day</text>
+    <g transform="translate(202, 240)">
+      <circle r="200" />
+      <g stroke="black" stroke-width="1">
+        <path d="M 0 0 L 0 -200 A 200 200 0 0 1 173.205 100.000 Z" fill="gray" />
+        <path d="M 0 0 L 173.205 100.000 A 200 200 0 0 1 141.421 141.421 Z" fill="lightgreen" />
+        <path d="M 0 0 L 141.421 141.421 A 200 200 0 0 1 51.764 193.185 Z" fill="lightblue" />
+        <path d="M 0 0 L 51.764 193.185 A 200 200 0 0 1 0 200 Z" fill="navy" />
+        <path d="M 0 0 L 0 200 A 200 200 0 0 1 -51.764 193.185 Z" fill="lightgreen" />
+        <path d="M 0 0 L -51.764 193.185 A 200 200 0 0 1 -71.674 186.716 Z" fill="gray" />
+        <path d="M 0 0 L -71.674 186.716 A 200 200 0 0 1 -200 0 Z" fill="pink" />
+        <path d="M 0 0 L -200 0 A 200 200 0 0 1 -193.185 -51.764 Z" fill="lightgreen" />
+        <path d="M 0 0 L -193.185 -51.764 A 200 200 0 0 1 -100 -173.205 Z" fill="orange" />
+        <path d="M 0 0 L -100 -173.205 A 200 200 0 0 1 0 -200 Z" fill="navy" />
+      </g>
+      <g stroke="none" fill="black" text-anchor="middle">
+        <text x="121.244" y="-70" fill="white">Sleep</text>
+        <text x="111.069" y="85.227" fill="black">Breakfast</text>
+        <text x="70" y="121.244" fill="black">Gym</text>
+        <text x="18.274" y="138.802" fill="white">Read</text>
+        <text x="-18.274" y="138.802" fill="black">Lunch</text>
+        <text x="-43.262" y="133.148" fill="white">Shuteye</text>
+        <text x="-115.378" y="79.297" fill="black">Write</text>
+        <text x="-138.802" y="-18.274" fill="black">Dinner</text>
+        <text x="-111.069" y="-85.227" fill="black">TV</text>
+        <text x="-36.235" y="-135.230" fill="white">Read</text>
+      </g>
+    </g>
+  </g>
+</svg>

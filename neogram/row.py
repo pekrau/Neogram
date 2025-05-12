@@ -16,7 +16,10 @@ class Row(Diagram):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "title": {"$ref": "#title"},
+            "title": {
+                "title": "Title of the column diagram.",
+                "$ref": "#text",
+            },
             "align": {
                 "title": "Align diagrams vertically within the row.",
                 "enum": constants.VERTICAL_ALIGN,

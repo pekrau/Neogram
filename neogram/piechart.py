@@ -16,15 +16,6 @@ class Piechart(Diagram):
 
     DEFAULT_DIAMETER = 200
     DEFAULT_START = Degrees(-90)
-    # See: https://austingil.com/css-named-colors/#bold
-    DEFAULT_PALETTE = [
-        "tomato",
-        "darkviolet",
-        "deeppink",
-        "deepskyblue",
-        "gold",
-        "yellowgreen",
-    ]
 
     SCHEMA = {
         "title": __doc__,
@@ -32,7 +23,10 @@ class Piechart(Diagram):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "title": {"$ref": "#title"},
+            "title": {
+                "title": "Title of the pie chart diagram.",
+                "$ref": "#text",
+            },
             "diameter": {
                 "title": "Diameter of the pie chart, in pixels.",
                 "type": "number",
@@ -57,7 +51,7 @@ class Piechart(Diagram):
                     "type": "string",
                     "format": "color",
                 },
-                "default": DEFAULT_PALETTE,
+                "default": constants.DEFAULT_PALETTE,
             },
             "entries": {
                 "title": "Entries (slices) in the pie chart.",
@@ -112,7 +106,7 @@ class Piechart(Diagram):
         self.diameter = diameter or self.DEFAULT_DIAMETER
         self.total = total
         self.start = start
-        self.palette = palette or self.DEFAULT_PALETTE
+        self.palette = palette or constants.DEFAULT_PALETTE
 
     def check_entry(self, entry):
         return isinstance(entry, Slice)
@@ -125,7 +119,7 @@ class Piechart(Diagram):
             result["total"] = self.total
         if self.start is not None:
             result["start"] = self.start
-        if self.palette != self.DEFAULT_PALETTE:
+        if self.palette != constants.DEFAULT_PALETTE:
             result["palette"] = self.palette
         return result
 

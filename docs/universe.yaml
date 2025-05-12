@@ -1,0 +1,62 @@
+neogram: 0.7.10
+timelines:
+  title:
+    text: Universe
+    size: 18
+    bold: true
+    color: purple
+  entries:
+  - event:
+      label: Big Bang
+      timeline: Universe
+      color: red
+      instant: -13787000000
+  - period:
+      label: Milky Way galaxy
+      timeline: Universe
+      color: navy
+      begin: -8000000000
+      end: 0
+  - period:
+      label: Earth
+      color: lightgreen
+      begin: -4567000000
+      end: 0
+  - event:
+      label: Here
+      timeline: markers
+      instant: -12000000000
+      marker: none
+  - event:
+      label: Circle
+      timeline: markers
+      color: cyan
+      instant: -10000000000
+      marker: circle
+      placement: left
+  - event:
+      label: Ellipse
+      timeline: markers
+      color: blue
+      instant: -8000000000
+      placement: left
+  - event:
+      label: ''
+      timeline: markers
+      color: orange
+      instant: -6000000000
+      marker: square
+  - event:
+      label: Pyramid
+      timeline: markers
+      color: gold
+      instant: -4000000000
+      marker: pyramid
+      placement: center
+  - event:
+      label: Triangle
+      timeline: markers
+      color: purple
+      instant: -2000000000
+      marker: triangle
+  legend: false

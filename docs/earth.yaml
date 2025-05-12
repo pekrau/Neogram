@@ -1,0 +1,30 @@
+neogram: 0.7.10
+timelines:
+  title: Earth
+  entries:
+  - period:
+      label: Earth
+      begin: -4567000000
+      end: 0
+  - event:
+      label: LUCA?
+      timeline: Encelliga
+      instant: -4200000000
+  - period:
+      label: Unicellular organisms
+      timeline: Unicellular
+      begin: -3480000000
+      end: 0
+  - period:
+      label: Eukaryotes
+      begin: -1650000000
+      end: 0
+  - period:
+      label: Photosynthesis
+      begin: -3400000000
+      end: 0
+  - period:
+      label: Plants
+      timeline: Photosynthesis
+      begin: -470000000
+      end: 0

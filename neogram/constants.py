@@ -35,6 +35,16 @@ TRIANGLE = "triangle"
 NONE = "none"
 MARKERS = [CIRCLE, ELLIPSE, SQUARE, PYRAMID, TRIANGLE, NONE]
 
+# See: https://austingil.com/css-named-colors/#bold
+DEFAULT_PALETTE = [
+    "tomato",
+    "darkviolet",
+    "deeppink",
+    "deepskyblue",
+    "gold",
+    "yellowgreen",
+]
+
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {
     "sans": {

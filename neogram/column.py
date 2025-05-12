@@ -16,7 +16,10 @@ class Column(Diagram):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "title": {"$ref": "#title"},
+            "title": {
+                "title": "Title of the column diagram.",
+                "$ref": "#text",
+            },
             "align": {
                 "title": "Align diagrams horizontally within the column.",
                 "enum": constants.HORIZONTAL_ALIGN,

@@ -21,7 +21,10 @@ class Timelines(Diagram):
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "title": {"$ref": "#title"},
+            "title": {
+                "title": "Title of the timelines diagram.",
+                "$ref": "#text",
+            },
             "width": {
                 "title": "Width of chart, in pixels.",
                 "type": "number",
@@ -208,7 +211,8 @@ class Timelines(Diagram):
         labels["stroke"] = "none"
         labels["fill"] = "black"
         for entry in self.entries:
-            labels += entry.render_label(timelines, dimension)
+            if (label := entry.render_label(timelines, dimension)):
+                labels += label
 
         # Add legend labels.
         if self.legend:
@@ -357,6 +361,8 @@ class Event(_Entry):
         return elem
 
     def render_label(self, timelines, dimension):
+        if not self.label:
+            return None
         x = dimension.get_pixel(self.instant)
         match self.placement:
             case None:
@@ -420,6 +426,8 @@ class Period(_Entry):
         return elem
 
     def render_label(self, timelines, dimension):
+        if not self.label:
+            return None
         elem = Element(
             "text",
             self.label,

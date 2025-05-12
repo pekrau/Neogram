@@ -15,35 +15,35 @@ SCHEMA = {
     "$id": constants.JSONSCHEMA_ID,
     "title": "Generate SVG for diagrams of different kinds from YAML specification.",
     "$defs": {
-        "title": {
-            "$anchor": "title",
+        "text": {
+            "$anchor": "text",
             "oneOf": [
                 {
-                    "title": "Title of the diagram with default styling.",
+                    "title": "Text with default styling.",
                     "type": "string",
                 },
                 {
-                    "title": "Title of the diagram with styling options.",
+                    "title": "Text with styling options.",
                     "type": "object",
                     "required": ["text"],
                     "additionalProperties": False,
                     "properties": {
                         "text": {
-                            "title": "Text of title.",
+                            "title": "The text to display.",
                             "type": "string",
                         },
                         "size": {
-                            "title": "Size of font in title.",
+                            "title": "Size of font.",
                             "type": "number",
                             "exclusiveMinimum": 0,  # Default depends on the diagram.
                         },
                         "bold": {
-                            "title": "Text in bold.",
+                            "title": "Bold font.",
                             "type": "boolean",
                             "default": False,
                         },
                         "italic": {
-                            "title": "Text in italics.",
+                            "title": "Italics font.",
                             "type": "boolean",
                             "default": False,
                         },
@@ -54,7 +54,7 @@ SCHEMA = {
                             "default": "black",
                         },
                         "anchor": {
-                            "title": "Anchor of title text.",
+                            "title": "Anchor of text.",
                             "enum": ["start", "middle", "end"],
                             "default": "middle",
                         },
@@ -77,7 +77,7 @@ SCHEMA = {
                     "type": "string",
                 },
                 {
-                    "title": "Unspecified version; no check will be performed.",
+                    "title": "Unspecified version; no check performed.",
                     "const": None,
                 },
             ],

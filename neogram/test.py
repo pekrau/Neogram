@@ -3,17 +3,17 @@
 from lib import *
 
 
-def get_universum():
-    universum = Timelines(
-        {"text": "Universum", "bold": True, "color": "red"}, legend=False
+def get_universe(legend=True):
+    universe = Timelines(
+        {"text": "Universe", "bold": True, "size": 18, "color": "purple"}, legend=legend
     )
-    universum += Event("Big Bang", -13_787_000_000, timeline="Universum", color="red")
-    universum += Period(
-        "Vintergatan", -8_000_000_000, 0, timeline="Universum", color="navy"
+    universe += Event("Big Bang", -13_787_000_000, timeline="Universe", color="red")
+    universe += Period(
+        "Milky Way galaxy", -8_000_000_000, 0, timeline="Universe", color="navy"
     )
-    universum += Period("Jorden", -4_567_000_000, 0, color="lightgreen")
-    universum += Event("Here", -12_000_000_000, timeline="markers", marker="none")
-    universum += Event(
+    universe += Period("Earth", -4_567_000_000, 0, color="lightgreen")
+    universe += Event("Here", -12_000_000_000, timeline="markers", marker="none")
+    universe += Event(
         "Circle",
         -10_000_000_000,
         timeline="markers",
@@ -21,7 +21,7 @@ def get_universum():
         color="cyan",
         placement="left",
     )
-    universum += Event(
+    universe += Event(
         "Ellipse",
         -8_000_000_000,
         timeline="markers",
@@ -29,15 +29,14 @@ def get_universum():
         color="blue",
         placement="left",
     )
-    universum += Event(
-        "Square",
+    universe += Event(
+        "",
         -6_000_000_000,
         timeline="markers",
         marker="square",
         color="orange",
-        placement="left",
     )
-    universum += Event(
+    universe += Event(
         "Pyramid",
         -4_000_000_000,
         timeline="markers",
@@ -45,49 +44,54 @@ def get_universum():
         color="gold",
         placement="center",
     )
-    universum += Event(
+    universe += Event(
         "Triangle",
         -2_000_000_000,
         timeline="markers",
         marker="triangle",
         color="purple",
     )
-    return universum
+    return universe
 
 
-def test_universum():
-    universum = get_universum()
-    universum.save("universum.yaml")
-    universum.render("universum.svg")
+def get_earth(legend=True):
+    earth = Timelines("Earth", legend=legend)
+    earth += Period("Earth", -4_567_000_000, 0)
+    earth += Event("LUCA?", -4_200_000_000, timeline="Encelliga")
+    earth += Period("Unicellular organisms", -3_480_000_000, 0, timeline="Unicellular")
+    earth += Period("Eukaryotes", -1_650_000_000, 0)
+    earth += Period("Photosynthesis", -3_400_000_000, 0)
+    earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis")
+    return earth
 
-    universum2 = retrieve("universum.yaml")
-    assert universum == universum2
-    assert universum.render() == universum2.render()
+def test_universe():
+    universe = get_universe(legend=False)
+    universe.save("universe.yaml")
+    universe.render("universe.svg")
+
+    universe2 = retrieve("universe.yaml")
+    assert universe == universe2
+    assert universe.render() == universe2.render()
 
 
-def test_jorden():
-    jorden = Timelines("Jorden")
-    jorden += Period("Jorden", -4_567_000_000, 0)
-    jorden += Event("LUCA?", -4_200_000_000, timeline="Encelliga")
-    jorden += Period("Encelliga organismer", -3_480_000_000, 0, timeline="Encelliga")
-    jorden += Period("Eukaryoter", -1_650_000_000, 0)
-    jorden += Period("Fotosyntes", -3_400_000_000, 0)
-    jorden += Period("Landväxter", -470_000_000, 0, timeline="Fotosyntes")
-    jorden.save("jorden.yaml")
-    jorden.render("jorden.svg")
+def test_earth():
+    earth = get_earth()
+    earth.save("earth.yaml")
+    earth.render("earth.svg")
 
-    both = Column("Universum och Jorden")
-    both += get_universum()
-    both += jorden
-    both.save("universum_jorden.yaml")
-    both.render("universum_jorden.svg")
+def test_universe_earth():
+    both = Column("Universe and Earth")
+    both += get_universe()
+    both += get_earth()
+    both.save("universe_earth.yaml")
+    both.render("universe_earth.svg")
 
 
 def test_pyramid():
     pyramid = Piechart("Pyramid", start=132, palette=["#4c78a8", "#9ecae9", "#f58518"])
-    pyramid += Slice("Skuggsida", 7)
-    pyramid += Slice("Solsida", 18)
-    pyramid += Slice("Himmel", 70)
+    pyramid += Slice("Shadow", 7)
+    pyramid += Slice("Sunny", 18)
+    pyramid += Slice("Sky", 70)
     pyramid.save("pyramid.yaml")
     pyramid.render("pyramid.svg")
 
@@ -96,77 +100,79 @@ def test_pyramid():
     assert pyramid.render() == pyramid2.render()
 
 
-def test_dagen():
-    dagen = Piechart({"text": "Dagen", "size": 30}, total=24, diameter=400)
-    dagen += Slice("Sova", 8, color="gray")
-    dagen += Slice("Frukost", 1, color="lightgreen")
-    dagen += Slice("Träna", 2, color="lightblue")
-    dagen += Slice("Läsa", 1, color="navy")
-    dagen += Slice("Lunch", 1, color="lightgreen")
-    dagen += Slice("Tupplur", 0.4, color="gray")
-    dagen += Slice("Skriva", 4.6, color="pink")
-    dagen += Slice("Middag", 1, color="lightgreen")
-    dagen += Slice("TV", 3, color="orange")
-    dagen += Slice("Läsa", 2, color="navy")
+def test_day():
+    day = Piechart({"text": "Day", "size": 30}, total=24, diameter=400)
+    day += Slice("Sleep", 8, color="gray")
+    day += Slice("Breakfast", 1, color="lightgreen")
+    day += Slice("Gym", 2, color="lightblue")
+    day += Slice("Read", 1, color="navy")
+    day += Slice("Lunch", 1, color="lightgreen")
+    day += Slice("Shuteye", 0.4, color="gray")
+    day += Slice("Write", 4.6, color="pink")
+    day += Slice("Dinner", 1, color="lightgreen")
+    day += Slice("TV", 3, color="orange")
+    day += Slice("Read", 2, color="navy")
 
-    dagen.save("dagen.yaml")
-    dagen.render("dagen.svg")
+    day.save("day.yaml")
+    day.render("day.svg")
 
-    dagen2 = retrieve("dagen.yaml")
-    assert dagen == dagen2
-    assert dagen.render() == dagen2.render()
+    day2 = retrieve("day.yaml")
+    assert day == day2
+    assert day.render() == day2.render()
 
 
-def test_cpajer():
-    pajer = Column("Pajer column")
+def test_cpies():
+    pajer = Column("Pies in column")
 
-    pajer += (paj := Piechart("Jordgubbspaj", diameter=100))
-    paj += Slice("Mjöl", 7, color="white")
-    paj += Slice("Ägg", 2, color="yellow")
-    paj += Slice("Smör", 3, color="gold")
-    paj += Slice("Jordgubbar", 3, color="orangered")
+    pajer += (paj := Piechart("Strawberry pie", diameter=100))
+    paj += Slice("Flour", 7, color="white")
+    paj += Slice("Eggs", 2, color="yellow")
+    paj += Slice("Butter", 3, color="gold")
+    paj += Slice("Strawberries", 3, color="orangered")
 
-    pajer += (paj := Piechart("Rabarberpaj"))
-    paj += Slice("Mjöl", 7, color="white")
-    paj += Slice("Ägg", 2, color="yellow")
-    paj += Slice("Smör", 3, color="gold")
-    paj += Slice("Rabarber", 3, color="green")
+    pajer += (paj := Piechart("Rhubarb pie"))
+    paj += Slice("Flour", 7, color="white")
+    paj += Slice("Eggs", 2, color="yellow")
+    paj += Slice("Butter", 3, color="gold")
+    paj += Slice("Rhubarb", 3, color="green")
 
-    pajer.save("cpajer.yaml")
-    pajer.render("cpajer.svg")
+    pajer.save("cpies.yaml")
+    pajer.render("cpies.svg")
 
-    pajer2 = retrieve("cpajer.yaml")
+    pajer2 = retrieve("cpies.yaml")
     assert pajer == pajer2
     assert pajer.render() == pajer2.render()
 
 
-def test_rpajer():
-    pajer = Row("Pajer row")
+def test_rpies():
+    pajer = Row("Pies in row")
 
-    pajer += (paj := Piechart("Jordgubbspaj", diameter=300))
-    paj += Slice("Mjöl", 7)
-    paj += Slice("Ägg", 2)
-    paj += Slice("Smör", 3)
-    paj += Slice("Jordgubbar", 3)
+    pajer += (paj := Piechart("Strawberry pie", diameter=300))
+    paj += Slice("Flour", 7)
+    paj += Slice("Eggs", 2)
+    paj += Slice("Butter", 3)
+    paj += Slice("Strawberries", 3)
 
-    pajer += (paj := Piechart("Rabarberpaj"))
-    paj += Slice("Mjöl", 7, color="white")
-    paj += Slice("Ägg", 2, color="yellow")
-    paj += Slice("Smör", 3, color="gold")
-    paj += Slice("Rabarber", 3, color="green")
+    pajer += (paj := Piechart("Rhubarb pie"))
+    paj += Slice("Flour", 7, color="white")
+    paj += Slice("Eggs", 2, color="yellow")
+    paj += Slice("Butter", 3, color="gold")
+    paj += Slice("Rhubarb", 3, color="green")
 
-    pajer.save("rpajer.yaml")
-    pajer.render("rpajer.svg")
+    pajer.save("rpies.yaml")
+    pajer.render("rpies.svg")
 
-    pajer2 = retrieve("rpajer.yaml")
+    pajer2 = retrieve("rpies.yaml")
     assert pajer == pajer2
     assert pajer.render() == pajer2.render()
 
 
 if __name__ == "__main__":
-    test_universum()
-    test_jorden()
+    import os
+    os.chdir("../docs")
+    test_universe()
+    test_earth()
     test_pyramid()
-    test_dagen()
-    test_cpajer()
-    test_rpajer()
+    test_day()
+    test_cpies()
+    test_rpies()

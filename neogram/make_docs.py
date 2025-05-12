@@ -8,6 +8,13 @@ import schema
 
 TERMS = {"array": "sequence", "object": "mapping", "number": "float"}
 
+TESTS = {
+    "timelines": ["universe", "earth", "universe_earth"],
+    "piechart": ["pyramid", "day", "cpies", "rpies"],
+    "column": ["universe_earth", "cpies"],
+    "row": ["rpies"],
+}
+
 
 def term(v):
     return TERMS.get(v, v)
@@ -51,6 +58,13 @@ def make_docs():
         result.append(f"# {diagram}\n")
         href = f"{diagram}.md"
         result.extend(output_schema(subschema, href=href))
+        result.append("\n## Examples\n\n")
+        for test in TESTS[diagram]:
+            result.append(f"### {test}\n\n")
+            result.append(f"![{test} SVG]({test}.svg)\n\n")
+            with open(f"../docs/{test}.yaml") as infile:
+                code = infile.read()
+            result.append(f"```yaml\n{code}```\n")
         with open(f"../docs/{href}", "w") as outfile:
             outfile.write("".join(result) + "\n")
 
