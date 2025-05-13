@@ -32,7 +32,7 @@ Diagrams stacked in a column.
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.13
+neogram: 0.7.15
 column:
   title: Universe and Earth
   entries:
@@ -68,13 +68,14 @@ column:
             value: -12000000000
             error: 600000000
           marker: none
+          placement: right
       - event:
           label: Circle
           timeline: markers
           color: cyan
           instant: -10000000000
           marker: circle
-          placement: left
+          placement: center
       - event:
           label: Ellipse
           timeline: markers
@@ -157,6 +158,7 @@ column:
           color: green
           begin: -470000000
           end: 0
+          placement: left
       legend: false
 ```
 ### cpies
@@ -164,7 +166,7 @@ column:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.7.13
+neogram: 0.7.15
 column:
   title: Pies in column
   entries:

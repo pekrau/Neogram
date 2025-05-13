@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 14)
+VERSION = (0, 7, 15)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -26,6 +26,9 @@ LEFT = "left"
 CENTER = "center"
 RIGHT = "right"
 HORIZONTAL_ALIGN = [LEFT, CENTER, RIGHT]
+
+# Add: above, below, left-above, left-below, right-above, right-below.
+PLACEMENT = [LEFT, CENTER, RIGHT]
 
 CIRCLE = "circle"
 ELLIPSE = "ellipse"

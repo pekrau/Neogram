@@ -24,6 +24,7 @@ def get_universe(legend=True):
         {"value": -12_000_000_000, "error": 600_000_000},
         timeline="markers",
         marker="none",
+        placement="right",
     )
     universe += Event(
         "Circle",
@@ -31,7 +32,7 @@ def get_universe(legend=True):
         timeline="markers",
         marker="circle",
         color="cyan",
-        placement="left",
+        placement="center",
     )
     universe += Event(
         "Ellipse",
@@ -95,7 +96,8 @@ def get_earth(legend=True):
         fuzzy="wedge",
     )
     earth += Period("Photosynthesis", -3_400_000_000, 0, color="springgreen")
-    earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis", color="green")
+    earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis", color="green",
+                    placement="left")
     return earth
 
 

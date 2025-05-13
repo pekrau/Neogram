@@ -78,14 +78,14 @@
       </g>
     </g>
     <g text-anchor="middle" stroke="none" fill="black">
-      <text x="377.235" y="38.800" text-anchor="middle">Earth</text>
-      <text x="282.526" y="60.800" text-anchor="middle" fill="black">Archean</text>
+      <text x="376.235" y="38.800" fill="black" text-anchor="middle">Earth</text>
+      <text x="281.526" y="60.800" fill="black" text-anchor="middle">Archean</text>
       <text x="194.034" y="82.800" text-anchor="start">LUCA?</text>
-      <text x="430.494" y="82.800" text-anchor="middle">Unicellular organisms</text>
-      <text x="520.157" y="104.800" text-anchor="middle">Eukaryotes</text>
-      <text x="358.470" y="126.800" text-anchor="middle" fill="black">Engineers</text>
-      <text x="434.414" y="148.800" text-anchor="middle" fill="black">Photosynthesis</text>
-      <text x="577.972" y="148.800" text-anchor="middle" fill="white">Plants</text>
+      <text x="429.494" y="82.800" fill="black" text-anchor="middle">Unicellular organisms</text>
+      <text x="519.157" y="104.800" fill="black" text-anchor="middle">Eukaryotes</text>
+      <text x="357.470" y="126.800" fill="black" text-anchor="middle">Engineers</text>
+      <text x="433.414" y="148.800" fill="black" text-anchor="middle">Photosynthesis</text>
+      <text x="551.944" y="148.800" fill="black" text-anchor="end">Plants</text>
     </g>
     <g stroke="none" fill="black">
       <text x="2" y="38.800">Earth</text>

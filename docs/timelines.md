@@ -92,7 +92,7 @@ Timelines having events and periods.
           - *default*: 'black'
         - **placement**: Placement of event label.
           - *one of*: 'left', 'center', 'right'
-        - **fuzzy**: Use error bar marker for fuzzy number.
+        - **fuzzy**: Error bar marker for fuzzy number.
           - *type*: boolean
           - *default*: true
     - Option 2
@@ -120,6 +120,8 @@ Timelines having events and periods.
           - *type*: string
           - *format*: color
           - *default*: 'white'
+        - **placement**: Placement of period label.
+          - *one of*: 'left', 'center', 'right'
         - **fuzzy**: Marker to use for fuzzy number.
           - *one of*: 'error', 'wedge', 'gradient', 'none'
           - *default*: 'error'
@@ -130,7 +132,7 @@ Timelines having events and periods.
 ![universe SVG](universe.svg)
 
 ```yaml
-neogram: 0.7.13
+neogram: 0.7.15
 timelines:
   title:
     text: Universe
@@ -163,13 +165,14 @@ timelines:
         value: -12000000000
         error: 600000000
       marker: none
+      placement: right
   - event:
       label: Circle
       timeline: markers
       color: cyan
       instant: -10000000000
       marker: circle
-      placement: left
+      placement: center
   - event:
       label: Ellipse
       timeline: markers
@@ -204,7 +207,7 @@ timelines:
 ![earth SVG](earth.svg)
 
 ```yaml
-neogram: 0.7.13
+neogram: 0.7.15
 timelines:
   title: Earth
   entries:
@@ -258,13 +261,14 @@ timelines:
       color: green
       begin: -470000000
       end: 0
+      placement: left
 ```
 ### universe_earth
 
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.13
+neogram: 0.7.15
 column:
   title: Universe and Earth
   entries:
@@ -300,13 +304,14 @@ column:
             value: -12000000000
             error: 600000000
           marker: none
+          placement: right
       - event:
           label: Circle
           timeline: markers
           color: cyan
           instant: -10000000000
           marker: circle
-          placement: left
+          placement: center
       - event:
           label: Ellipse
           timeline: markers
@@ -389,6 +394,7 @@ column:
           color: green
           begin: -470000000
           end: 0
+          placement: left
       legend: false
 ```
 

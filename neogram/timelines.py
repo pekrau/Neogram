@@ -118,10 +118,10 @@ class Timelines(Diagram):
                                         },
                                         "placement": {
                                             "title": "Placement of event label.",
-                                            "enum": constants.HORIZONTAL_ALIGN,
+                                            "enum": constants.PLACEMENT,
                                         },
                                         "fuzzy": {
-                                            "title": "Use error bar marker for fuzzy number.",
+                                            "title": "Error bar marker for fuzzy number.",
                                             "type": "boolean",
                                             "default": True,
                                         },
@@ -179,6 +179,10 @@ class Timelines(Diagram):
                                             "type": "string",
                                             "format": "color",
                                             "default": "white",
+                                        },
+                                        "placement": {
+                                            "title": "Placement of period label.",
+                                            "enum": constants.PLACEMENT,
                                         },
                                         "fuzzy": {
                                             "title": "Marker to use for fuzzy number.",
@@ -410,7 +414,7 @@ class Event(_Entry):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(instant, (int, float, dict))
         assert marker is None or marker in constants.MARKERS
-        assert placement is None or placement in constants.HORIZONTAL_ALIGN
+        assert placement is None or placement in constants.PLACEMENT
         assert fuzzy is None or isinstance(fuzzy, bool)
 
         self.instant = instant
@@ -511,26 +515,41 @@ class Event(_Entry):
     def render_label(self, timelines, dimension):
         if not self.label:
             return None
-        if isinstance(self.instant, dict):
-            x = dimension.get_pixel(self.instant["value"])
-        else:
+        if not isinstance(self.instant, dict):
             x = dimension.get_pixel(self.instant)
+
         match self.placement:
-            case None:
+
+            case constants.LEFT:
+                if isinstance(self.instant, dict):
+                    value = ["value"]
+                    try:
+                        value = self.instant["low"]
+                    except KeyError:
+                        value = self.instant["value"] - self.instant.get("error", 0)
+                        x = dimension.get_pixel(value)
+                x -= self.label_x_offset + constants.DEFAULT_PADDING
+                anchor = "end"
+
+            case constants.CENTER:
+                anchor = "middle"
+
+            case None | constants.RIGHT:
+                if isinstance(self.instant, dict):
+                    value = ["value"]
+                    try:
+                        value = self.instant["high"]
+                    except KeyError:
+                        value = self.instant["value"] + self.instant.get("error", 0)
+                        x = dimension.get_pixel(value)
+                x += self.label_x_offset + constants.DEFAULT_PADDING
                 if self.marker == constants.NONE:
                     anchor = "middle"
                 else:
-                    x += self.label_x_offset + constants.DEFAULT_PADDING
                     anchor = "start"
-            case constants.LEFT:
-                x -= self.label_x_offset + constants.DEFAULT_PADDING
-                anchor = "end"
-            case constants.CENTER:
-                anchor = "middle"
-            case constants.RIGHT:
-                x += self.label_x_offset + constants.DEFAULT_PADDING
                 anchor = "start"
-        elem = Element(
+
+        label = Element(
             "text",
             self.label,
             x=utils.N(x),
@@ -540,8 +559,8 @@ class Event(_Entry):
                 - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
             ),
         )
-        elem["text-anchor"] = anchor
-        return elem
+        label["text-anchor"] = anchor
+        return label
 
 
 class Period(_Entry):
@@ -549,20 +568,24 @@ class Period(_Entry):
 
     DEFAULT_FUZZY = constants.ERROR
 
-    def __init__(self, label, begin, end, timeline=None, color=None, fuzzy=None):
+    def __init__(self, label, begin, end, timeline=None, color=None, placement=None, fuzzy=None):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(begin, (int, float, dict))
         assert isinstance(end, (int, float, dict))
+        assert placement is None or placement in constants.PLACEMENT
         assert fuzzy is None or isinstance(fuzzy, str)
 
         self.begin = begin
         self.end = end
+        self.placement = placement
         self.fuzzy = fuzzy or self.DEFAULT_FUZZY
 
     def data_as_dict(self):
         result = super().data_as_dict()
         result["begin"] = self.begin
         result["end"] = self.end
+        if self.placement:
+            result["placement"] = self.placement
         if self.fuzzy != self.DEFAULT_FUZZY:
             result["fuzzy"] = self.fuzzy
         return result
@@ -793,26 +816,52 @@ class Period(_Entry):
             return None
         if isinstance(self.begin, dict):
             begin = self.begin["value"]
+            try:
+                low = self.begin["low"]
+            except KeyError:
+                low = begin - self.begin.get("error", 0)
         else:
             begin = self.begin
+            low = begin
         if isinstance(self.end, dict):
             end = self.end["value"]
+            try:
+                high = self.end["low"]
+            except KeyError:
+                high = end + self.end.get("error", 0)
         else:
             end = self.end
-        elem = Element(
+            high = end
+
+        color = "black"
+        match self.placement:
+
+            case constants.LEFT:
+                x = dimension.get_pixel(low) - constants.DEFAULT_PADDING
+                anchor = "end"
+
+            case None | constants.CENTER:
+                x = dimension.get_pixel((begin + end) / 2)
+                anchor = "middle"
+                if self.color:
+                    color = Color(self.color).best_contrast
+
+            case constants.RIGHT:
+                x = dimension.get_pixel(high) + constants.DEFAULT_PADDING
+                anchor = "start"
+
+        label = Element(
             "text",
             self.label,
-            x=utils.N(dimension.get_pixel((begin + end) / 2) + 1),
+            x=utils.N(x),
             y=utils.N(
                 timelines[self.timeline]
                 + (constants.DEFAULT_SIZE + self.DEFAULT_FONT_SIZE) / 2
-                - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
-            ),
+                - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND),
+            fill=color,
         )
-        elem["text-anchor"] = "middle"
-        if self.color:
-            elem["fill"] = Color(self.color).best_contrast
-        return elem
+        label["text-anchor"] = anchor
+        return label
 
 
 register(Timelines)

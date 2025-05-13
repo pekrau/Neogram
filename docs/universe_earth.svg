@@ -62,10 +62,10 @@
         </g>
         <g text-anchor="middle" stroke="none" fill="black">
           <text x="14.729" y="38.800" text-anchor="start">Big Bang</text>
-          <text x="440.286" y="38.800" text-anchor="middle" fill="white">Milky Way galaxy</text>
-          <text x="503.136" y="60.800" text-anchor="middle" fill="black">Earth</text>
-          <text x="85.714" y="82.800" text-anchor="middle">Here</text>
-          <text x="160.429" y="82.800" text-anchor="end">Circle</text>
+          <text x="439.286" y="38.800" fill="white" text-anchor="middle">Milky Way galaxy</text>
+          <text x="502.136" y="60.800" fill="black" text-anchor="middle">Earth</text>
+          <text x="113.429" y="82.800" text-anchor="start">Here</text>
+          <text x="171.429" y="82.800" text-anchor="middle">Circle</text>
           <text x="251.543" y="82.800" text-anchor="end">Ellipse</text>
           <text x="428.571" y="82.800" text-anchor="middle">Pyramid</text>
           <text x="525.286" y="82.800" text-anchor="start">Triangle</text>
@@ -151,14 +151,14 @@
           </g>
         </g>
         <g text-anchor="middle" stroke="none" fill="black">
-          <text x="326.980" y="38.800" text-anchor="middle">Earth</text>
-          <text x="211.000" y="60.800" text-anchor="middle" fill="black">Archean</text>
+          <text x="325.980" y="38.800" fill="black" text-anchor="middle">Earth</text>
+          <text x="210.000" y="60.800" fill="black" text-anchor="middle">Archean</text>
           <text x="101.600" y="82.800" text-anchor="start">LUCA?</text>
-          <text x="392.200" y="82.800" text-anchor="middle">Unicellular organisms</text>
-          <text x="502.000" y="104.800" text-anchor="middle">Eukaryotes</text>
-          <text x="304" y="126.800" text-anchor="middle" fill="black">Engineers</text>
-          <text x="397.000" y="148.800" text-anchor="middle" fill="black">Photosynthesis</text>
-          <text x="572.800" y="148.800" text-anchor="middle" fill="white">Plants</text>
+          <text x="391.200" y="82.800" fill="black" text-anchor="middle">Unicellular organisms</text>
+          <text x="501.000" y="104.800" fill="black" text-anchor="middle">Eukaryotes</text>
+          <text x="303" y="126.800" fill="black" text-anchor="middle">Engineers</text>
+          <text x="396.000" y="148.800" fill="black" text-anchor="middle">Photosynthesis</text>
+          <text x="541.600" y="148.800" fill="black" text-anchor="end">Plants</text>
         </g>
       </g>
     </g>

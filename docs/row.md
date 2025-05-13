@@ -31,7 +31,7 @@ Diagrams arranged in a row.
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.7.13
+neogram: 0.7.15
 row:
   title: Pies in row
   entries:

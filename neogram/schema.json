@@ -226,7 +226,7 @@
                         ]
                       },
                       "fuzzy": {
-                        "title": "Use error bar marker for fuzzy number.",
+                        "title": "Error bar marker for fuzzy number.",
                         "type": "boolean",
                         "default": true
                       }
@@ -288,6 +288,14 @@
                         "type": "string",
                         "format": "color",
                         "default": "white"
+                      },
+                      "placement": {
+                        "title": "Placement of period label.",
+                        "enum": [
+                          "left",
+                          "center",
+                          "right"
+                        ]
                       },
                       "fuzzy": {
                         "title": "Marker to use for fuzzy number.",

@@ -59,10 +59,10 @@
     </g>
     <g text-anchor="middle" stroke="none" fill="black">
       <text x="79.941" y="38.800" text-anchor="start">Big Bang</text>
-      <text x="458.023" y="38.800" text-anchor="middle" fill="white">Milky Way galaxy</text>
-      <text x="513.937" y="60.800" text-anchor="middle" fill="black">Earth</text>
-      <text x="142.474" y="82.800" text-anchor="middle">Here</text>
-      <text x="207.729" y="82.800" text-anchor="end">Circle</text>
+      <text x="457.023" y="38.800" fill="white" text-anchor="middle">Milky Way galaxy</text>
+      <text x="512.937" y="60.800" fill="black" text-anchor="middle">Earth</text>
+      <text x="167.351" y="82.800" text-anchor="start">Here</text>
+      <text x="218.729" y="82.800" text-anchor="middle">Circle</text>
       <text x="289.383" y="82.800" text-anchor="end">Ellipse</text>
       <text x="447.491" y="82.800" text-anchor="middle">Pyramid</text>
       <text x="534.746" y="82.800" text-anchor="start">Triangle</text>
