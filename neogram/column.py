@@ -7,8 +7,9 @@ from diagram import *
 
 class Column(Diagram):
 
-    DEFAULT_FONT_SIZE = 18
+    DEFAULT_TITLE_FONT_SIZE = 22
     DEFAULT_ALIGN = constants.CENTER
+    DEFAULT_PADDING = 10
 
     SCHEMA = {
         "title": __doc__,
@@ -72,6 +73,11 @@ class Column(Diagram):
         self.width = max([e.width for e in self.entries])
 
         super().build()
+        self.height += self.DEFAULT_PADDING
+
+        height = self.height
+        self.height += sum([e.height for e in self.entries])
+        self.height += (len(self.entries) - 1) * self.DEFAULT_PADDING
 
         for entry in self.entries:
             match self.align:
@@ -81,10 +87,8 @@ class Column(Diagram):
                     x = (self.width - entry.width) / 2
                 case constants.RIGHT:
                     x = self.width - entry.width
-            self.svg += Element(
-                "g", entry.svg, transform=f"translate({x}, {self.height})"
-            )
-            self.height += entry.height
+            self.svg += Element("g", entry.svg, transform=f"translate({x}, {height})")
+            height += entry.height + self.DEFAULT_PADDING
 
 
 register(Column)

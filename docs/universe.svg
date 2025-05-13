@@ -1,56 +1,76 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="601" height="110.600" viewBox="0 0 601 110.600" transform="translate(0.5, 0.5)">
+<svg xmlns="http://www.w3.org/2000/svg" width="601" height="123.400" viewBox="0 0 601 123.400" transform="translate(0.5, 0.5)">
   <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
-    <text x="300.0" y="18" stroke="none" font-size="18" font-weight="bold" text-anchor="middle" fill="purple">Universe</text>
+    <text x="300" y="18" stroke="none" fill="blue" font-size="18" text-anchor="middle" font-weight="bold">Universe</text>
     <g>
-      <path d="M 0 23.600 V 89.600 M 85.714 23.600 V 89.600 M 171.429 23.600 V 89.600 M 257.143 23.600 V 89.600 M 342.857 23.600 V 89.600 M 428.571 23.600 V 89.600 M 514.286 23.600 V 89.600 M 600 23.600 V 89.600 M 0 23.600 H 600 M 0 89.600 H 600" />
+      <path d="M 66.220 23.600 V 89.600 M 142.474 23.600 V 89.600 M 218.729 23.600 V 89.600 M 294.983 23.600 V 89.600 M 371.237 23.600 V 89.600 M 447.491 23.600 V 89.600 M 523.746 23.600 V 89.600 M 600 23.600 V 89.600 M 66.220 23.600 H 600 M 66.220 89.600 H 600" stroke="gray" />
       <g text-anchor="middle" stroke="none" fill="black">
-        <text x="0" y="107.600" text-anchor="start">-14</text>
-        <text x="85.714" y="107.600">-12</text>
-        <text x="171.429" y="107.600">-10</text>
-        <text x="257.143" y="107.600">-8</text>
-        <text x="342.857" y="107.600">-6</text>
-        <text x="428.571" y="107.600">-4</text>
-        <text x="514.286" y="107.600">-2</text>
-        <text x="600" y="107.600" text-anchor="end">0</text>
+        <text x="66.220" y="103.600" text-anchor="start">14</text>
+        <text x="142.474" y="103.600">12</text>
+        <text x="218.729" y="103.600">10</text>
+        <text x="294.983" y="103.600">8</text>
+        <text x="371.237" y="103.600">6</text>
+        <text x="447.491" y="103.600">4</text>
+        <text x="523.746" y="103.600">2</text>
+        <text x="600" y="103.600" text-anchor="end">0</text>
+        <text x="333.110" y="120.39999999999999">Billion years ago</text>
       </g>
     </g>
     <g>
-      <ellipse cx="9.129" cy="34.600" rx="3.6" ry="9.0" stroke="none" fill="red" />
+      <ellipse cx="74.341" cy="34.600" rx="3.6" ry="9.0" stroke="none" fill="red" />
       <g>
-        <rect x="257.143" y="25.600" width="342.857" height="18" fill="navy" />
+        <rect x="314.0464285714286" y="25.600" width="285.954" height="18" stroke="none" fill="navy" />
+        <path d="M 314.046 25.600 H 600 m 0 18 H 314.046" stroke="black" />
+        <defs>
+          <linearGradient id="id1">
+            <stop offset="0" stop-color="navy" stop-opacity="0" />
+            <stop offset="1" stop-color="navy" stop-opacity="1" />
+          </linearGradient>
+          <linearGradient id="id2">
+            <stop offset="0" stop-color="black" stop-opacity="0" />
+            <stop offset="1" stop-color="black" stop-opacity="1" />
+          </linearGradient>
+        </defs>
+        <rect x="275.9192857142857" y="25.600" width="38.127" height="18" stroke="none" fill="url(#id1)" />
+        <path d="M 275.919 25.600 H 314.046 m 0 18 H 275.919" stroke="url(#id2)" />
+        <line x1="600" y1="25.600" x2="600" y2="43.600" stroke="black" />
       </g>
       <g>
-        <rect x="404.271" y="47.600" width="195.729" height="18" fill="lightgreen" />
+        <rect x="425.873" y="47.600" width="174.127" height="18" fill="lightgreen" />
       </g>
       <g>
         <g stroke="black">
-          <path d="M 60 74.100 v 9 m 0 -4.500 H 85.714" />
-          <path d="M 111.429 74.100 v 9 m 0 -4.500 H 85.714" />
+          <path d="M 119.598 74.100 v 9 m 0 -4.500 H 142.474" />
+          <path d="M 165.351 74.100 v 9 m 0 -4.500 H 142.474" />
         </g>
         <g stroke="none" fill="black" />
       </g>
-      <circle cx="171.429" cy="78.600" r="9.0" stroke="none" fill="cyan" />
-      <ellipse cx="257.143" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="blue" />
+      <circle cx="218.729" cy="78.600" r="9.0" stroke="none" fill="cyan" />
+      <ellipse cx="294.983" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="blue" />
       <g>
         <g stroke="black">
-          <path d="M 321.429 74.100 v 9 m 0 -4.500 H 342.857" />
-          <path d="M 385.714 74.100 v 9 m 0 -4.500 H 342.857" />
+          <path d="M 352.174 74.100 v 9 m 0 -4.500 H 371.237" />
+          <path d="M 409.364 74.100 v 9 m 0 -4.500 H 371.237" />
         </g>
-        <rect x="333.857" y="69.600" width="18" height="18" stroke="none" fill="orange" />
+        <rect x="362.237" y="69.600" width="18" height="18" stroke="none" fill="orange" />
       </g>
-      <path d="M 428.571 69.600 L 419.571 87.600 h 18 Z" stroke="none" fill="gold" />
-      <path d="M 514.286 87.600 L 505.286 69.600 h 18 Z" stroke="none" fill="purple" />
+      <path d="M 447.491 69.600 L 438.491 87.600 h 18 Z" stroke="none" fill="gold" />
+      <path d="M 523.746 87.600 L 514.746 69.600 h 18 Z" stroke="none" fill="purple" />
     </g>
     <g text-anchor="middle" stroke="none" fill="black">
-      <text x="14.729" y="38.800" text-anchor="start">Big Bang</text>
-      <text x="429.571" y="38.800" text-anchor="middle" fill="white">Milky Way galaxy</text>
-      <text x="503.136" y="60.800" text-anchor="middle" fill="black">Earth</text>
-      <text x="85.714" y="82.800" text-anchor="middle">Here</text>
-      <text x="160.429" y="82.800" text-anchor="end">Circle</text>
-      <text x="251.543" y="82.800" text-anchor="end">Ellipse</text>
-      <text x="428.571" y="82.800" text-anchor="middle">Pyramid</text>
-      <text x="525.286" y="82.800" text-anchor="start">Triangle</text>
+      <text x="79.941" y="38.800" text-anchor="start">Big Bang</text>
+      <text x="458.023" y="38.800" text-anchor="middle" fill="white">Milky Way galaxy</text>
+      <text x="513.937" y="60.800" text-anchor="middle" fill="black">Earth</text>
+      <text x="142.474" y="82.800" text-anchor="middle">Here</text>
+      <text x="207.729" y="82.800" text-anchor="end">Circle</text>
+      <text x="289.383" y="82.800" text-anchor="end">Ellipse</text>
+      <text x="447.491" y="82.800" text-anchor="middle">Pyramid</text>
+      <text x="534.746" y="82.800" text-anchor="start">Triangle</text>
+    </g>
+    <g stroke="none" fill="black">
+      <text x="2" y="38.800">Universe</text>
+      <text x="2" y="60.800">Earth</text>
+      <text x="2" y="82.800">markers</text>
     </g>
   </g>
 </svg>

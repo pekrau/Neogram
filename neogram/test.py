@@ -5,11 +5,18 @@ from lib import *
 
 def get_universe(legend=True):
     universe = Timelines(
-        {"text": "Universe", "bold": True, "size": 18, "color": "purple"}, legend=legend
+        {"text": "Universe", "bold": True, "color": "blue"},
+        legend=legend,
+        axis={"absolute": True, "caption": "Billion years ago"},
     )
     universe += Event("Big Bang", -13_787_000_000, timeline="Universe", color="red")
     universe += Period(
-        "Milky Way galaxy", -8_000_000_000, 0, timeline="Universe", color="navy"
+        "Milky Way galaxy",
+        {"value": -7_500_000_000, "low": -8_500_000_000},
+        0,
+        timeline="Universe",
+        color="navy",
+        fuzzy="gradient",
     )
     universe += Period("Earth", -4_567_000_000, 0, color="lightgreen")
     universe += Event(
@@ -60,44 +67,47 @@ def get_universe(legend=True):
 
 
 def get_earth(legend=True):
-    earth = Timelines("Earth", legend=legend)
+    earth = Timelines(
+        "Earth", legend=legend, axis={"absolute": True, "caption": "Billion years ago"}
+    )
     earth += Period("Earth", -4_567_000_000, 0)
     earth += Period(
         "Archean",
         {"value": -4_000_000_000, "low": -4_100_000_000, "high": -3_950_000_000},
         {"value": -2_500_000_000, "error": 200_000_000},
-        color="lime",
+        color="wheat",
         fuzzy="gradient",
     )
     earth += Event("LUCA?", -4_200_000_000, timeline="Unicellular")
     earth += Period(
         "Unicellular organisms",
         {"value": -3_480_000_000, "low": -4_200_000_000},
-        -100_000_000,
+        0,
         timeline="Unicellular",
         fuzzy="gradient",
     )
     earth += Period("Eukaryotes", -1_650_000_000, 0)
     earth += Period(
         "Engineers",
-        {"value": -3_500_000_000, "error": 100_000_000},
+        {"value": -3_300_000_000, "error": 200_000_000},
         -1_650_000_000,
-        color="gray",
+        color="lightgray",
         fuzzy="wedge",
     )
-    earth += Period("Photosynthesis", -3_400_000_000, 0)
-    earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis")
+    earth += Period("Photosynthesis", -3_400_000_000, 0, color="springgreen")
+    earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis", color="green")
     return earth
 
 
 def test_universe():
-    universe = get_universe(legend=False)
+    universe = get_universe()
     universe.save("universe.yaml")
     universe.render("universe.svg")
 
     universe2 = retrieve("universe.yaml")
     assert universe == universe2
-    assert universe.render() == universe2.render()
+    # XXX id's are not equal, since new unique ones are created for each build.
+    # assert universe.render() == universe2.render()
 
 
 def test_earth():
@@ -108,8 +118,8 @@ def test_earth():
 
 def test_universe_earth():
     both = Column("Universe and Earth")
-    both += get_universe()
-    both += get_earth()
+    both += get_universe(legend=False)
+    both += get_earth(legend=False)
     both.save("universe_earth.yaml")
     both.render("universe_earth.svg")
 

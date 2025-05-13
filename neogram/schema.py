@@ -35,7 +35,8 @@ SCHEMA = {
                         "size": {
                             "title": "Size of font.",
                             "type": "number",
-                            "exclusiveMinimum": 0,  # Default depends on the diagram.
+                            "exclusiveMinimum": 0,
+                            # Default depends on the diagram.
                         },
                         "bold": {
                             "title": "Bold font.",

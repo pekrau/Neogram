@@ -33,6 +33,7 @@ class Diagram(Entity):
     "Abstract diagram."
 
     DEFAULT_FONT_SIZE = 14
+    DEFAULT_TITLE_FONT_SIZE = 18
 
     def __init__(self, title=None, entries=None):
         assert title is None or isinstance(title, (str, dict))
@@ -69,7 +70,7 @@ class Diagram(Entity):
 
                 if (
                     size := self.title.get("size")
-                ) is not None and size != self.DEFAULT_FONT_SIZE:
+                ) is not None and size != self.DEFAULT_TITLE_FONT_SIZE:
                     title["size"] = size
                 if self.title.get("bold"):
                     title["bold"] = True
@@ -129,29 +130,33 @@ class Diagram(Entity):
         self.svg["font-size"] = self.DEFAULT_FONT_SIZE
         if self.title:
             if isinstance(self.title, dict):
-                self.height += self.title.get("size") or self.DEFAULT_FONT_SIZE
+                title = self.title["text"] or ""
+                size = self.title.get("size") or self.DEFAULT_TITLE_FONT_SIZE
+                color = self.title.get("color") or "black"
+                anchor = self.title.get("anchor") or "middle"
             else:
-                self.height += self.DEFAULT_FONT_SIZE
-            self.svg += (title := Element("text", x=self.width / 2, y=self.height))
-
-            title["stroke"] = "none"
+                title = self.title
+                size = self.DEFAULT_TITLE_FONT_SIZE
+                color = "black"
+                anchor = "middle"
+            self.height += size
+            self.svg += (
+                title := Element(
+                    "text",
+                    title,
+                    x=utils.N(self.width / 2),
+                    y=utils.N(self.height),
+                    stroke="none",
+                    fill=color,
+                )
+            )
+            title["font-size"] = size
+            title["text-anchor"] = anchor
             if isinstance(self.title, dict):
-                title += self.title["text"]
-                if size := self.title.get("size"):
-                    title["font-size"] = size
-                else:
-                    size = self.DEFAULT_FONT_SIZE
                 if self.title.get("bold"):
                     title["font-weight"] = "bold"
                 if self.title.get("italic"):
                     title["font-style"] = "italic"
-                title["text-anchor"] = self.title.get("anchor") or "middle"
-                title["fill"] = self.title.get("color") or "black"
-            else:
-                title += self.title
-                size = self.DEFAULT_FONT_SIZE
-                title["fill"] = "black"
-                title["text-anchor"] = "middle"
             self.height += constants.DEFAULT_PADDING + constants.FONT_DESCEND * size
 
     def save(self, target=None):

@@ -36,6 +36,38 @@ class Timelines(Diagram):
                 "type": "boolean",
                 "default": True,
             },
+            "axis": {
+                "title": "Time axis specification.",
+                "oneOf": [
+                    {
+                        "title": "Display default time axis.",
+                        "type": "boolean",
+                        "default": True,
+                    },
+                    {
+                        "title": "Time axis details.",
+                        "type": "object",
+                        "additionalProperties": False,
+                        "properties": {
+                            "absolute": {
+                                "title": "Display absolute values for ticks.",
+                                "type": "boolean",
+                                "default": False,
+                            },
+                            "color": {
+                                "title": "Color of tick lines.",
+                                "type": "string",
+                                "format": "color",
+                                "default": "gray",
+                            },
+                            "caption": {
+                                "title": "Time axis description.",
+                                "type": "string",
+                            },
+                        },
+                    },
+                ],
+            },
             "entries": {
                 "title": "Entries in the timelines.",
                 "type": "array",
@@ -169,13 +201,16 @@ class Timelines(Diagram):
         entries=None,
         width=None,
         legend=None,
+        axis=None,
     ):
         super().__init__(title=title, entries=entries)
         assert width is None or (isinstance(width, (int, float)) and width > 0)
         assert legend is None or isinstance(legend, bool)
+        assert axis is None or isinstance(axis, (bool, dict))
 
         self.width = width or self.DEFAULT_WIDTH
         self.legend = True if legend is None else legend
+        self.axis = True if axis is None else axis
 
     def check_entry(self, entry):
         return isinstance(entry, (Event, Period))
@@ -211,38 +246,63 @@ class Timelines(Diagram):
                 timelines[entry.timeline] = self.height
                 self.height += constants.DEFAULT_SIZE + constants.DEFAULT_PADDING
 
-        # Add time axis lines and their labels.
-        self.svg += (axis := Element("g"))
-        ticks = dimension.get_ticks()
-        path = Path(ticks[0].pixel, area_height).V(self.height)
-        for tick in ticks[1:]:
-            path.M(tick.pixel, area_height).V(self.height)
-        path.M(ticks[0].pixel, area_height).H(self.width)
-        path.M(ticks[0].pixel, self.height).H(self.width)
-        axis += Element("path", d=path)
-        axis += (labels := Element("g"))
-        labels["text-anchor"] = "middle"
-        labels["stroke"] = "none"
-        labels["fill"] = "black"
-        self.height += constants.DEFAULT_SIZE
-        for tick in ticks:
-            labels += (
-                label := Element(
-                    "text", tick.label, x=utils.N(tick.pixel), y=utils.N(self.height)
-                )
-            )
-            if tick is ticks[0]:
-                label["text-anchor"] = "start"
-            elif tick is ticks[-1]:
-                label["text-anchor"] = "end"
-        self.height += self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
+        # Time axis lines and their labels.
+        if self.axis:
+            if isinstance(self.axis, dict):
+                absolute = bool(self.axis.get("absolute"))
+                color = self.axis.get("color") or "gray"
+                caption = self.axis.get("caption")
+            else:
+                absolute = False
+                color = "gray"
+                caption = None
+            self.svg += (axis := Element("g"))
+            ticks = dimension.get_ticks(absolute=absolute)
+            path = Path(ticks[0].pixel, area_height).V(self.height)
+            for tick in ticks[1:]:
+                path.M(tick.pixel, area_height).V(self.height)
+            path.M(ticks[0].pixel, area_height).H(self.width)
+            path.M(ticks[0].pixel, self.height).H(self.width)
+            axis += Element("path", d=path, stroke=color)
 
-        # Add graphics for entries.
+            axis += (labels := Element("g"))
+            labels["text-anchor"] = "middle"
+            labels["stroke"] = "none"
+            labels["fill"] = "black"
+            self.height += self.DEFAULT_FONT_SIZE
+            for tick in ticks:
+                labels += (
+                    label := Element(
+                        "text",
+                        tick.label,
+                        x=utils.N(tick.pixel),
+                        y=utils.N(self.height),
+                    )
+                )
+                if tick is ticks[0]:
+                    label["text-anchor"] = "start"
+                elif tick is ticks[-1]:
+                    label["text-anchor"] = "end"
+            self.height += self.DEFAULT_FONT_SIZE * (1 + constants.FONT_DESCEND)
+
+            # Time axis caption, if any.
+            if caption:
+                labels += Element(
+                    "text",
+                    caption,
+                    x=utils.N(
+                        dimension.get_pixel((dimension.first + dimension.last) / 2)
+                    ),
+                    y=self.height,
+                )
+            self.height += self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
+
+        # Graphics for entries.
         self.svg += (graphics := Element("g"))
         for entry in self.entries:
             graphics += entry.render_graphic(timelines, dimension)
 
-        # Add entry labels after graphics, to render on top.
+        # Entry labels after graphics, to render on top.
         self.svg += (labels := Element("g"))
         labels["text-anchor"] = "middle"
         labels["stroke"] = "none"
@@ -251,7 +311,7 @@ class Timelines(Diagram):
             if label := entry.render_label(timelines, dimension):
                 labels += label
 
-        # Add legend labels.
+        # Legend labels.
         if self.legend:
             self.svg += (legends := Element("g"))
             legends["stroke"] = "none"
@@ -608,8 +668,6 @@ class Period(_Entry):
                         path.H(x3)
                     path.L(x4, y + constants.DEFAULT_SIZE / 2)
                     path.L(x3, y)
-                    if x2 < x3:
-                        path.H(x2)
                     path.Z()
                     result += Element("path", d=path, fill=self.color or "white")
 
@@ -669,7 +727,7 @@ class Period(_Entry):
                         )
 
                     else:
-                        # Add path line at beginning of rectangle.
+                        # Path line at beginning of rectangle.
                         result += Element(
                             "line",
                             x1=utils.N(x1),
@@ -716,7 +774,7 @@ class Period(_Entry):
                         )
 
                     else:
-                        # Add path line at end of rectangle.
+                        # Path line at end of rectangle.
                         result += Element(
                             "line",
                             x1=utils.N(x3),

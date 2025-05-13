@@ -2,9 +2,8 @@ neogram: 0.7.13
 timelines:
   title:
     text: Universe
-    size: 18
     bold: true
-    color: purple
+    color: blue
   entries:
   - event:
       label: Big Bang
@@ -15,8 +14,11 @@ timelines:
       label: Milky Way galaxy
       timeline: Universe
       color: navy
-      begin: -8000000000
+      begin:
+        value: -7500000000
+        low: -8500000000
       end: 0
+      fuzzy: gradient
   - period:
       label: Earth
       color: lightgreen
@@ -64,4 +66,3 @@ timelines:
       color: purple
       instant: -2000000000
       marker: triangle
-  legend: false

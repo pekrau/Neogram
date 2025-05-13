@@ -127,6 +127,38 @@
           "type": "boolean",
           "default": true
         },
+        "axis": {
+          "title": "Time axis specification.",
+          "oneOf": [
+            {
+              "title": "Display default time axis.",
+              "type": "boolean",
+              "default": true
+            },
+            {
+              "title": "Time axis details.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "absolute": {
+                  "title": "Display absolute values for ticks.",
+                  "type": "boolean",
+                  "default": false
+                },
+                "color": {
+                  "title": "Color of tick lines.",
+                  "type": "string",
+                  "format": "color",
+                  "default": "gray"
+                },
+                "caption": {
+                  "title": "Time axis description.",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
         "entries": {
           "title": "Entries in the timelines.",
           "type": "array",

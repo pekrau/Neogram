@@ -39,9 +39,8 @@ column:
   - timelines:
       title:
         text: Universe
-        size: 18
         bold: true
-        color: purple
+        color: blue
       entries:
       - event:
           label: Big Bang
@@ -52,8 +51,11 @@ column:
           label: Milky Way galaxy
           timeline: Universe
           color: navy
-          begin: -8000000000
+          begin:
+            value: -7500000000
+            low: -8500000000
           end: 0
+          fuzzy: gradient
       - period:
           label: Earth
           color: lightgreen
@@ -101,6 +103,7 @@ column:
           color: purple
           instant: -2000000000
           marker: triangle
+      legend: false
   - timelines:
       title: Earth
       entries:
@@ -110,7 +113,7 @@ column:
           end: 0
       - period:
           label: Archean
-          color: lime
+          color: wheat
           begin:
             value: -4000000000
             low: -4100000000
@@ -129,7 +132,7 @@ column:
           begin:
             value: -3480000000
             low: -4200000000
-          end: -100000000
+          end: 0
           fuzzy: gradient
       - period:
           label: Eukaryotes
@@ -137,21 +140,24 @@ column:
           end: 0
       - period:
           label: Engineers
-          color: gray
+          color: lightgray
           begin:
-            value: -3500000000
-            error: 100000000
+            value: -3300000000
+            error: 200000000
           end: -1650000000
           fuzzy: wedge
       - period:
           label: Photosynthesis
+          color: springgreen
           begin: -3400000000
           end: 0
       - period:
           label: Plants
           timeline: Photosynthesis
+          color: green
           begin: -470000000
           end: 0
+      legend: false
 ```
 ### cpies
 

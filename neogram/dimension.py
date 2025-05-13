@@ -60,7 +60,7 @@ class Dimension:
         else:
             self.offset = max(self.offset, value)
 
-    def get_ticks(self, number=8):
+    def get_ticks(self, number=8, absolute=False):
         "Return ticks for the current span (min and max)."
         span = self.max - self.min
         self.magnitude = math.log10(span / number)
@@ -102,7 +102,6 @@ class Dimension:
         self.last = best[-1]
         self.scale = (self.width - self.offset) / (self.last - self.first)
         step = 10**self.magnitude
-        absolute = False
         func = (lambda u: abs(u)) if absolute else (lambda u: u)
         result = [
             Tick(u, self.get_pixel(u), label=N(round(func(u) / step))) for u in best

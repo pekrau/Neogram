@@ -147,7 +147,7 @@ class Piechart(Diagram):
         )
         pie += Element("circle", r=utils.N(radius))
 
-        # Prepare and add slices.
+        # Prepare and create slices.
         if self.start is None:
             stop = self.DEFAULT_START
         else:
@@ -162,7 +162,7 @@ class Piechart(Diagram):
         for entry in self.entries:
             slices += entry.render_graphic(radius, palette)
 
-        # Add labels on top of slices.
+        # Labels on top of slices.
         pie += (labels := Element("g", stroke="none", fill="black"))
         labels["text-anchor"] = "middle"
         for entry in self.entries:

@@ -8,7 +8,7 @@ timelines:
       end: 0
   - period:
       label: Archean
-      color: lime
+      color: wheat
       begin:
         value: -4000000000
         low: -4100000000
@@ -27,7 +27,7 @@ timelines:
       begin:
         value: -3480000000
         low: -4200000000
-      end: -100000000
+      end: 0
       fuzzy: gradient
   - period:
       label: Eukaryotes
@@ -35,18 +35,20 @@ timelines:
       end: 0
   - period:
       label: Engineers
-      color: gray
+      color: lightgray
       begin:
-        value: -3500000000
-        error: 100000000
+        value: -3300000000
+        error: 200000000
       end: -1650000000
       fuzzy: wedge
   - period:
       label: Photosynthesis
+      color: springgreen
       begin: -3400000000
       end: 0
   - period:
       label: Plants
       timeline: Photosynthesis
+      color: green
       begin: -470000000
       end: 0

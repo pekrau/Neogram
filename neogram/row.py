@@ -7,8 +7,9 @@ from diagram import *
 
 class Row(Diagram):
 
-    DEFAULT_FONT_SIZE = 18
+    DEFAULT_TITLE_FONT_SIZE = 22
     DEFAULT_ALIGN = constants.MIDDLE
+    DEFAULT_PADDING = 10
 
     SCHEMA = {
         "title": __doc__,
@@ -70,8 +71,10 @@ class Row(Diagram):
             entry.build()
 
         self.width = sum([e.width for e in self.entries])
+        self.width += (len(self.entries) - 1) * self.DEFAULT_PADDING
 
         super().build()
+        self.height += self.DEFAULT_PADDING
 
         x = 0
         max_height = max([e.height for e in self.entries])
@@ -85,7 +88,7 @@ class Row(Diagram):
                 case constants.TOP:
                     y = self.height
             self.svg += Element("g", entry.svg, transform=f"translate({x}, {y})")
-            x += entry.width + constants.DEFAULT_PADDING
+            x += entry.width + self.DEFAULT_PADDING
 
         self.height += max_height
 
