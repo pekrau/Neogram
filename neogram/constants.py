@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 12)
+VERSION = (0, 7, 13)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -46,9 +46,9 @@ DEFAULT_PALETTE = [
 ]
 
 ERROR = "error"
+WEDGE = "wedge"
 GRADIENT = "gradient"
-TAPER = "taper"
-FUZZY_MARKERS = [ERROR, GRADIENT, TAPER, NONE]
+FUZZY_MARKERS = [ERROR, WEDGE, GRADIENT, NONE]
 
 # Measured using Tkinter and 100pt characters in FreeSans, FreeSerif and FreeMono.
 CHARACTER_WIDTHS = {

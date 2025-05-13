@@ -67,13 +67,31 @@ def get_earth(legend=True):
         {"value": -4_000_000_000, "low": -4_100_000_000, "high": -3_950_000_000},
         {"value": -2_500_000_000, "error": 200_000_000},
         color="lime",
-        fuzzy_marker="gradient",
+        fuzzy="gradient",
     )
     earth += Event("LUCA?", -4_200_000_000, timeline="Unicellular")
-    earth += Period("Unicellular organisms",
-                    {"value": -3_480_000_000, "low": -4_200_000_000},
-                     0, timeline="Unicellular", fuzzy_marker="gradient")
+    earth += Period(
+        "Unicellular organisms",
+        {"value": -3_480_000_000, "low": -4_200_000_000},
+        -100_000_000,
+        timeline="Unicellular",
+        fuzzy="gradient",
+    )
     earth += Period("Eukaryotes", -1_650_000_000, 0)
+    earth += Period(
+        "Engineers",
+        {"value": -3_500_000_000, "error": 100_000_000},
+        -1_800_000_000,
+        color="gray",
+        fuzzy="wedge",
+    )
+    earth += Period(
+        "Engineers2",
+        {"value": -3_500_000_000, "error": 100_000_000},
+        -1_800_000_000,
+        color="lightgray",
+        fuzzy="error",
+    )
     earth += Period("Photosynthesis", -3_400_000_000, 0)
     earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis")
     return earth

@@ -88,7 +88,7 @@ class Timelines(Diagram):
                                             "title": "Placement of event label.",
                                             "enum": constants.HORIZONTAL_ALIGN,
                                         },
-                                        "fuzzy_marker": {
+                                        "fuzzy": {
                                             "title": "Use error bar marker for fuzzy number.",
                                             "type": "boolean",
                                             "default": True,
@@ -148,7 +148,7 @@ class Timelines(Diagram):
                                             "format": "color",
                                             "default": "white",
                                         },
-                                        "fuzzy_marker": {
+                                        "fuzzy": {
                                             "title": "Marker to use for fuzzy number.",
                                             "enum": constants.FUZZY_MARKERS,
                                             "default": constants.ERROR,
@@ -345,18 +345,18 @@ class Event(_Entry):
         marker=None,
         color=None,
         placement=None,
-        fuzzy_marker=None,
+        fuzzy=None,
     ):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(instant, (int, float, dict))
         assert marker is None or marker in constants.MARKERS
         assert placement is None or placement in constants.HORIZONTAL_ALIGN
-        assert fuzzy_marker is None or isinstance(fuzzy_marker, bool)
+        assert fuzzy is None or isinstance(fuzzy, bool)
 
         self.instant = instant
         self.marker = marker or self.DEFAULT_MARKER
         self.placement = placement
-        self.fuzzy_marker = fuzzy_marker is None or fuzzy_marker
+        self.fuzzy = fuzzy is None or fuzzy
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -365,8 +365,8 @@ class Event(_Entry):
             result["marker"] = self.marker
         if self.placement:
             result["placement"] = self.placement
-        if not self.fuzzy_marker:
-            result["fuzzy_marker"] = False
+        if not self.fuzzy:
+            result["fuzzy"] = False
         return result
 
     @property
@@ -442,7 +442,7 @@ class Event(_Entry):
         elem["fill"] = self.color or "black"
 
         # Get error bars if fuzzy value; place below marker itself.
-        if self.fuzzy_marker and isinstance(self.instant, dict):
+        if self.fuzzy and isinstance(self.instant, dict):
             elem = Element(
                 "g", self.render_graphic_error(self.instant, timelines, dimension), elem
             )
@@ -487,24 +487,24 @@ class Event(_Entry):
 class Period(_Entry):
     "Period of time in a timeline."
 
-    DEFAULT_FUZZY_MARKER = constants.ERROR
+    DEFAULT_FUZZY = constants.ERROR
 
-    def __init__(self, label, begin, end, timeline=None, color=None, fuzzy_marker=None):
+    def __init__(self, label, begin, end, timeline=None, color=None, fuzzy=None):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(begin, (int, float, dict))
         assert isinstance(end, (int, float, dict))
-        assert fuzzy_marker is None or isinstance(fuzzy_marker, str)
+        assert fuzzy is None or isinstance(fuzzy, str)
 
         self.begin = begin
         self.end = end
-        self.fuzzy_marker = fuzzy_marker or self.DEFAULT_FUZZY_MARKER
+        self.fuzzy = fuzzy or self.DEFAULT_FUZZY
 
     def data_as_dict(self):
         result = super().data_as_dict()
         result["begin"] = self.begin
         result["end"] = self.end
-        if self.fuzzy_marker != self.DEFAULT_FUZZY_MARKER:
-            result["fuzzy_marker"] = self.fuzzy_marker
+        if self.fuzzy != self.DEFAULT_FUZZY:
+            result["fuzzy"] = self.fuzzy
         return result
 
     @property
@@ -522,7 +522,7 @@ class Period(_Entry):
     def render_graphic(self, timelines, dimension):
         # Simple case: do not show fuzzy values, or no fuzzy values.
         if (
-            self.fuzzy_marker == constants.NONE
+            self.fuzzy == constants.NONE
             and not isinstance(self.begin, dict)
             and not isinstance(self.end, dict)
         ):
@@ -539,17 +539,46 @@ class Period(_Entry):
         else:
             if isinstance(self.begin, dict):
                 begin = self.begin["value"]
+                try:  # If 'low' is given, then ignore 'error'.
+                    low1 = self.begin["low"]
+                except KeyError:
+                    low1 = begin - self.begin.get("error", 0)
+                try:  # If 'high' is given, then ignore 'error'.
+                    high1 = self.begin["high"]
+                except KeyError:
+                    high1 = begin + self.begin.get("error", 0)
+                x1 = dimension.get_pixel(low1)
+                x2 = dimension.get_pixel(high1)
             else:
                 begin = self.begin
+                x1 = x2 = dimension.get_pixel(begin)
+
             if isinstance(self.end, dict):
                 end = self.end["value"]
+                try:  # If 'low' is given, then ignore 'error'.
+                    low2 = self.end["low"]
+                except KeyError:
+                    low2 = end - self.end.get("error", 0)
+                try:  # If 'high' is given, then ignore 'error'.
+                    high2 = self.end["high"]
+                except KeyError:
+                    high2 = end + self.end.get("error", 0)
+                x3 = dimension.get_pixel(low2)
+                x4 = dimension.get_pixel(high2)
             else:
                 end = self.end
+                x3 = x4 = dimension.get_pixel(end)
+
+            # The fuzzy regions overlap; adjust.
+            if x2 > x3:
+                x2 = (x2 + x3) / 2
+                x3 = x2
 
             # Graphics depends on how to show fuzzy values.
             result = Element("g")
             y = timelines[self.timeline]
-            match self.fuzzy_marker:
+
+            match self.fuzzy:
 
                 case constants.ERROR:
                     result += Element(
@@ -569,35 +598,22 @@ class Period(_Entry):
                             self.end, timelines, dimension
                         )
 
+                case constants.WEDGE:
+                    path = (
+                        Path(x2, y)
+                        .L(x1, y + constants.DEFAULT_SIZE / 2)
+                        .L(x2, y + constants.DEFAULT_SIZE)
+                    )
+                    if x2 < x3:
+                        path.H(x3)
+                    path.L(x4, y + constants.DEFAULT_SIZE / 2)
+                    path.L(x3, y)
+                    if x2 < x3:
+                        path.H(x2)
+                    path.Z()
+                    result += Element("path", d=path, fill=self.color or "white")
+
                 case constants.GRADIENT:
-                    if isinstance(self.begin, dict):
-                        try:  # If 'low' is given, then ignore 'error'.
-                            x1 = dimension.get_pixel(self.begin["low"])
-                        except KeyError:
-                            x1 = dimension.get_pixel(begin - self.begin.get("error", 0))
-                        try:  # If 'high' is given, then ignore 'error'.
-                            x2 = dimension.get_pixel(self.begin["high"])
-                        except KeyError:
-                            x2 = dimension.get_pixel(begin + self.begin.get("error", 0))
-                    else:
-                        x1 = x2 = dimension.get_pixel(begin)
-                    if isinstance(self.end, dict):
-                        try:  # If 'low' is given, then ignore 'error'.
-                            x3 = dimension.get_pixel(self.end["low"])
-                        except KeyError:
-                            x3 = dimension.get_pixel(end - self.end.get("error", 0))
-                        try:  # If 'high' is given, then ignore 'error'.
-                            x4 = dimension.get_pixel(self.end["high"])
-                        except KeyError:
-                            x4 = dimension.get_pixel(end + self.end.get("error", 0))
-                    else:
-                        x3 = x4 = dimension.get_pixel(end)
-
-                    # The fuzzy regions overlap.
-                    if x2 >= x3:
-                        x2 = (x2 + x3) / 2
-                        x3 = x2
-
                     # The constant-color part of the period.
                     if x2 < x3:
                         # The filled rectangle.
@@ -608,15 +624,12 @@ class Period(_Entry):
                             width=utils.N(x3 - x2),
                             height=constants.DEFAULT_SIZE,
                             stroke="none",
-                            fill=self.color or "white"
+                            fill=self.color or "white",
                         )
                         # The lines at the long edges of the filled rectangle.
                         result += Element(
                             "path",
-                            d=Path(x2, y)
-                            .H(x3)
-                            .m(0, constants.DEFAULT_SIZE)
-                            .H(x2),
+                            d=Path(x2, y).H(x3).m(0, constants.DEFAULT_SIZE).H(x2),
                             stroke="black",
                         )
                     # The left gradient of the period.
@@ -640,7 +653,7 @@ class Period(_Entry):
                             stroke="none",
                             fill=f"url(#{id1})",
                         )
-                        # The lines at the long edges of the filled rectangle.
+                        # Lines at the long edges of the gradient-filled rectangle.
                         id2 = next(utils.unique_id)
                         defs += (stroke1 := Element("linearGradient", id=id2))
                         stroke1 += (stop := Element("stop", offset=0))
@@ -651,11 +664,19 @@ class Period(_Entry):
                         stop["stop-opacity"] = 1
                         result += Element(
                             "path",
-                            d=Path(x1, y)
-                            .H(x2)
-                            .m(0, constants.DEFAULT_SIZE)
-                            .H(x1),
+                            d=Path(x1, y).H(x2).m(0, constants.DEFAULT_SIZE).H(x1),
                             stroke=f"url(#{id2})",
+                        )
+
+                    else:
+                        # Add path line at beginning of rectangle.
+                        result += Element(
+                            "line",
+                            x1=utils.N(x1),
+                            y1=utils.N(y),
+                            x2=utils.N(x1),
+                            y2=utils.N(y + constants.DEFAULT_SIZE),
+                            stroke="black",
                         )
 
                     # The right gradient of the period.
@@ -672,14 +693,14 @@ class Period(_Entry):
                         # The gradient-filled rectangle.
                         result += Element(
                             "rect",
-                            x=x3,
+                            x=utils.N(x3),
                             y=utils.N(y),
                             width=utils.N(x4 - x3),
                             height=constants.DEFAULT_SIZE,
                             stroke="none",
                             fill=f"url(#{id3})",
                         )
-                        # The lines at the long edges of the filled rectangle.
+                        # Lines at the long edges of the gradient-filled rectangle.
                         id4 = next(utils.unique_id)
                         defs += (stroke2 := Element("linearGradient", id=id4))
                         stroke2 += (stop := Element("stop", offset=0))
@@ -690,11 +711,19 @@ class Period(_Entry):
                         stop["stop-opacity"] = 0
                         result += Element(
                             "path",
-                            d=Path(x3, y)
-                            .H(x4)
-                            .m(0, constants.DEFAULT_SIZE)
-                            .H(x3),
+                            d=Path(x3, y).H(x4).m(0, constants.DEFAULT_SIZE).H(x3),
                             stroke=f"url(#{id4})",
+                        )
+
+                    else:
+                        # Add path line at end of rectangle.
+                        result += Element(
+                            "line",
+                            x1=utils.N(x3),
+                            y1=utils.N(y),
+                            x2=utils.N(x3),
+                            y2=utils.N(y + constants.DEFAULT_SIZE),
+                            stroke="black",
                         )
 
                 case constants.TAPER:
