@@ -77,7 +77,7 @@ Timelines having events and periods.
           - *default*: 'black'
         - **placement**: Placement of event label.
           - *one of*: 'left', 'center', 'right'
-        - **fuzzy_marker**: Use error bar marker for fuzzy number.
+        - **fuzzy**: Use error bar marker for fuzzy number.
           - *type*: boolean
           - *default*: true
     - Option 2
@@ -105,8 +105,8 @@ Timelines having events and periods.
           - *type*: string
           - *format*: color
           - *default*: 'white'
-        - **fuzzy_marker**: Marker to use for fuzzy number.
-          - *one of*: 'error', 'gradient', 'taper', 'none'
+        - **fuzzy**: Marker to use for fuzzy number.
+          - *one of*: 'error', 'wedge', 'gradient', 'none'
           - *default*: 'error'
 ## Examples
 
@@ -115,7 +115,7 @@ Timelines having events and periods.
 ![universe SVG](universe.svg)
 
 ```yaml
-neogram: 0.7.12
+neogram: 0.7.13
 timelines:
   title:
     text: Universe
@@ -188,7 +188,7 @@ timelines:
 ![earth SVG](earth.svg)
 
 ```yaml
-neogram: 0.7.12
+neogram: 0.7.13
 timelines:
   title: Earth
   entries:
@@ -206,7 +206,7 @@ timelines:
       end:
         value: -2500000000
         error: 200000000
-      fuzzy_marker: gradient
+      fuzzy: gradient
   - event:
       label: LUCA?
       timeline: Unicellular
@@ -217,12 +217,20 @@ timelines:
       begin:
         value: -3480000000
         low: -4200000000
-      end: 0
-      fuzzy_marker: gradient
+      end: -100000000
+      fuzzy: gradient
   - period:
       label: Eukaryotes
       begin: -1650000000
       end: 0
+  - period:
+      label: Engineers
+      color: gray
+      begin:
+        value: -3500000000
+        error: 100000000
+      end: -1650000000
+      fuzzy: wedge
   - period:
       label: Photosynthesis
       begin: -3400000000
@@ -238,7 +246,7 @@ timelines:
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.12
+neogram: 0.7.13
 column:
   title: Universe and Earth
   entries:
@@ -324,7 +332,7 @@ column:
           end:
             value: -2500000000
             error: 200000000
-          fuzzy_marker: gradient
+          fuzzy: gradient
       - event:
           label: LUCA?
           timeline: Unicellular
@@ -335,12 +343,20 @@ column:
           begin:
             value: -3480000000
             low: -4200000000
-          end: 0
-          fuzzy_marker: gradient
+          end: -100000000
+          fuzzy: gradient
       - period:
           label: Eukaryotes
           begin: -1650000000
           end: 0
+      - period:
+          label: Engineers
+          color: gray
+          begin:
+            value: -3500000000
+            error: 100000000
+          end: -1650000000
+          fuzzy: wedge
       - period:
           label: Photosynthesis
           begin: -3400000000

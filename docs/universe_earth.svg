@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="601" height="327" viewBox="0 0 601 327" transform="translate(0.5, 0.5)">
+<svg xmlns="http://www.w3.org/2000/svg" width="601" height="305" viewBox="0 0 601 305" transform="translate(0.5, 0.5)">
   <g stroke="black" fill="white" font-family="sans-serif" font-size="18">
     <text x="300.0" y="18" stroke="none" fill="black" text-anchor="middle">Universe and Earth</text>
     <g transform="translate(0.0, 23.6)">
@@ -66,14 +66,14 @@
       <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
         <text x="300.0" y="14" stroke="none" fill="black" text-anchor="middle">Earth</text>
         <g>
-          <path d="M 110.040 18.800 V 172.800 M 208.032 18.800 V 172.800 M 306.024 18.800 V 172.800 M 404.016 18.800 V 172.800 M 502.008 18.800 V 172.800 M 600 18.800 V 172.800 M 110.040 18.800 H 600 M 110.040 172.800 H 600" />
+          <path d="M 110.040 18.800 V 150.800 M 208.032 18.800 V 150.800 M 306.024 18.800 V 150.800 M 404.016 18.800 V 150.800 M 502.008 18.800 V 150.800 M 600 18.800 V 150.800 M 110.040 18.800 H 600 M 110.040 150.800 H 600" />
           <g text-anchor="middle" stroke="none" fill="black">
-            <text x="110.040" y="190.800" text-anchor="start">-5</text>
-            <text x="208.032" y="190.800">-4</text>
-            <text x="306.024" y="190.800">-3</text>
-            <text x="404.016" y="190.800">-2</text>
-            <text x="502.008" y="190.800">-1</text>
-            <text x="600" y="190.800" text-anchor="end">0</text>
+            <text x="110.040" y="168.800" text-anchor="start">-5</text>
+            <text x="208.032" y="168.800">-4</text>
+            <text x="306.024" y="168.800">-3</text>
+            <text x="404.016" y="168.800">-2</text>
+            <text x="502.008" y="168.800">-1</text>
+            <text x="600" y="168.800" text-anchor="end">0</text>
           </g>
         </g>
         <g>
@@ -130,20 +130,13 @@
             <rect x="438.313" y="86.800" width="161.687" height="18" fill="white" />
           </g>
           <g>
-            <path d="M 266.827 108.800 L 247.229 117.800 266.827 126.800 H 423.614 L 423.614 117.800 423.614 108.800 H 266.827 Z" fill="gray" />
+            <path d="M 266.827 108.800 L 247.229 117.800 266.827 126.800 H 438.313 L 438.313 117.800 438.313 108.800 H 266.827 Z" fill="gray" />
           </g>
           <g>
-            <rect x="257.028" y="130.800" width="166.586" height="18" fill="lightgray" />
-            <g stroke="black">
-              <path d="M 247.229 135.300 v 9 m 0 -4.500 H 257.028" />
-              <path d="M 266.827 135.300 v 9 m 0 -4.500 H 257.028" />
-            </g>
+            <rect x="266.827" y="130.800" width="333.173" height="18" fill="white" />
           </g>
           <g>
-            <rect x="266.827" y="152.800" width="333.173" height="18" fill="white" />
-          </g>
-          <g>
-            <rect x="553.944" y="152.800" width="46.056" height="18" fill="white" />
+            <rect x="553.944" y="130.800" width="46.056" height="18" fill="white" />
           </g>
         </g>
         <g text-anchor="middle" stroke="none" fill="black">
@@ -152,10 +145,9 @@
           <text x="194.034" y="78" text-anchor="start">LUCA?</text>
           <text x="425.594" y="78" text-anchor="middle">Unicellular organisms</text>
           <text x="520.157" y="100" text-anchor="middle">Eukaryotes</text>
-          <text x="341.321" y="122" text-anchor="middle" fill="white">Engineers</text>
-          <text x="341.321" y="144" text-anchor="middle" fill="black">Engineers2</text>
-          <text x="434.414" y="166" text-anchor="middle">Photosynthesis</text>
-          <text x="577.972" y="166" text-anchor="middle">Plants</text>
+          <text x="348.671" y="122" text-anchor="middle" fill="white">Engineers</text>
+          <text x="434.414" y="144" text-anchor="middle">Photosynthesis</text>
+          <text x="577.972" y="144" text-anchor="middle">Plants</text>
         </g>
         <g stroke="none" fill="black">
           <text x="2" y="34">Earth</text>
@@ -163,8 +155,7 @@
           <text x="2" y="78">Unicellular</text>
           <text x="2" y="100">Eukaryotes</text>
           <text x="2" y="122">Engineers</text>
-          <text x="2" y="144">Engineers2</text>
-          <text x="2" y="166">Photosynthesis</text>
+          <text x="2" y="144">Photosynthesis</text>
         </g>
       </g>
     </g>

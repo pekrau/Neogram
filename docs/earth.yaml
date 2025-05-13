@@ -39,15 +39,8 @@ timelines:
       begin:
         value: -3500000000
         error: 100000000
-      end: -1800000000
+      end: -1650000000
       fuzzy: wedge
-  - period:
-      label: Engineers2
-      color: lightgray
-      begin:
-        value: -3500000000
-        error: 100000000
-      end: -1800000000
   - period:
       label: Photosynthesis
       begin: -3400000000

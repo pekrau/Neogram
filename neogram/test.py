@@ -81,16 +81,9 @@ def get_earth(legend=True):
     earth += Period(
         "Engineers",
         {"value": -3_500_000_000, "error": 100_000_000},
-        -1_800_000_000,
+        -1_650_000_000,
         color="gray",
         fuzzy="wedge",
-    )
-    earth += Period(
-        "Engineers2",
-        {"value": -3_500_000_000, "error": 100_000_000},
-        -1_800_000_000,
-        color="lightgray",
-        fuzzy="error",
     )
     earth += Period("Photosynthesis", -3_400_000_000, 0)
     earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis")
