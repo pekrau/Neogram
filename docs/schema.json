@@ -1,0 +1,560 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pekrau/Neogram/blob/main/docs/schema.json",
+  "title": "Generate SVG for diagrams of different kinds from YAML specification.",
+  "$defs": {
+    "text": {
+      "$anchor": "text",
+      "oneOf": [
+        {
+          "title": "Text with default styling.",
+          "type": "string"
+        },
+        {
+          "title": "Text with styling options.",
+          "type": "object",
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "title": "The text to display.",
+              "type": "string"
+            },
+            "size": {
+              "title": "Size of font.",
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "bold": {
+              "title": "Bold font.",
+              "type": "boolean",
+              "default": false
+            },
+            "italic": {
+              "title": "Italics font.",
+              "type": "boolean",
+              "default": false
+            },
+            "color": {
+              "title": "Color of text.",
+              "type": "string",
+              "format": "color",
+              "default": "black"
+            },
+            "placement": {
+              "title": "Placement of text (ignored in some cases).",
+              "enum": [
+                "left",
+                "center",
+                "right"
+              ],
+              "default": "center"
+            },
+            "anchor": {
+              "title": "Anchor location in text (ignored in some cases).",
+              "enum": [
+                "start",
+                "middle",
+                "end"
+              ],
+              "default": "middle"
+            }
+          }
+        }
+      ]
+    },
+    "fuzzy_number": {
+      "$anchor": "fuzzy_number",
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "additionalProperties": false,
+      "minProperties": 2,
+      "properties": {
+        "value": {
+          "title": "Central value for the fuzzy number.",
+          "type": "number"
+        },
+        "low": {
+          "title": "Low value for the fuzzy number.",
+          "type": "number"
+        },
+        "high": {
+          "title": "High value for the fuzzy number.",
+          "type": "number"
+        },
+        "error": {
+          "title": "Symmetrical error around the central value.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    }
+  },
+  "type": "object",
+  "required": [
+    "neogram"
+  ],
+  "additionalProperties": false,
+  "minProperties": 2,
+  "maxProperties": 2,
+  "properties": {
+    "neogram": {
+      "title": "Identitification marker for the YAML file.",
+      "oneOf": [
+        {
+          "title": "Version of the Neogram sofware.",
+          "type": "string"
+        },
+        {
+          "title": "Unspecified version; no check performed.",
+          "const": null
+        }
+      ]
+    },
+    "timelines": {
+      "title": "Timelines having events and periods.",
+      "$anchor": "timelines",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title of the timelines diagram.",
+          "$ref": "#text"
+        },
+        "width": {
+          "title": "Width of chart, in pixels.",
+          "type": "number",
+          "default": 600,
+          "exclusiveMinimum": 0
+        },
+        "legend": {
+          "title": "Display legend.",
+          "type": "boolean",
+          "default": true
+        },
+        "axis": {
+          "title": "Time axis specification.",
+          "oneOf": [
+            {
+              "title": "Display default time axis.",
+              "type": "boolean",
+              "default": true
+            },
+            {
+              "title": "Time axis details.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "absolute": {
+                  "title": "Display absolute values for ticks.",
+                  "type": "boolean",
+                  "default": false
+                },
+                "color": {
+                  "title": "Color of tick lines.",
+                  "type": "string",
+                  "format": "color",
+                  "default": "gray"
+                },
+                "caption": {
+                  "title": "Time axis description.",
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        },
+        "entries": {
+          "title": "Entries in the timelines.",
+          "type": "array",
+          "items": {
+            "anyOf": [
+              {
+                "title": "Event specification in the timeline.",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "event": {
+                    "title": "Event at an instant in time.",
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "instant"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "label": {
+                        "title": "Description of the event.",
+                        "type": "string"
+                      },
+                      "instant": {
+                        "title": "Time of the event.",
+                        "oneOf": [
+                          {
+                            "title": "Exact time.",
+                            "type": "number"
+                          },
+                          {
+                            "title": "Imprecise time.",
+                            "$ref": "#fuzzy_number"
+                          }
+                        ]
+                      },
+                      "timeline": {
+                        "title": "Timeline to place the event in.",
+                        "type": "string"
+                      },
+                      "marker": {
+                        "title": "Marker for event.",
+                        "enum": [
+                          "circle",
+                          "ellipse",
+                          "square",
+                          "pyramid",
+                          "triangle",
+                          "none"
+                        ],
+                        "default": "ellipse"
+                      },
+                      "color": {
+                        "title": "Color of the event marker.",
+                        "type": "string",
+                        "format": "color",
+                        "default": "black"
+                      },
+                      "placement": {
+                        "title": "Placement of event label.",
+                        "enum": [
+                          "left",
+                          "center",
+                          "right"
+                        ],
+                        "default": "right"
+                      },
+                      "fuzzy": {
+                        "title": "Error bar marker for fuzzy number.",
+                        "type": "boolean",
+                        "default": true
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "title": "Period specification in the timeline.",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "period": {
+                    "title": "Period of time.",
+                    "type": "object",
+                    "required": [
+                      "label",
+                      "begin",
+                      "end"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "label": {
+                        "title": "Description of the period.",
+                        "type": "string"
+                      },
+                      "begin": {
+                        "title": "Starting time of the period.",
+                        "oneOf": [
+                          {
+                            "title": "Exact time.",
+                            "type": "number"
+                          },
+                          {
+                            "title": "Imprecise time.",
+                            "$ref": "#fuzzy_number"
+                          }
+                        ]
+                      },
+                      "end": {
+                        "title": "Ending time of the period.",
+                        "oneOf": [
+                          {
+                            "title": "Exact time.",
+                            "type": "number"
+                          },
+                          {
+                            "title": "Imprecise time.",
+                            "$ref": "#fuzzy_number"
+                          }
+                        ]
+                      },
+                      "timeline": {
+                        "title": "Timeline to place the period in.",
+                        "type": "string"
+                      },
+                      "color": {
+                        "title": "Color of the period graphic.",
+                        "type": "string",
+                        "format": "color",
+                        "default": "white"
+                      },
+                      "placement": {
+                        "title": "Placement of period label.",
+                        "enum": [
+                          "left",
+                          "center",
+                          "right"
+                        ],
+                        "default": "center"
+                      },
+                      "fuzzy": {
+                        "title": "Marker to use for fuzzy number.",
+                        "enum": [
+                          "error",
+                          "wedge",
+                          "gradient",
+                          "none"
+                        ],
+                        "default": "error"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "piechart": {
+      "title": "Pie chart containing slices.",
+      "$anchor": "piechart",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title of the pie chart diagram.",
+          "$ref": "#text"
+        },
+        "diameter": {
+          "title": "Diameter of the pie chart, in pixels.",
+          "type": "number",
+          "default": 200,
+          "exclusiveMinimum": 0
+        },
+        "total": {
+          "title": "Total value to relate slice values to.",
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "start": {
+          "title": "Starting point for first slice; in degrees from top.",
+          "type": "number"
+        },
+        "palette": {
+          "title": "Palette for slice colors.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "title": "Color in palette.",
+            "type": "string",
+            "format": "color"
+          },
+          "default": [
+            "tomato",
+            "darkviolet",
+            "deeppink",
+            "deepskyblue",
+            "gold",
+            "yellowgreen"
+          ]
+        },
+        "entries": {
+          "title": "Entries (slices) in the pie chart.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "slice": {
+                "title": "Slice representing a value.",
+                "type": "object",
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "title": "Description of the value.",
+                    "type": "string"
+                  },
+                  "value": {
+                    "title": "The value shown by the slice.",
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "color": {
+                    "title": "Color of the slice. Use palette if not defined.",
+                    "type": "string",
+                    "format": "color"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "column": {
+      "title": "Diagrams stacked in a column.",
+      "$anchor": "column",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title of the column diagram.",
+          "$ref": "#text"
+        },
+        "align": {
+          "title": "Align diagrams horizontally within the column.",
+          "enum": [
+            "left",
+            "center",
+            "right"
+          ],
+          "default": "center"
+        },
+        "entries": {
+          "title": "Component diagrams in the column.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timelines": {
+                "$ref": "#timelines"
+              },
+              "piechart": {
+                "$ref": "#piechart"
+              },
+              "column": {
+                "$ref": "#column"
+              },
+              "row": {
+                "$ref": "#row"
+              },
+              "note": {
+                "$ref": "#note"
+              }
+            }
+          }
+        }
+      }
+    },
+    "row": {
+      "title": "Diagrams arranged in a row.",
+      "$anchor": "row",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title of the column diagram.",
+          "$ref": "#text"
+        },
+        "align": {
+          "title": "Align diagrams vertically within the row.",
+          "enum": [
+            "bottom",
+            "middle",
+            "top"
+          ],
+          "default": "middle"
+        },
+        "entries": {
+          "title": "Component diagrams in the row.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "timelines": {
+                "$ref": "#timelines"
+              },
+              "piechart": {
+                "$ref": "#piechart"
+              },
+              "column": {
+                "$ref": "#column"
+              },
+              "row": {
+                "$ref": "#row"
+              },
+              "note": {
+                "$ref": "#note"
+              }
+            }
+          }
+        }
+      }
+    },
+    "note": {
+      "title": "Textual note with header, body and footer text.",
+      "$anchor": "note",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "header": {
+          "title": "Header of the note.",
+          "$ref": "#text"
+        },
+        "body": {
+          "title": "Body of the note.",
+          "$ref": "#text"
+        },
+        "footer": {
+          "title": "Footer of the note.",
+          "$ref": "#text"
+        },
+        "width": {
+          "title": "Width of chart, in pixels.",
+          "type": "number",
+          "default": 200,
+          "exclusiveMinimum": 0
+        },
+        "frame": {
+          "title": "Thickness of the frame.",
+          "type": "number",
+          "minimum": 0,
+          "default": 5
+        },
+        "color": {
+          "title": "Color of the note frame and lines.",
+          "type": "string",
+          "format": "color",
+          "default": "gold"
+        },
+        "radius": {
+          "title": "Radius of the frame edge curvature.",
+          "type": "number",
+          "default": 10,
+          "minimum": 0
+        },
+        "line": {
+          "title": "Thickness of lines between sections.",
+          "type": "number",
+          "minimum": 0,
+          "default": 1
+        },
+        "background": {
+          "title": "Background color of the note.",
+          "type": "string",
+          "format": "color",
+          "default": "lightyellow"
+        }
+      }
+    }
+  }
+}
