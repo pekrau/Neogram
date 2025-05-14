@@ -50,7 +50,7 @@ Pie chart containing slices.
 ![pyramid SVG](pyramid.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 piechart:
   title: Pyramid
   entries:
@@ -74,7 +74,7 @@ piechart:
 ![day SVG](day.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 piechart:
   title:
     text: Day
@@ -128,7 +128,7 @@ piechart:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 column:
   title: Pies in column
   entries:
@@ -171,13 +171,19 @@ column:
           label: Rhubarb
           value: 3
           color: green
+  - note:
+      header: Comment
+      body: Strawberry pie is good.
+      footer:
+        text: Copyright 2025 Per Kraulis
+        italic: true
 ```
 ### rpies
 
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 row:
   title: Pies in row
   entries:

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="205" height="404.600" viewBox="0 0 205 404.600" transform="translate(0.5, 0.5)">
+<svg xmlns="http://www.w3.org/2000/svg" width="205" height="497" viewBox="0 0 205 497" transform="translate(0.5, 0.5)">
   <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
     <text x="102" y="22" stroke="none" fill="black" font-size="22" text-anchor="middle">Pies in column</text>
     <g transform="translate(50.0, 38.4)">
@@ -39,6 +39,22 @@
             <text x="-66.574" y="21.631" fill="black">Butter</text>
             <text x="-41.145" y="-56.631" fill="white">Rhubarb</text>
           </g>
+        </g>
+      </g>
+    </g>
+    <g transform="translate(2.0, 413.6)">
+      <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+        <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="75.900" />
+        <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20.500)">
+          <text x="0" y="0">Comment</text>
+        </g>
+        <line x1="0" y1="25.300" x2="200" y2="25.300" stroke="gold" stroke-width="1" />
+        <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 43.800)">
+          <text x="0" y="0">Strawberry pie is good.</text>
+        </g>
+        <line x1="0" y1="51.600" x2="200" y2="51.600" stroke="gold" stroke-width="1" />
+        <g stroke="none" fill="black" text-anchor="middle" font-style="italic" transform="translate(102.500, 70.100)">
+          <text x="0" y="0">Copyright 2025 Per Kraulis</text>
         </g>
       </g>
     </g>

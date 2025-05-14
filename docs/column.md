@@ -25,6 +25,8 @@ Diagrams stacked in a column.
         - *definition*: See [here](column.md)
     - **row**:
       - *definition*: See elsewhere.
+    - **note**:
+      - *definition*: See elsewhere.
 ## Examples
 
 ### universe_earth
@@ -32,7 +34,7 @@ Diagrams stacked in a column.
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 column:
   title: Universe and Earth
   entries:
@@ -68,7 +70,6 @@ column:
             value: -12000000000
             error: 600000000
           marker: none
-          placement: right
       - event:
           label: Circle
           timeline: markers
@@ -166,7 +167,7 @@ column:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 column:
   title: Pies in column
   entries:
@@ -209,5 +210,11 @@ column:
           label: Rhubarb
           value: 3
           color: green
+  - note:
+      header: Comment
+      body: Strawberry pie is good.
+      footer:
+        text: Copyright 2025 Per Kraulis
+        italic: true
 ```
 

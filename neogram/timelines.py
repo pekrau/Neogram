@@ -118,7 +118,8 @@ class Timelines(Diagram):
                                         },
                                         "placement": {
                                             "title": "Placement of event label.",
-                                            "enum": constants.PLACEMENT,
+                                            "enum": constants.PLACEMENTS,
+                                            "default": constants.RIGHT,
                                         },
                                         "fuzzy": {
                                             "title": "Error bar marker for fuzzy number.",
@@ -182,7 +183,8 @@ class Timelines(Diagram):
                                         },
                                         "placement": {
                                             "title": "Placement of period label.",
-                                            "enum": constants.PLACEMENT,
+                                            "enum": constants.PLACEMENTS,
+                                            "default": constants.CENTER,
                                         },
                                         "fuzzy": {
                                             "title": "Marker to use for fuzzy number.",
@@ -228,7 +230,9 @@ class Timelines(Diagram):
         return result
 
     def build(self):
-        "Set the 'svg' and 'height' attributes."
+        """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
+        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        """
         super().build()
 
         dimension = Dimension(width=self.width)
@@ -399,6 +403,7 @@ class _Entry(Entity):
 class Event(_Entry):
     "Event at a given instant in a timeline."
 
+    DEFAULT_PLACEMENT = constants.RIGHT
     DEFAULT_MARKER = constants.ELLIPSE
 
     def __init__(
@@ -414,12 +419,12 @@ class Event(_Entry):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(instant, (int, float, dict))
         assert marker is None or marker in constants.MARKERS
-        assert placement is None or placement in constants.PLACEMENT
+        assert placement is None or placement in constants.PLACEMENTS
         assert fuzzy is None or isinstance(fuzzy, bool)
 
         self.instant = instant
         self.marker = marker or self.DEFAULT_MARKER
-        self.placement = placement
+        self.placement = placement or self.DEFAULT_PLACEMENT
         self.fuzzy = fuzzy is None or fuzzy
 
     def data_as_dict(self):
@@ -427,7 +432,7 @@ class Event(_Entry):
         result["instant"] = self.instant
         if self.marker != self.DEFAULT_MARKER:
             result["marker"] = self.marker
-        if self.placement:
+        if self.placement != self.DEFAULT_PLACEMENT:
             result["placement"] = self.placement
         if not self.fuzzy:
             result["fuzzy"] = False
@@ -534,7 +539,7 @@ class Event(_Entry):
             case constants.CENTER:
                 anchor = "middle"
 
-            case None | constants.RIGHT:
+            case constants.RIGHT:
                 if isinstance(self.instant, dict):
                     value = ["value"]
                     try:
@@ -566,25 +571,28 @@ class Event(_Entry):
 class Period(_Entry):
     "Period of time in a timeline."
 
+    DEFAULT_PLACEMENT = constants.CENTER
     DEFAULT_FUZZY = constants.ERROR
 
-    def __init__(self, label, begin, end, timeline=None, color=None, placement=None, fuzzy=None):
+    def __init__(
+        self, label, begin, end, timeline=None, color=None, placement=None, fuzzy=None
+    ):
         super().__init__(label=label, timeline=timeline, color=color)
         assert isinstance(begin, (int, float, dict))
         assert isinstance(end, (int, float, dict))
-        assert placement is None or placement in constants.PLACEMENT
+        assert placement is None or placement in constants.PLACEMENTS
         assert fuzzy is None or isinstance(fuzzy, str)
 
         self.begin = begin
         self.end = end
-        self.placement = placement
+        self.placement = placement or self.DEFAULT_PLACEMENT
         self.fuzzy = fuzzy or self.DEFAULT_FUZZY
 
     def data_as_dict(self):
         result = super().data_as_dict()
         result["begin"] = self.begin
         result["end"] = self.end
-        if self.placement:
+        if self.placement != self.DEFAULT_PLACEMENT:
             result["placement"] = self.placement
         if self.fuzzy != self.DEFAULT_FUZZY:
             result["fuzzy"] = self.fuzzy
@@ -840,7 +848,7 @@ class Period(_Entry):
                 x = dimension.get_pixel(low) - constants.DEFAULT_PADDING
                 anchor = "end"
 
-            case None | constants.CENTER:
+            case constants.CENTER:
                 x = dimension.get_pixel((begin + end) / 2)
                 anchor = "middle"
                 if self.color:
@@ -857,7 +865,8 @@ class Period(_Entry):
             y=utils.N(
                 timelines[self.timeline]
                 + (constants.DEFAULT_SIZE + self.DEFAULT_FONT_SIZE) / 2
-                - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND),
+                - self.DEFAULT_FONT_SIZE * constants.FONT_DESCEND
+            ),
             fill=color,
         )
         label["text-anchor"] = anchor

@@ -30,7 +30,10 @@ Timelines having events and periods.
       - *type*: string
       - *format*: color
       - *default*: 'black'
-    - **anchor**: Anchor of text.
+    - **placement**: Placement of text (ignored in some cases).
+      - *one of*: 'left', 'center', 'right'
+      - *default*: 'center'
+    - **anchor**: Anchor location in text (ignored in some cases).
       - *one of*: 'start', 'middle', 'end'
       - *default*: 'middle'
 - **width**: Width of chart, in pixels.
@@ -92,6 +95,7 @@ Timelines having events and periods.
           - *default*: 'black'
         - **placement**: Placement of event label.
           - *one of*: 'left', 'center', 'right'
+          - *default*: 'right'
         - **fuzzy**: Error bar marker for fuzzy number.
           - *type*: boolean
           - *default*: true
@@ -122,6 +126,7 @@ Timelines having events and periods.
           - *default*: 'white'
         - **placement**: Placement of period label.
           - *one of*: 'left', 'center', 'right'
+          - *default*: 'center'
         - **fuzzy**: Marker to use for fuzzy number.
           - *one of*: 'error', 'wedge', 'gradient', 'none'
           - *default*: 'error'
@@ -132,7 +137,7 @@ Timelines having events and periods.
 ![universe SVG](universe.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 timelines:
   title:
     text: Universe
@@ -165,7 +170,6 @@ timelines:
         value: -12000000000
         error: 600000000
       marker: none
-      placement: right
   - event:
       label: Circle
       timeline: markers
@@ -207,7 +211,7 @@ timelines:
 ![earth SVG](earth.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 timelines:
   title: Earth
   entries:
@@ -268,7 +272,7 @@ timelines:
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.7.15
+neogram: 0.8.0
 column:
   title: Universe and Earth
   entries:
@@ -304,7 +308,6 @@ column:
             value: -12000000000
             error: 600000000
           marker: none
-          placement: right
       - event:
           label: Circle
           timeline: markers

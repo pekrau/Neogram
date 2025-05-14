@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 7, 15)
+VERSION = (0, 8, 0)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -17,18 +17,23 @@ DEFAULT_PADDING = 2
 DEFAULT_FONT_FAMILY = "sans-serif"
 FONT_DESCEND = 0.2  # Constant throughout.
 
+START = "start"
+MIDDLE = "middle"
+END = "end"
+ANCHORS = [START, MIDDLE, END]
+
 BOTTOM = "bottom"
 MIDDLE = "middle"
 TOP = "top"
-VERTICAL_ALIGN = [BOTTOM, MIDDLE, TOP]
+VERTICAL = [BOTTOM, MIDDLE, TOP]
 
 LEFT = "left"
 CENTER = "center"
 RIGHT = "right"
-HORIZONTAL_ALIGN = [LEFT, CENTER, RIGHT]
+HORIZONTAL = [LEFT, CENTER, RIGHT]
 
-# Add: above, below, left-above, left-below, right-above, right-below.
-PLACEMENT = [LEFT, CENTER, RIGHT]
+# XXX Add: above, below, left-above, left-below, right-above, right-below.
+PLACEMENTS = [LEFT, CENTER, RIGHT]
 
 CIRCLE = "circle"
 ELLIPSE = "ellipse"

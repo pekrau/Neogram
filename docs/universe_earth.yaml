@@ -1,4 +1,4 @@
-neogram: 0.7.15
+neogram: 0.8.0
 column:
   title: Universe and Earth
   entries:
@@ -34,7 +34,6 @@ column:
             value: -12000000000
             error: 600000000
           marker: none
-          placement: right
       - event:
           label: Circle
           timeline: markers

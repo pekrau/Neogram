@@ -126,7 +126,9 @@ class Piechart(Diagram):
         return result
 
     def build(self):
-        "Set the 'svg' and 'height' attributes."
+        """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
+        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        """
         # XXX add line width if and when implemented
         self.width = self.diameter + 2 * constants.DEFAULT_PADDING
 

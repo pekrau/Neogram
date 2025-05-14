@@ -1,0 +1,13 @@
+neogram: 0.8.0
+note:
+  header:
+    text: Declaration
+    placement: left
+  body:
+    text: 'This software was
+
+      written by me.'
+    placement: right
+  footer:
+    text: Copyright 2025 Per Kraulis
+    italic: true

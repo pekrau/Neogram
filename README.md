@@ -1,4 +1,4 @@
-# Neogram 0.7.15
+# Neogram 0.8.0
 
 Generate SVG for diagrams of different kinds from YAML specification.
 
@@ -17,4 +17,6 @@ where `{version}` is either `null` or the string representing the version of the
 - [column](docs/column.md): Diagrams stacked in a column.
 
 - [row](docs/row.md): Diagrams arranged in a row.
+
+- [note](docs/note.md): Textual note with header, body and footer text.
 

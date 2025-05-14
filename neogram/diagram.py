@@ -84,15 +84,14 @@ class Diagram(Entity):
                     title["anchor"] = anchor
             else:
                 result["title"] = self.title
-        result["entries"] = [e.as_dict() for e in self.entries]
+        if self.entries:
+            result["entries"] = [e.as_dict() for e in self.entries]
         return result
 
     def render(self, target=None, antialias=True, indent=2):
         """Render diagram and return SVG.
         If target is provided, write into file given by path or open file object.
         """
-        if not self.entries:
-            raise ValueError("no entries in diagram to render.")
         self.build()
         if antialias:
             extent = Vector2(self.width + 1, self.height + 1)
@@ -119,8 +118,8 @@ class Diagram(Entity):
             target.write(repr(document))
 
     def build(self):
-        """Create the SVG elements in the 'svg' attribute.
-        Requires that the 'width' attribute has been set. Sets the width' attributes.
+        """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
+        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
         To be extended in subclasses.
         """
         assert hasattr(self, "width")
@@ -167,7 +166,7 @@ class Diagram(Entity):
 
         data = {"neogram": constants.__version__}
         data.update(self.as_dict())
-        assert schema.is_valid(data)
+        schema.validate(data)
         if isinstance(target, (str, pathlib.Path)):
             with open(target, "w") as outfile:
                 yaml.dump(data, outfile, allow_unicode=True, sort_keys=False)

@@ -23,7 +23,7 @@ class Row(Diagram):
             },
             "align": {
                 "title": "Align diagrams vertically within the row.",
-                "enum": constants.VERTICAL_ALIGN,
+                "enum": constants.VERTICAL,
                 "default": DEFAULT_ALIGN,
             },
             "entries": {
@@ -37,6 +37,7 @@ class Row(Diagram):
                         "piechart": {"$ref": "#piechart"},
                         "column": {"$ref": "#column"},
                         "row": {"$ref": "#row"},
+                        "note": {"$ref": "#note"},
                     },
                 },
             },
@@ -50,9 +51,7 @@ class Row(Diagram):
         align=None,
     ):
         super().__init__(title=title, entries=entries)
-        assert align is None or (
-            isinstance(align, str) and align in constants.VERTICAL_ALIGN
-        )
+        assert align is None or (isinstance(align, str) and align in constants.VERTICAL)
 
         self.align = align or self.DEFAULT_ALIGN
 
@@ -66,7 +65,9 @@ class Row(Diagram):
         return result
 
     def build(self):
-        "Set the 'svg' and 'height' attributes."
+        """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
+        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        """
         for entry in self.entries:
             entry.build()
 

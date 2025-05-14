@@ -23,7 +23,7 @@ class Column(Diagram):
             },
             "align": {
                 "title": "Align diagrams horizontally within the column.",
-                "enum": constants.HORIZONTAL_ALIGN,
+                "enum": constants.HORIZONTAL,
                 "default": DEFAULT_ALIGN,
             },
             "entries": {
@@ -37,6 +37,7 @@ class Column(Diagram):
                         "piechart": {"$ref": "#piechart"},
                         "column": {"$ref": "#column"},
                         "row": {"$ref": "#row"},
+                        "note": {"$ref": "#note"},
                     },
                 },
             },
@@ -51,7 +52,7 @@ class Column(Diagram):
     ):
         super().__init__(title=title, entries=entries)
         assert align is None or (
-            isinstance(align, str) and align in constants.HORIZONTAL_ALIGN
+            isinstance(align, str) and align in constants.HORIZONTAL
         )
 
         self.align = align or self.DEFAULT_ALIGN
@@ -66,7 +67,9 @@ class Column(Diagram):
         return result
 
     def build(self):
-        "Set the 'svg' and 'height' attributes."
+        """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
+        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        """
         for entry in self.entries:
             entry.build()
 

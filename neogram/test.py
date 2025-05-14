@@ -96,8 +96,14 @@ def get_earth(legend=True):
         fuzzy="wedge",
     )
     earth += Period("Photosynthesis", -3_400_000_000, 0, color="springgreen")
-    earth += Period("Plants", -470_000_000, 0, timeline="Photosynthesis", color="green",
-                    placement="left")
+    earth += Period(
+        "Plants",
+        -470_000_000,
+        0,
+        timeline="Photosynthesis",
+        color="green",
+        placement="left",
+    )
     return earth
 
 
@@ -175,6 +181,12 @@ def test_cpies():
     paj += Slice("Butter", 3, color="gold")
     paj += Slice("Rhubarb", 3, color="green")
 
+    pajer += Note(
+        header="Comment",
+        body="Strawberry pie is good.",
+        footer={"text": "Copyright 2025 Per Kraulis", "italic": True},
+    )
+
     pajer.save("cpies.yaml")
     pajer.render("cpies.svg")
 
@@ -207,6 +219,16 @@ def test_rpies():
     assert pajer.render() == pajer2.render()
 
 
+def test_declaration():
+    decl = Note(
+        header={"text": "Declaration", "placement": "left"},
+        body={"text": "This software was\nwritten by me.", "placement": "right"},
+        footer={"text": "Copyright 2025 Per Kraulis", "italic": True},
+    )
+    decl.render("declaration.svg")
+    decl.save("declaration.yaml")
+
+
 if __name__ == "__main__":
     import os
 
@@ -218,3 +240,4 @@ if __name__ == "__main__":
     test_day()
     test_cpies()
     test_rpies()
+    test_declaration()

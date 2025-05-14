@@ -43,8 +43,17 @@
               "format": "color",
               "default": "black"
             },
+            "placement": {
+              "title": "Placement of text (ignored in some cases).",
+              "enum": [
+                "left",
+                "center",
+                "right"
+              ],
+              "default": "center"
+            },
             "anchor": {
-              "title": "Anchor of text.",
+              "title": "Anchor location in text (ignored in some cases).",
               "enum": [
                 "start",
                 "middle",
@@ -223,7 +232,8 @@
                           "left",
                           "center",
                           "right"
-                        ]
+                        ],
+                        "default": "right"
                       },
                       "fuzzy": {
                         "title": "Error bar marker for fuzzy number.",
@@ -295,7 +305,8 @@
                           "left",
                           "center",
                           "right"
-                        ]
+                        ],
+                        "default": "center"
                       },
                       "fuzzy": {
                         "title": "Marker to use for fuzzy number.",
@@ -433,6 +444,9 @@
               },
               "row": {
                 "$ref": "#row"
+              },
+              "note": {
+                "$ref": "#note"
               }
             }
           }
@@ -476,9 +490,69 @@
               },
               "row": {
                 "$ref": "#row"
+              },
+              "note": {
+                "$ref": "#note"
               }
             }
           }
+        }
+      }
+    },
+    "note": {
+      "title": "Textual note with header, body and footer text.",
+      "$anchor": "note",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "header": {
+          "title": "Header of the note.",
+          "$ref": "#text"
+        },
+        "body": {
+          "title": "Body of the note.",
+          "$ref": "#text"
+        },
+        "footer": {
+          "title": "Footer of the note.",
+          "$ref": "#text"
+        },
+        "width": {
+          "title": "Width of chart, in pixels.",
+          "type": "number",
+          "default": 200,
+          "exclusiveMinimum": 0
+        },
+        "frame": {
+          "title": "Thickness of the frame.",
+          "type": "number",
+          "minimum": 0,
+          "default": 5
+        },
+        "color": {
+          "title": "Color of the note frame and lines.",
+          "type": "string",
+          "format": "color",
+          "default": "gold"
+        },
+        "radius": {
+          "title": "Radius of the frame edge curvature.",
+          "type": "number",
+          "default": 10,
+          "minimum": 0
+        },
+        "line": {
+          "title": "Thickness of lines between sections.",
+          "type": "number",
+          "minimum": 0,
+          "default": 1
+        },
+        "background": {
+          "title": "Background color of the note.",
+          "type": "string",
+          "format": "color",
+          "default": "lightyellow"
         }
       }
     }

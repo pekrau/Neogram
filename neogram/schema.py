@@ -54,10 +54,15 @@ SCHEMA = {
                             "format": "color",
                             "default": "black",
                         },
+                        "placement": {
+                            "title": "Placement of text (ignored in some cases).",
+                            "enum": constants.PLACEMENTS,
+                            "default": constants.CENTER,
+                        },
                         "anchor": {
-                            "title": "Anchor of text.",
-                            "enum": ["start", "middle", "end"],
-                            "default": "middle",
+                            "title": "Anchor location in text (ignored in some cases).",
+                            "enum": constants.ANCHORS,
+                            "default": constants.MIDDLE,
                         },
                     },
                 },
@@ -93,8 +98,8 @@ SCHEMA = {
     "type": "object",
     "required": ["neogram"],
     "additionalProperties": False,
-    "minProperties": 2,
-    "maxProperties": 2,
+    "minProperties": 2,  # Ensure that there is one...
+    "maxProperties": 2,  # ...and only one diagram.
     "properties": {
         "neogram": {
             "title": "Identitification marker for the YAML file.",
@@ -109,10 +114,12 @@ SCHEMA = {
                 },
             ],
         },
+        # Full subschemas here, use $ref in other parts of the schema.
         "timelines": lib.Timelines.SCHEMA,
         "piechart": lib.Piechart.SCHEMA,
         "column": lib.Column.SCHEMA,
         "row": lib.Row.SCHEMA,
+        "note": lib.Note.SCHEMA,
     },
 }
 

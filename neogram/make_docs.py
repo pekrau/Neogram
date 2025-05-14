@@ -13,6 +13,7 @@ TESTS = {
     "piechart": ["pyramid", "day", "cpies", "rpies"],
     "column": ["universe_earth", "cpies"],
     "row": ["rpies"],
+    "note": ["declaration", "cpies"],
 }
 
 
