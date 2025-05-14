@@ -33,10 +33,9 @@ SCHEMA = {
                             "type": "string",
                         },
                         "size": {
-                            "title": "Size of font.",
+                            "title": "Size of font. Default depends on context.",
                             "type": "number",
                             "exclusiveMinimum": 0,
-                            # Default depends on the diagram.
                         },
                         "bold": {
                             "title": "Bold font.",
@@ -55,12 +54,12 @@ SCHEMA = {
                             "default": "black",
                         },
                         "placement": {
-                            "title": "Placement of text (ignored in some cases).",
+                            "title": "Placement of text. Ignored in some contexts.",
                             "enum": constants.PLACEMENTS,
                             "default": constants.CENTER,
                         },
                         "anchor": {
-                            "title": "Anchor location in text (ignored in some cases).",
+                            "title": "Anchor location in text. Ignored in some contexts.",
                             "enum": constants.ANCHORS,
                             "default": constants.MIDDLE,
                         },
@@ -120,6 +119,7 @@ SCHEMA = {
         "column": lib.Column.SCHEMA,
         "row": lib.Row.SCHEMA,
         "note": lib.Note.SCHEMA,
+        "board": lib.Board.SCHEMA,
     },
 }
 

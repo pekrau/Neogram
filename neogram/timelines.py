@@ -19,6 +19,7 @@ class Timelines(Diagram):
         "title": __doc__,
         "$anchor": "timelines",
         "type": "object",
+        "required": ["entries"],
         "additionalProperties": False,
         "properties": {
             "title": {
@@ -26,7 +27,7 @@ class Timelines(Diagram):
                 "$ref": "#text",
             },
             "width": {
-                "title": "Width of chart, in pixels.",
+                "title": "Width of diagram, in pixels.",
                 "type": "number",
                 "default": DEFAULT_WIDTH,
                 "exclusiveMinimum": 0,
@@ -219,7 +220,8 @@ class Timelines(Diagram):
         self.axis = True if axis is None else axis
 
     def check_entry(self, entry):
-        return isinstance(entry, (Event, Period))
+        if not isinstance(entry, (Event, Period)):
+            raise ValueError(f"invalid entry for board: {entry}; not an Event or Period")
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -231,8 +233,11 @@ class Timelines(Diagram):
 
     def build(self):
         """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
-        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        Set the 'svg' and 'height' attributes.
+        Requires the 'width' attribute.
         """
+        assert hasattr(self, "width")
+
         super().build()
 
         dimension = Dimension(width=self.width)

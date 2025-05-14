@@ -1,8 +1,61 @@
+# board
+
+- [Specification](#specification)
+- [Examples](#examples)
+  - [poster](#poster)
+
+## Specification
+Diagram to place diagrams at specified positions.
+
+- **title**: Title of the board.
+    - *definition*: See [here](timelines.md)
+- **entries**: Diagrams at specified positions.
+  - *required*
+  - *type*: sequence
+  - *items*:
+    - *type*: mapping
+    - **x**: Absolute position in board. Zero at left.
+      - *required*
+      - *type*: float
+      - *minimum*: 0
+    - **y**: Absolute position in board. Zero at top.
+      - *required*
+      - *type*: float
+      - *minimum*: 0
+    - **scale**: Scaling of diagram.
+      - *type*: float
+      - *exclusiveMinimum*: 0
+      - *default*: 1
+    - **timelines**:
+        - *definition*: See [here](timelines.md)
+    - **piechart**:
+        - *definition*: See [here](piechart.md)
+    - **note**:
+        - *definition*: See [here](note.md)
+    - **column**:
+        - *definition*: See [here](column.md)
+    - **row**:
+        - *definition*: See [here](row.md)
+## Examples
+
+### poster
+
+![poster SVG](poster.svg)
+
+```yaml
 neogram: 0.8.1
-column:
-  title: Universe and Earth
+board:
+  title: Poster
   entries:
-  - timelines:
+  - x: 250
+    y: 10
+    note:
+      header: By Per Kraulis
+      body: Ph.D.
+      footer: Stockholm University
+  - x: 0
+    y: 100
+    timelines:
       title:
         text: Universe
         bold: true
@@ -69,8 +122,9 @@ column:
           color: purple
           instant: -2000000000
           marker: triangle
-      legend: false
-  - timelines:
+  - x: 50
+    y: 230
+    timelines:
       title: Earth
       entries:
       - period:
@@ -124,4 +178,5 @@ column:
           begin: -470000000
           end: 0
           placement: left
-      legend: false
+```
+

@@ -1,18 +1,104 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="201" height="97.400" viewBox="0 0 201 97.400" transform="translate(0.5, 0.5)">
+<svg xmlns="http://www.w3.org/2000/svg" width="301" height="737.200" viewBox="0 0 301 737.200" transform="translate(0.5, 0.5)">
   <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
-    <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="89.900" />
-    <g stroke="none" fill="black" text-anchor="start" transform="translate(7, 20.500)">
-      <text x="0" y="0">Declaration</text>
-    </g>
-    <line x1="0" y1="25.300" x2="200" y2="25.300" stroke="gold" stroke-width="1" />
-    <g stroke="none" fill="black" text-anchor="end" transform="translate(193, 43.800)">
-      <text x="0" y="0">This software was</text>
-      <text x="0" y="14">written by me.</text>
-    </g>
-    <line x1="0" y1="65.600" x2="200" y2="65.600" stroke="gold" stroke-width="1" />
-    <g stroke="none" fill="black" text-anchor="middle" font-style="italic" transform="translate(102.500, 84.100)">
-      <text x="0" y="0">Copyright 2025 Per Kraulis</text>
+    <g transform="scale(1.5) translate(0, 0)">
+      <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+        <g transform="translate(0.0, 10)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="80.400" />
+            <g stroke="none" fill="black" text-anchor="start" font-weight="bold" transform="translate(7, 20)">
+              <text x="0" y="0">Declaration</text>
+            </g>
+            <line x1="0" y1="24.800" x2="200" y2="24.800" stroke="gold" stroke-width="1" />
+            <g stroke="none" fill="black" text-anchor="end" transform="translate(193, 40.800)">
+              <text x="0" y="0">This software was</text>
+              <text x="0" y="14">written by me.</text>
+            </g>
+            <line x1="0" y1="60.600" x2="200" y2="60.600" stroke="gold" stroke-width="1" />
+            <g stroke="none" fill="black" text-anchor="middle" font-style="italic" transform="translate(102.500, 76.600)">
+              <text x="0" y="0">Copyright 2025 Per Kraulis</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 105.39999999999999)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="66.400" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Header</text>
+            </g>
+            <line x1="0" y1="24.800" x2="200" y2="24.800" stroke="gold" stroke-width="1" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 40.800)">
+              <text x="0" y="0">Body</text>
+            </g>
+            <line x1="0" y1="46.600" x2="200" y2="46.600" stroke="gold" stroke-width="1" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 62.600)">
+              <text x="0" y="0">Footer</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 186.8)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="46.600" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Header</text>
+            </g>
+            <line x1="0" y1="24.800" x2="200" y2="24.800" stroke="gold" stroke-width="1" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 40.800)">
+              <text x="0" y="0">Body</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 248.4)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="44.600" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Body</text>
+            </g>
+            <line x1="0" y1="24.800" x2="200" y2="24.800" stroke="gold" stroke-width="1" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 40.800)">
+              <text x="0" y="0">Footer</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 308.0)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="24.800" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Header</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 347.8)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="24.800" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Body</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 387.6)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="22.800" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Footer</text>
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0.0, 425.40000000000003)">
+          <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
+            <rect x="2.5" y="2.5" rx="10" ry="10" width="195" fill="lightyellow" stroke="gold" stroke-width="5" height="60.400" />
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 20)">
+              <text x="0" y="0">Header</text>
+            </g>
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 38.800)">
+              <text x="0" y="0">Body</text>
+            </g>
+            <g stroke="none" fill="black" text-anchor="middle" transform="translate(102.500, 57.600)">
+              <text x="0" y="0">Footer</text>
+            </g>
+          </g>
+        </g>
+      </g>
     </g>
   </g>
 </svg>

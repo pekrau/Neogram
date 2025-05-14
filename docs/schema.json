@@ -23,7 +23,7 @@
               "type": "string"
             },
             "size": {
-              "title": "Size of font.",
+              "title": "Size of font. Default depends on context.",
               "type": "number",
               "exclusiveMinimum": 0
             },
@@ -44,7 +44,7 @@
               "default": "black"
             },
             "placement": {
-              "title": "Placement of text (ignored in some cases).",
+              "title": "Placement of text. Ignored in some contexts.",
               "enum": [
                 "left",
                 "center",
@@ -53,7 +53,7 @@
               "default": "center"
             },
             "anchor": {
-              "title": "Anchor location in text (ignored in some cases).",
+              "title": "Anchor location in text. Ignored in some contexts.",
               "enum": [
                 "start",
                 "middle",
@@ -119,6 +119,9 @@
       "title": "Timelines having events and periods.",
       "$anchor": "timelines",
       "type": "object",
+      "required": [
+        "entries"
+      ],
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -126,7 +129,7 @@
           "$ref": "#text"
         },
         "width": {
-          "title": "Width of chart, in pixels.",
+          "title": "Width of diagram, in pixels.",
           "type": "number",
           "default": 600,
           "exclusiveMinimum": 0
@@ -331,6 +334,9 @@
       "title": "Pie chart containing slices.",
       "$anchor": "piechart",
       "type": "object",
+      "required": [
+        "entries"
+      ],
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -411,6 +417,9 @@
       "title": "Diagrams stacked in a column.",
       "$anchor": "column",
       "type": "object",
+      "required": [
+        "entries"
+      ],
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -439,14 +448,14 @@
               "piechart": {
                 "$ref": "#piechart"
               },
+              "note": {
+                "$ref": "#note"
+              },
               "column": {
                 "$ref": "#column"
               },
               "row": {
                 "$ref": "#row"
-              },
-              "note": {
-                "$ref": "#note"
               }
             }
           }
@@ -457,6 +466,9 @@
       "title": "Diagrams arranged in a row.",
       "$anchor": "row",
       "type": "object",
+      "required": [
+        "entries"
+      ],
       "additionalProperties": false,
       "properties": {
         "title": {
@@ -485,14 +497,14 @@
               "piechart": {
                 "$ref": "#piechart"
               },
+              "note": {
+                "$ref": "#note"
+              },
               "column": {
                 "$ref": "#column"
               },
               "row": {
                 "$ref": "#row"
-              },
-              "note": {
-                "$ref": "#note"
               }
             }
           }
@@ -553,6 +565,68 @@
           "type": "string",
           "format": "color",
           "default": "lightyellow"
+        }
+      }
+    },
+    "board": {
+      "title": "Diagram to place diagrams at specified positions.",
+      "$anchor": "board",
+      "type": "object",
+      "required": [
+        "entries"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "title": "Title of the board.",
+          "$ref": "#text"
+        },
+        "entries": {
+          "title": "Diagrams at specified positions.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "x",
+              "y"
+            ],
+            "minProperties": 3,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": {
+              "x": {
+                "title": "Absolute position in board. Zero at left.",
+                "type": "number",
+                "minimum": 0
+              },
+              "y": {
+                "title": "Absolute position in board. Zero at top.",
+                "type": "number",
+                "minimum": 0
+              },
+              "scale": {
+                "title": "Scaling of diagram.",
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "default": 1
+              },
+              "timelines": {
+                "$ref": "#timelines"
+              },
+              "piechart": {
+                "$ref": "#piechart"
+              },
+              "note": {
+                "$ref": "#note"
+              },
+              "column": {
+                "$ref": "#column"
+              },
+              "row": {
+                "$ref": "#row"
+              }
+            }
+          }
         }
       }
     }

@@ -4,6 +4,7 @@
 - [Examples](#examples)
   - [universe_earth](#universe_earth)
   - [cpies](#cpies)
+  - [declaration](#declaration)
 
 ## Specification
 Diagrams stacked in a column.
@@ -14,6 +15,7 @@ Diagrams stacked in a column.
   - *one of*: 'left', 'center', 'right'
   - *default*: 'center'
 - **entries**: Component diagrams in the column.
+  - *required*
   - *type*: sequence
   - *items*:
     - *type*: mapping
@@ -21,11 +23,11 @@ Diagrams stacked in a column.
         - *definition*: See [here](timelines.md)
     - **piechart**:
         - *definition*: See [here](piechart.md)
+    - **note**:
+      - *definition*: See elsewhere.
     - **column**:
         - *definition*: See [here](column.md)
     - **row**:
-      - *definition*: See elsewhere.
-    - **note**:
       - *definition*: See elsewhere.
 ## Examples
 
@@ -34,7 +36,7 @@ Diagrams stacked in a column.
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 column:
   title: Universe and Earth
   entries:
@@ -167,7 +169,7 @@ column:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 column:
   title: Pies in column
   entries:
@@ -216,5 +218,53 @@ column:
       footer:
         text: Copyright 2025 Per Kraulis
         italic: true
+```
+### declaration
+
+![declaration SVG](declaration.svg)
+
+```yaml
+neogram: 0.8.1
+board:
+  entries:
+  - x: 0
+    y: 0
+    scale: 1.5
+    column:
+      entries:
+      - note:
+          header:
+            text: Declaration
+            placement: left
+            bold: true
+          body:
+            text: 'This software was
+
+              written by me.'
+            placement: right
+          footer:
+            text: Copyright 2025 Per Kraulis
+            italic: true
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+      - note:
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+      - note:
+          body: Body
+      - note:
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+          line: 0
 ```
 

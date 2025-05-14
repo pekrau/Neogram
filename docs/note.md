@@ -4,6 +4,7 @@
 - [Examples](#examples)
   - [declaration](#declaration)
   - [cpies](#cpies)
+  - [poster](#poster)
 
 ## Specification
 Textual note with header, body and footer text.
@@ -45,26 +46,55 @@ Textual note with header, body and footer text.
 ![declaration SVG](declaration.svg)
 
 ```yaml
-neogram: 0.8.0
-note:
-  header:
-    text: Declaration
-    placement: left
-  body:
-    text: 'This software was
+neogram: 0.8.1
+board:
+  entries:
+  - x: 0
+    y: 0
+    scale: 1.5
+    column:
+      entries:
+      - note:
+          header:
+            text: Declaration
+            placement: left
+            bold: true
+          body:
+            text: 'This software was
 
-      written by me.'
-    placement: right
-  footer:
-    text: Copyright 2025 Per Kraulis
-    italic: true
+              written by me.'
+            placement: right
+          footer:
+            text: Copyright 2025 Per Kraulis
+            italic: true
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+      - note:
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+      - note:
+          body: Body
+      - note:
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+          line: 0
 ```
 ### cpies
 
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 column:
   title: Pies in column
   entries:
@@ -113,5 +143,146 @@ column:
       footer:
         text: Copyright 2025 Per Kraulis
         italic: true
+```
+### poster
+
+![poster SVG](poster.svg)
+
+```yaml
+neogram: 0.8.1
+board:
+  title: Poster
+  entries:
+  - x: 250
+    y: 10
+    note:
+      header: By Per Kraulis
+      body: Ph.D.
+      footer: Stockholm University
+  - x: 0
+    y: 100
+    timelines:
+      title:
+        text: Universe
+        bold: true
+        color: blue
+      entries:
+      - event:
+          label: Big Bang
+          timeline: Universe
+          color: red
+          instant: -13787000000
+      - period:
+          label: Milky Way galaxy
+          timeline: Universe
+          color: navy
+          begin:
+            value: -7500000000
+            low: -8500000000
+          end: 0
+          fuzzy: gradient
+      - period:
+          label: Earth
+          color: lightgreen
+          begin: -4567000000
+          end: 0
+      - event:
+          label: Here
+          timeline: markers
+          instant:
+            value: -12000000000
+            error: 600000000
+          marker: none
+      - event:
+          label: Circle
+          timeline: markers
+          color: cyan
+          instant: -10000000000
+          marker: circle
+          placement: center
+      - event:
+          label: Ellipse
+          timeline: markers
+          color: blue
+          instant: -8000000000
+          placement: left
+      - event:
+          label: ''
+          timeline: markers
+          color: orange
+          instant:
+            value: -6000000000
+            low: -6500000000
+            high: -5000000000
+          marker: square
+      - event:
+          label: Pyramid
+          timeline: markers
+          color: gold
+          instant: -4000000000
+          marker: pyramid
+          placement: center
+      - event:
+          label: Triangle
+          timeline: markers
+          color: purple
+          instant: -2000000000
+          marker: triangle
+  - x: 50
+    y: 230
+    timelines:
+      title: Earth
+      entries:
+      - period:
+          label: Earth
+          begin: -4567000000
+          end: 0
+      - period:
+          label: Archean
+          color: wheat
+          begin:
+            value: -4000000000
+            low: -4100000000
+            high: -3950000000
+          end:
+            value: -2500000000
+            error: 200000000
+          fuzzy: gradient
+      - event:
+          label: LUCA?
+          timeline: Unicellular
+          instant: -4200000000
+      - period:
+          label: Unicellular organisms
+          timeline: Unicellular
+          begin:
+            value: -3480000000
+            low: -4200000000
+          end: 0
+          fuzzy: gradient
+      - period:
+          label: Eukaryotes
+          begin: -1650000000
+          end: 0
+      - period:
+          label: Engineers
+          color: lightgray
+          begin:
+            value: -3300000000
+            error: 200000000
+          end: -1650000000
+          fuzzy: wedge
+      - period:
+          label: Photosynthesis
+          color: springgreen
+          begin: -3400000000
+          end: 0
+      - period:
+          label: Plants
+          timeline: Photosynthesis
+          color: green
+          begin: -470000000
+          end: 0
+          placement: left
 ```
 

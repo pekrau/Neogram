@@ -1,8 +1,16 @@
 neogram: 0.8.1
-column:
-  title: Universe and Earth
+board:
+  title: Poster
   entries:
-  - timelines:
+  - x: 250
+    y: 10
+    note:
+      header: By Per Kraulis
+      body: Ph.D.
+      footer: Stockholm University
+  - x: 0
+    y: 100
+    timelines:
       title:
         text: Universe
         bold: true
@@ -69,8 +77,9 @@ column:
           color: purple
           instant: -2000000000
           marker: triangle
-      legend: false
-  - timelines:
+  - x: 50
+    y: 230
+    timelines:
       title: Earth
       entries:
       - period:
@@ -124,4 +133,3 @@ column:
           begin: -470000000
           end: 0
           placement: left
-      legend: false

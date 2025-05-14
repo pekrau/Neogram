@@ -28,6 +28,7 @@ Pie chart containing slices.
     - *format*: color
   - *default*: ['tomato', 'darkviolet', 'deeppink', 'deepskyblue', 'gold', 'yellowgreen']
 - **entries**: Entries (slices) in the pie chart.
+  - *required*
   - *type*: sequence
   - *items*:
     - *type*: mapping
@@ -50,7 +51,7 @@ Pie chart containing slices.
 ![pyramid SVG](pyramid.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 piechart:
   title: Pyramid
   entries:
@@ -74,7 +75,7 @@ piechart:
 ![day SVG](day.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 piechart:
   title:
     text: Day
@@ -128,7 +129,7 @@ piechart:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 column:
   title: Pies in column
   entries:
@@ -183,7 +184,7 @@ column:
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 row:
   title: Pies in row
   entries:

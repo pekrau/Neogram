@@ -1,6 +1,20 @@
 "Test diagrams."
 
+from icecream import ic
+
+import os
+
 from lib import *
+
+
+TESTS = {
+    "timelines": ["universe", "earth", "universe_earth", "poster"],
+    "piechart": ["pyramid", "day", "cpies", "rpies"],
+    "column": ["universe_earth", "cpies", "declaration"],
+    "row": ["rpies"],
+    "note": ["declaration", "cpies", "poster"],
+    "board": ["poster"],
+}
 
 
 def get_universe(legend=True):
@@ -220,24 +234,52 @@ def test_rpies():
 
 
 def test_declaration():
-    decl = Note(
-        header={"text": "Declaration", "placement": "left"},
+    column = Column()
+    column += (decl := Note(
+        header={"text": "Declaration", "placement": "left", "bold": True},
         body={"text": "This software was\nwritten by me.", "placement": "right"},
         footer={"text": "Copyright 2025 Per Kraulis", "italic": True},
     )
-    decl.render("declaration.svg")
-    decl.save("declaration.yaml")
+               )
+    column += Note("Header", "Body", "Footer")
+    column += Note("Header", "Body")
+    column += Note(body="Body", footer="Footer")
+    column += Note("Header")
+    column += Note(body="Body")
+    column += Note(footer="Footer")
+    column += Note("Header", "Body", "Footer", line=0)
+
+    board = Board()
+    board.append(x=0, y=0, scale=1.5, column=column)
+
+    board.save("declaration.yaml")
+    board.render("declaration.svg")
+
+def test_poster():
+    poster = Board("Poster")
+    poster.append(x=250, y=10, note=Note("By Per Kraulis", body="Ph.D.", footer="Stockholm University"))
+    poster.append(dict(x=0, y=100, timelines=get_universe()))
+    poster.append(dict(x=50, y=230, timelines=get_earth()))
+    poster.render("poster.svg")
+    poster.save("poster.yaml")
+
+
+def run_tests():
+    origdir = os.getcwd()
+    try:
+        os.chdir("../docs")
+        test_universe()
+        test_earth()
+        test_universe_earth()
+        test_pyramid()
+        test_day()
+        test_cpies()
+        test_rpies()
+        test_declaration()
+        test_poster()
+    finally:
+        os.chdir(origdir)
 
 
 if __name__ == "__main__":
-    import os
-
-    os.chdir("../docs")
-    test_universe()
-    test_earth()
-    test_universe_earth()
-    test_pyramid()
-    test_day()
-    test_cpies()
-    test_rpies()
-    test_declaration()
+    run_tests()

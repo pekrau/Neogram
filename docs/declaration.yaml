@@ -1,13 +1,42 @@
-neogram: 0.8.0
-note:
-  header:
-    text: Declaration
-    placement: left
-  body:
-    text: 'This software was
+neogram: 0.8.1
+board:
+  entries:
+  - x: 0
+    y: 0
+    scale: 1.5
+    column:
+      entries:
+      - note:
+          header:
+            text: Declaration
+            placement: left
+            bold: true
+          body:
+            text: 'This software was
 
-      written by me.'
-    placement: right
-  footer:
-    text: Copyright 2025 Per Kraulis
-    italic: true
+              written by me.'
+            placement: right
+          footer:
+            text: Copyright 2025 Per Kraulis
+            italic: true
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+      - note:
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+      - note:
+          body: Body
+      - note:
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+          line: 0

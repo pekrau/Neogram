@@ -111,7 +111,7 @@ class Note(Diagram):
         self.background = background or self.DEFAULT_BACKGROUND
 
     def data_as_dict(self):
-        result = {}
+        result = {}  # Reimplement; do not extend from Diagram.
         if self.header:
             result["header"] = self.header
         if self.body:
@@ -130,10 +130,16 @@ class Note(Diagram):
             result["background"] = self.background
         return result
 
+    def data_as_dict_entries(self):
+        return {}
+
     def build(self):
         """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
-        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        Set the 'svg' and 'height' attributes.
+        Requires the 'width' attribute.
         """
+        assert hasattr(self, "width")
+
         super().build()
         self.svg += (
             rect := Element(
@@ -149,15 +155,18 @@ class Note(Diagram):
         )
         rect["stroke-width"] = self.frame
 
+        self.height = 2 * constants.DEFAULT_PADDING
+
         header, height = self.get_text(self.header)
         if header:
             self.svg += header
-            self.height += height
+            self.height += height + constants.DEFAULT_PADDING
+            if self.line:
+                self.height += constants.DEFAULT_PADDING
 
         body, height = self.get_text(self.body)
         if body:
             if self.line and header:
-                self.height += constants.DEFAULT_PADDING
                 self.svg += (
                     line := Element(
                         "line",
@@ -172,12 +181,14 @@ class Note(Diagram):
                 self.height += self.line
 
             self.svg += body
-            self.height += height
+            self.height += height + constants.DEFAULT_PADDING
+            if self.line:
+                self.height += constants.DEFAULT_PADDING
 
         footer, height = self.get_text(self.footer)
         if footer:
             if self.line and (body or (header and not body)):
-                self.height += constants.DEFAULT_PADDING
+                # self.height += constants.DEFAULT_PADDING
                 self.svg += (
                     line := Element(
                         "line",
@@ -192,10 +203,11 @@ class Note(Diagram):
                 self.height += self.line
 
             self.svg += footer
-            self.height += height
+            self.height += height + constants.DEFAULT_PADDING
 
+        # self.height += constants.DEFAULT_PADDING
         rect["height"] = utils.N(self.height)
-        self.height += self.frame / 2 + 2 * constants.DEFAULT_PADDING
+        self.height += self.frame
 
     def get_text(self, text):
         "Return tuple (g with text elements, height)."
@@ -240,14 +252,9 @@ class Note(Diagram):
             result += Element("text", line, x=0, y=utils.N(height))
             height += size
         x = (self.frame + self.width) / 2 + offset
-        y = self.height + self.frame / 2 + 2 * constants.DEFAULT_PADDING + size
+        y = self.height + size + constants.DEFAULT_PADDING
         result["transform"] = f"translate({utils.N(x)}, {utils.N(y)})"
-        height += (
-            self.frame / 2
-            + constants.DEFAULT_PADDING
-            + size * constants.FONT_DESCEND
-            + constants.DEFAULT_PADDING
-        )
+        height += size * constants.FONT_DESCEND
         return result, height
 
 

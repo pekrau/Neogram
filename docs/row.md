@@ -13,6 +13,7 @@ Diagrams arranged in a row.
   - *one of*: 'bottom', 'middle', 'top'
   - *default*: 'middle'
 - **entries**: Component diagrams in the row.
+  - *required*
   - *type*: sequence
   - *items*:
     - *type*: mapping
@@ -20,12 +21,12 @@ Diagrams arranged in a row.
         - *definition*: See [here](timelines.md)
     - **piechart**:
         - *definition*: See [here](piechart.md)
+    - **note**:
+      - *definition*: See elsewhere.
     - **column**:
         - *definition*: See [here](column.md)
     - **row**:
         - *definition*: See [here](row.md)
-    - **note**:
-      - *definition*: See elsewhere.
 ## Examples
 
 ### rpies
@@ -33,7 +34,7 @@ Diagrams arranged in a row.
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.8.0
+neogram: 0.8.1
 row:
   title: Pies in row
   entries:

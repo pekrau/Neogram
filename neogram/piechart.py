@@ -22,6 +22,7 @@ class Piechart(Diagram):
         "title": __doc__,
         "$anchor": "piechart",
         "type": "object",
+        "required": ["entries"],
         "additionalProperties": False,
         "properties": {
             "title": {
@@ -111,7 +112,8 @@ class Piechart(Diagram):
         self.palette = list(palette or constants.DEFAULT_PALETTE)
 
     def check_entry(self, entry):
-        return isinstance(entry, Slice)
+        if not isinstance(entry, Slice):
+            raise ValueError(f"invalid entry for board: {entry}; not a Slice")
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -127,7 +129,8 @@ class Piechart(Diagram):
 
     def build(self):
         """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
-        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        Set the 'svg' and 'height' attributes.
+        Sets the 'width' attribute from 'diameter' and padding.
         """
         # XXX add line width if and when implemented
         self.width = self.diameter + 2 * constants.DEFAULT_PADDING

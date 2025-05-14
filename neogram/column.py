@@ -15,6 +15,7 @@ class Column(Diagram):
         "title": __doc__,
         "$anchor": "column",
         "type": "object",
+        "required": ["entries"],
         "additionalProperties": False,
         "properties": {
             "title": {
@@ -35,9 +36,9 @@ class Column(Diagram):
                     "properties": {
                         "timelines": {"$ref": "#timelines"},
                         "piechart": {"$ref": "#piechart"},
+                        "note": {"$ref": "#note"},
                         "column": {"$ref": "#column"},
                         "row": {"$ref": "#row"},
-                        "note": {"$ref": "#note"},
                     },
                 },
             },
@@ -58,7 +59,8 @@ class Column(Diagram):
         self.align = align or self.DEFAULT_ALIGN
 
     def check_entry(self, entry):
-        return isinstance(entry, Diagram)
+        if not isinstance(entry, Diagram):
+            raise ValueError(f"invalid entry for board: {entry}; not a Diagram")
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -68,7 +70,8 @@ class Column(Diagram):
 
     def build(self):
         """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
-        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        Set the 'svg' and 'height' attributes.
+        Sets the 'width' attribute.
         """
         for entry in self.entries:
             entry.build()

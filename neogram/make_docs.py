@@ -4,17 +4,9 @@ import json
 
 import constants
 import schema
+from test import run_tests, TESTS
 
 TERMS = {"array": "sequence", "object": "mapping", "number": "float"}
-
-TESTS = {
-    "timelines": ["universe", "earth", "universe_earth"],
-    "piechart": ["pyramid", "day", "cpies", "rpies"],
-    "column": ["universe_earth", "cpies"],
-    "row": ["rpies"],
-    "note": ["declaration", "cpies"],
-}
-
 
 def term(v):
     return TERMS.get(v, v)
@@ -43,21 +35,24 @@ def make_docs():
     )
     result.append("The full JSON Schema is [here](docs/schema.json).\n\n")
 
+    run_tests()
+
     if defs := schema.SCHEMA.get("$defs"):
         for key, value in defs.items():
             if anchor := value.get("$anchor"):
                 definitions[anchor] = value
 
-    schema.SCHEMA["properties"].pop("neogram")
+    properties = schema.SCHEMA["properties"].copy()
+    properties.pop("neogram")
 
     result.append("## Diagrams\n\n")
-    for diagram, subschema in schema.SCHEMA["properties"].items():
+    for diagram, subschema in properties.items():
         result.append(f"- [{diagram}](docs/{diagram}.md): {subschema['title']}\n\n")
 
     with open("../README.md", "w") as outfile:
         outfile.write("".join(result))
 
-    for diagram, subschema in schema.SCHEMA["properties"].items():
+    for diagram, subschema in properties.items():
         result = []
         result.append(f"# {diagram}\n\n")
         result.append("- [Specification](#specification)\n")

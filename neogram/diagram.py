@@ -2,6 +2,7 @@
 
 from icecream import ic
 
+import json
 import pathlib
 
 import yaml
@@ -40,7 +41,6 @@ class Diagram(Entity):
         assert entries is None or isinstance(entries, (tuple, list))
 
         self.title = title
-        self.height = 0
         self.entries = []
         if entries:
             for entry in entries:
@@ -59,7 +59,7 @@ class Diagram(Entity):
         self.entries.append(entry)
 
     def check_entry(self, entry):
-        "Check that the entry is valid for the diagram."
+        "Check that the entry is valid for the diagram. Raise ValueError otherwise."
         raise NotImplementedError
 
     def data_as_dict(self):
@@ -84,9 +84,11 @@ class Diagram(Entity):
                     title["anchor"] = anchor
             else:
                 result["title"] = self.title
-        if self.entries:
-            result["entries"] = [e.as_dict() for e in self.entries]
+        result.update(self.data_as_dict_entries())
         return result
+
+    def data_as_dict_entries(self):
+        return {"entries": [e.as_dict() for e in self.entries]}
 
     def render(self, target=None, antialias=True, indent=2):
         """Render diagram and return SVG.
@@ -119,11 +121,13 @@ class Diagram(Entity):
 
     def build(self):
         """Create the SVG elements in the 'svg' attribute. Adds the title, if given.
-        Set the 'svg' and 'height' attributes. Requires the 'width' attribute.
+        Sets the 'svg' and 'height' attributes.
+        Requires the 'width' attribute.
         To be extended in subclasses.
         """
-        assert hasattr(self, "width")
         self.height = 0
+        assert hasattr(self, "width")
+
         self.svg = Element("g", stroke="black", fill="white")
         self.svg["font-family"] = constants.DEFAULT_FONT_FAMILY
         self.svg["font-size"] = self.DEFAULT_FONT_SIZE
@@ -166,7 +170,12 @@ class Diagram(Entity):
 
         data = {"neogram": constants.__version__}
         data.update(self.as_dict())
-        schema.validate(data)
+        try:
+            schema.validate(data)
+        except ValueError:
+            with open("error.json", "w") as outfile:
+                json.dump(data, outfile, sort_keys=False)
+            raise
         if isinstance(target, (str, pathlib.Path)):
             with open(target, "w") as outfile:
                 yaml.dump(data, outfile, allow_unicode=True, sort_keys=False)
