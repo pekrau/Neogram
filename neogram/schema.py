@@ -163,9 +163,3 @@ def validate(instance, schema=SCHEMA, path=None):
             path = list(error.path)
         path = ".".join([str(p) for p in path])
         raise ValueError(f"{error.message} in instance '{path}'")
-
-
-if __name__ == "__main__":
-    check_schema(SCHEMA)
-    with open("schema.json", "w") as outfile:
-        json.dump(SCHEMA, outfile, indent=2, sort_keys=False)

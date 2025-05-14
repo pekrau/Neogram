@@ -8,6 +8,8 @@ The YAML file must contain the software identification marker:
 
 where `{version}` is either `null` or the string representing the version of the software.
 
+The full JSON Schema is [here](docs/schema.json).
+
 ## Diagrams
 
 - [timelines](docs/timelines.md): Timelines having events and periods.

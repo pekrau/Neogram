@@ -1,13 +1,13 @@
 "Constants."
 
-VERSION = (0, 8, 0)
+VERSION = (0, 8, 1)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
 SVG_CONTENT_TYPE = "image/svg+xml"
 YAML_CONTENT_TYPE = "application/yaml"
 
-JSONSCHEMA_ID = "https://neogram.org/schema"
+JSONSCHEMA_ID = "https://github.com/pekrau/Neogram/blob/main/docs/schema.json"
 JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
 
 PRECISION = 0.0005

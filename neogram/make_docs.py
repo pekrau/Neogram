@@ -1,10 +1,9 @@
 "Create documentation from JSON Schema."
 
-from icecream import ic
+import json
 
 import constants
 import schema
-
 
 TERMS = {"array": "sequence", "object": "mapping", "number": "float"}
 
@@ -23,11 +22,14 @@ def term(v):
 
 definitions = {}
 
-INDENT = "  "
-
 
 def make_docs():
     global definitions
+
+    schema.check_schema(schema.SCHEMA)
+
+    with open("../docs/schema.json", "w") as outfile:
+        json.dump(schema.SCHEMA, outfile, indent=2, sort_keys=False)
 
     result = []
     result.append(f"# Neogram {constants.__version__}\n\n")
@@ -39,6 +41,7 @@ def make_docs():
     result.append(
         f"where `{{version}}` is either `null` or the string representing the version of the software.\n\n"
     )
+    result.append("The full JSON Schema is [here](docs/schema.json).\n\n")
 
     if defs := schema.SCHEMA.get("$defs"):
         for key, value in defs.items():
@@ -80,7 +83,7 @@ def output_schema(schema, level=0, required=False, href=None):
     global definitions
 
     result = []
-    prefix = INDENT * level
+    prefix = "  " * level
 
     if level == 0:
         result.append(f"\n{prefix}{schema['title']}\n\n")
