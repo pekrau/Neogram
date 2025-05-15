@@ -20,7 +20,7 @@
           </g>
         </g>
         <g>
-          <ellipse cx="9.129" cy="34.600" rx="3.6" ry="9.0" stroke="none" fill="red" />
+          <path d="M 0.129 34.600 h 18 M 9.129 25.600 v 18 M 2.765 28.236 L 15.493 40.964 M 15.493 28.236 L 2.765 40.964" fill="none" stroke="red" stroke-width="2" />
           <g>
             <rect x="278.57142857142856" y="25.600" width="321.429" height="18" stroke="none" fill="navy" />
             <path d="M 278.571 25.600 H 600 m 0 18 H 278.571" stroke="black" />
@@ -46,27 +46,28 @@
               <path d="M 60 74.100 v 9 m 0 -4.500 H 85.714" />
               <path d="M 111.429 74.100 v 9 m 0 -4.500 H 85.714" />
             </g>
-            <g stroke="none" fill="black" />
+            <rect x="76.714" y="69.600" width="18" height="18" fill="black" stroke="none" stroke-width="2" />
           </g>
-          <circle cx="171.429" cy="78.600" r="9.0" stroke="none" fill="cyan" />
-          <ellipse cx="257.143" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="blue" />
+          <circle cx="171.429" cy="78.600" r="9.0" fill="none" stroke="cyan" stroke-width="2" />
+          <ellipse cx="257.143" cy="78.600" rx="3.6" ry="9.0" fill="none" stroke="blue" stroke-width="2" />
           <g>
             <g stroke="black">
-              <path d="M 321.429 74.100 v 9 m 0 -4.500 H 342.857" />
-              <path d="M 385.714 74.100 v 9 m 0 -4.500 H 342.857" />
+              <path d="M 321.429 74.100 v 9 m 0 -4.500 H 334.286" />
+              <path d="M 364.286 74.100 v 9 m 0 -4.500 H 334.286" />
             </g>
-            <rect x="333.857" y="69.600" width="18" height="18" stroke="none" fill="orange" />
+            <ellipse cx="334.286" cy="78.600" rx="3.6" ry="9.0" fill="orange" stroke="none" stroke-width="2" />
           </g>
-          <path d="M 428.571 69.600 L 419.571 87.600 h 18 Z" stroke="none" fill="gold" />
-          <path d="M 514.286 87.600 L 505.286 69.600 h 18 Z" stroke="none" fill="purple" />
+          <path d="M 428.571 69.600 L 419.571 87.600 h 18 Z" fill="gold" stroke="none" stroke-width="2" />
+          <path d="M 514.286 87.600 L 505.286 69.600 h 18 Z" fill="purple" stroke="none" stroke-width="2" />
         </g>
         <g text-anchor="middle" stroke="none" fill="black">
-          <text x="14.729" y="38.800" text-anchor="start">Big Bang</text>
+          <text x="20.129" y="38.800" text-anchor="start">Big Bang</text>
           <text x="439.286" y="38.800" fill="white" text-anchor="middle">Milky Way galaxy</text>
           <text x="502.136" y="60.800" fill="black" text-anchor="middle">Earth</text>
-          <text x="113.429" y="82.800" text-anchor="start">Here</text>
+          <text x="58" y="82.800" text-anchor="end">Block</text>
           <text x="171.429" y="82.800" text-anchor="middle">Circle</text>
           <text x="251.543" y="82.800" text-anchor="end">Ellipse</text>
+          <text x="319.429" y="82.800" text-anchor="end">Oval</text>
           <text x="428.571" y="82.800" text-anchor="middle">Pyramid</text>
           <text x="525.286" y="82.800" text-anchor="start">Triangle</text>
         </g>
@@ -119,7 +120,7 @@
             <rect x="276" y="47.600" width="48.000" height="18" stroke="none" fill="url(#id13)" />
             <path d="M 276 47.600 H 324.000 m 0 18 H 276" stroke="url(#id14)" />
           </g>
-          <ellipse cx="96.000" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="black" />
+          <ellipse cx="96.000" cy="78.600" rx="3.6" ry="9.0" fill="black" stroke="none" stroke-width="2" />
           <g>
             <rect x="182.39999999999998" y="69.600" width="417.600" height="18" stroke="none" fill="white" />
             <path d="M 182.400 69.600 H 600 m 0 18 H 182.400" stroke="black" />

@@ -1,4 +1,4 @@
-"Diagram to place diagrams at specified positions. Cannot be used in other diagrams."
+"Diagram to place diagrams at specified positions. Must be a top-level diagram."
 
 __all__ = ["Board"]
 
@@ -6,8 +6,8 @@ from diagram import *
 
 
 class Board(Diagram):
-    """ "Diagram to place diagrams at specified positions.
-    Cannot be used in other diagrams.
+    """Diagram to place diagrams at specified positions.
+    Must be a top-level diagram.
     """
 
     DEFAULT_TITLE_FONT_SIZE = 36
@@ -58,7 +58,7 @@ class Board(Diagram):
 
     # Load the allowed diagram properties.
     SCHEMA["properties"]["entries"]["items"]["properties"].update(
-        dict([(k, {"$ref": f"#{k}_ref"}) for k in constants.DIAGRAMS])
+        dict([(k, {"$ref": f"#{k}_ref"}) for k in constants.COMPOSABLE_DIAGRAMS])
     )
 
     def append(self, *entry, **fields):
@@ -75,15 +75,16 @@ class Board(Diagram):
     def check_entry(self, entry):
         if not isinstance(entry, dict):
             raise ValueError(f"invalid entry for board: {entry}; not a dict")
-        for key in constants.DIAGRAMS:
+        for key in constants.COMPOSABLE_DIAGRAMS:
             data = entry.get(key)
             if data:
+                # No need to use 'memo' here; board cannot refer to another board.
                 if isinstance(data, dict):
                     data = parse(key, entry[key])
                 entry["diagram"] = data
                 break
         else:
-            raise ValueError(f"invalid entry for board: {entry}; no diagram")
+            raise ValueError(f"invalid entry for board: {entry}")
 
     def data_as_dict_entries(self):
         result = []

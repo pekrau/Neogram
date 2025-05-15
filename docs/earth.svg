@@ -46,7 +46,7 @@
         <rect x="335.422" y="47.600" width="39.197" height="18" stroke="none" fill="url(#id5)" />
         <path d="M 335.422 47.600 H 374.618 m 0 18 H 335.422" stroke="url(#id6)" />
       </g>
-      <ellipse cx="188.434" cy="78.600" rx="3.6" ry="9.0" stroke="none" fill="black" />
+      <ellipse cx="188.434" cy="78.600" rx="3.6" ry="9.0" fill="black" stroke="none" stroke-width="2" />
       <g>
         <rect x="258.98784" y="69.600" width="341.012" height="18" stroke="none" fill="white" />
         <path d="M 258.988 69.600 H 600 m 0 18 H 258.988" stroke="black" />

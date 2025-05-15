@@ -2,8 +2,10 @@
 
 from icecream import ic
 
+import datetime
 import json
 import pathlib
+import os
 import urllib.parse
 
 import requests
@@ -94,9 +96,9 @@ class Diagram(Entity):
     def data_as_dict_entries(self):
         result = []
         for entry in self.entries:
-            if isinstance(entry, str):
-                result.append(entry)
-            else:
+            try:  # If this entry was included from another source.
+                result.append({entry.__class__.__name__.casefold(): entry.location})
+            except AttributeError:
                 result.append(entry.as_dict())
         return {"entries": result}
 
@@ -178,7 +180,14 @@ class Diagram(Entity):
         """
         import schema
 
-        data = {"neogram": constants.__version__}
+        data = {
+            "neogram": {
+                "version": constants.__version__,
+                "author": os.getlogin(),
+                "software": f"Neogram (Python) {constants.__version__}",
+                "timestamp": datetime.datetime.now(datetime.UTC).replace(microsecond=0).isoformat(),
+            }
+        }
         data.update(self.as_dict())
         try:
             schema.validate(data)
@@ -213,6 +222,7 @@ class Container(Diagram):
 
     def check_entry(self, entry):
         if isinstance(entry, str):
+            location = entry
             reader = Reader(entry)
             memo.check_add(reader)
             try:
@@ -221,11 +231,12 @@ class Container(Diagram):
                 reader.parse_yaml()
                 reader.check_diagram_yaml()
                 entry = reader.get_diagram()
+                entry.location = location  # Record the location for later output.
             except ValueError as error:
                 raise ValueError(f"error reading from '{reader}': {error}")
             memo.remove(reader)
         if not isinstance(entry, Diagram):
-            raise ValueError(f"invalid entry for board: {entry}; not a Diagram")
+            raise ValueError(f"invalid entry for container: {entry}")
 
     def data_as_dict(self):
         result = super().data_as_dict()
@@ -256,13 +267,15 @@ def parse(key, data):
     if isinstance(data, dict):
         return cls(**data)
     elif isinstance(data, str):  # Get and parse YAML from the location.
+        location = data
         reader = Reader(data)
         try:
             reader.read()
-            reader.read()
             reader.parse_yaml()
             reader.check_diagram_yaml()
-            return reader.get_diagram()
+            entry = reader.get_diagram()
+            entry.location = location
+            return entry
         except ValueError as error:
             raise ValueError(f"error reading from '{reader}': {error}")
 
@@ -336,6 +349,8 @@ class Reader:
             raise ValueError("YAML data lacks the software marker")
         if version:
             # XXX Currently strict check.
+            if isinstance(version, dict):
+                version = version.get("version")
             if version != constants.__version__:
                 raise ValueError(f"YAML data incompatible version {version}")
         if len(copy) != 1:

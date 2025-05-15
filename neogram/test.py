@@ -23,7 +23,9 @@ def get_universe(legend=True):
         legend=legend,
         axis={"absolute": True, "caption": "Billion years ago"},
     )
-    universe += Event("Big Bang", -13_787_000_000, timeline="Universe", color="red")
+    universe += Event(
+        "Big Bang", -13_787_000_000, timeline="Universe", marker="star", color="red"
+    )
     universe += Period(
         "Milky Way galaxy",
         {"value": -7_500_000_000, "low": -8_500_000_000},
@@ -34,11 +36,11 @@ def get_universe(legend=True):
     )
     universe += Period("Earth", -4_567_000_000, 0, color="lightgreen")
     universe += Event(
-        "Here",
+        "Block",
         {"value": -12_000_000_000, "error": 600_000_000},
         timeline="markers",
-        marker="none",
-        placement="right",
+        marker="block",
+        placement="left",
     )
     universe += Event(
         "Circle",
@@ -57,10 +59,10 @@ def get_universe(legend=True):
         placement="left",
     )
     universe += Event(
-        "",
-        {"value": -6_000_000_000, "low": -6_500_000_000, "high": -5_000_000_000},
+        "Oval",
+        {"value": -6_200_000_000, "low": -6_500_000_000, "high": -5_500_000_000},
         timeline="markers",
-        marker="square",
+        placement="left",
         color="orange",
     )
     universe += Event(

@@ -181,12 +181,37 @@ SCHEMA = {
             "title": "Identitification marker for the YAML file.",
             "oneOf": [
                 {
+                    "title": "Unspecified version; no check performed.",
+                    "const": None,
+                },
+                {
                     "title": "Version of the Neogram sofware.",
                     "type": "string",
                 },
                 {
-                    "title": "Unspecified version; no check performed.",
-                    "const": None,
+                    "title": "Full metadata for Neogram YAML file.",
+                    "type": "object",
+                    "required": ["version"],
+                    "additionalProperties": False,
+                    "properties": {
+                        "version": {
+                            "title": "Version of the Neogram sofware.",
+                            "type": "string",
+                        },
+                        "author": {
+                            "title": "Author of the YAML file.",
+                            "type": "string",
+                        },
+                        "software": {
+                            "title": "Software used to create the YAML file.",
+                            "type": "string",
+                        },
+                        "timestamp": {
+                            "title": "Creation time of the YAML file.",
+                            "type": "string",
+                            "format": "date-time",
+                        },
+                    },
                 },
             ],
         },

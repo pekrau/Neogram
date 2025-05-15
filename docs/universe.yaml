@@ -1,4 +1,8 @@
-neogram: 0.8.2
+neogram:
+  version: 0.8.3
+  author: pekrau
+  software: Neogram (Python) 0.8.3
+  timestamp: '2025-05-15T16:36:29+00:00'
 timelines:
   title:
     text: Universe
@@ -10,6 +14,7 @@ timelines:
       timeline: Universe
       color: red
       instant: -13787000000
+      marker: star
   - period:
       label: Milky Way galaxy
       timeline: Universe
@@ -25,12 +30,13 @@ timelines:
       begin: -4567000000
       end: 0
   - event:
-      label: Here
+      label: Block
       timeline: markers
       instant:
         value: -12000000000
         error: 600000000
-      marker: none
+      marker: block
+      placement: left
   - event:
       label: Circle
       timeline: markers
@@ -43,16 +49,17 @@ timelines:
       timeline: markers
       color: blue
       instant: -8000000000
+      marker: ellipse
       placement: left
   - event:
-      label: ''
+      label: Oval
       timeline: markers
       color: orange
       instant:
-        value: -6000000000
+        value: -6200000000
         low: -6500000000
-        high: -5000000000
-      marker: square
+        high: -5500000000
+      placement: left
   - event:
       label: Pyramid
       timeline: markers

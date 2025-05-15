@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 8, 2)
+VERSION = (0, 8, 3)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -10,7 +10,7 @@ YAML_CONTENT_TYPE = "application/yaml"
 JSONSCHEMA_ID = "https://github.com/pekrau/Neogram/blob/main/docs/schema.json"
 JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
 
-DIAGRAMS = ("timelines", "piechart", "note", "column", "row")
+COMPOSABLE_DIAGRAMS = ("timelines", "piechart", "note", "column", "row")
 
 PRECISION = 0.0005
 
@@ -37,13 +37,30 @@ HORIZONTAL = [LEFT, CENTER, RIGHT]
 # XXX Add: above, below, left-above, left-below, right-above, right-below.
 PLACEMENTS = [LEFT, CENTER, RIGHT]
 
+DISC = "disc"
 CIRCLE = "circle"
+OVAL = "oval"
 ELLIPSE = "ellipse"
+BLOCK = "block"
 SQUARE = "square"
+BAR = "bar"
 PYRAMID = "pyramid"
 TRIANGLE = "triangle"
+STAR = "star"
 NONE = "none"
-MARKERS = [CIRCLE, ELLIPSE, SQUARE, PYRAMID, TRIANGLE, NONE]
+MARKERS = [
+    DISC,
+    CIRCLE,
+    OVAL,
+    ELLIPSE,
+    BLOCK,
+    SQUARE,
+    BAR,
+    PYRAMID,
+    TRIANGLE,
+    STAR,
+    NONE,
+]
 
 # See: https://austingil.com/css-named-colors/#bold
 DEFAULT_PALETTE = [

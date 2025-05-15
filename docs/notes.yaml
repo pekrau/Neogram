@@ -1,4 +1,8 @@
-neogram: 0.8.2
+neogram:
+  version: 0.8.3
+  author: pekrau
+  software: Neogram (Python) 0.8.3
+  timestamp: '2025-05-15T16:36:29+00:00'
 board:
   entries:
   - x: 0
@@ -27,16 +31,4 @@ board:
           body: Body
           footer: Footer
           line: 0
-      - note:
-          header:
-            text: Declaration
-            placement: left
-            bold: true
-          body:
-            text: 'This software was
-
-              written by me.'
-            placement: right
-          footer:
-            text: Copyright 2025 Per Kraulis
-            italic: true
+      - note: declaration.yaml

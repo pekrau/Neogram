@@ -109,7 +109,7 @@ class Timelines(Diagram):
                                         "marker": {
                                             "title": "Marker for event.",
                                             "enum": constants.MARKERS,
-                                            "default": constants.ELLIPSE,
+                                            "default": constants.OVAL,
                                         },
                                         "color": {
                                             "title": "Color of the event marker.",
@@ -411,7 +411,7 @@ class Event(_Entry):
     "Event at a given instant in a timeline."
 
     DEFAULT_PLACEMENT = constants.RIGHT
-    DEFAULT_MARKER = constants.ELLIPSE
+    DEFAULT_MARKER = constants.OVAL
 
     def __init__(
         self,
@@ -460,35 +460,93 @@ class Event(_Entry):
             x = dimension.get_pixel(self.instant["value"])
         else:
             x = dimension.get_pixel(self.instant)
+        color = self.color or "black"
+
         match self.marker:
-            case constants.CIRCLE:
-                self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.DISC:
                 elem = Element(
                     "circle",
                     cx=utils.N(x),
                     cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
                     r=constants.DEFAULT_SIZE / 2,
+                    fill=color,
+                    stroke="none",
                 )
-            case constants.ELLIPSE:
-                self.label_x_offset = constants.DEFAULT_SIZE / 5
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.CIRCLE:
+                elem = Element(
+                    "circle",
+                    cx=utils.N(x),
+                    cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
+                    r=constants.DEFAULT_SIZE / 2,
+                    fill="none",
+                    stroke=color,
+                )
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.OVAL:
                 elem = Element(
                     "ellipse",
                     cx=utils.N(x),
                     cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
                     rx=constants.DEFAULT_SIZE / 5,
                     ry=constants.DEFAULT_SIZE / 2,
+                    fill=color,
+                    stroke="none",
                 )
-            case constants.SQUARE:
-                self.label_x_offset = constants.DEFAULT_SIZE / 2
+                self.label_x_offset = constants.DEFAULT_SIZE / 5
+
+            case constants.ELLIPSE:
+                elem = Element(
+                    "ellipse",
+                    cx=utils.N(x),
+                    cy=utils.N(timelines[self.timeline] + constants.DEFAULT_SIZE / 2),
+                    rx=constants.DEFAULT_SIZE / 5,
+                    ry=constants.DEFAULT_SIZE / 2,
+                    fill="none",
+                    stroke=color,
+                )
+                self.label_x_offset = constants.DEFAULT_SIZE / 5
+
+            case constants.BLOCK:
                 elem = Element(
                     "rect",
                     x=utils.N(x - constants.DEFAULT_SIZE / 2),
                     y=utils.N(timelines[self.timeline]),
                     width=utils.N(constants.DEFAULT_SIZE),
                     height=utils.N(constants.DEFAULT_SIZE),
+                    fill=color,
+                    stroke="none",
                 )
-            case constants.PYRAMID:
                 self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.SQUARE:
+                elem = Element(
+                    "rect",
+                    x=utils.N(x - constants.DEFAULT_SIZE / 2),
+                    y=utils.N(timelines[self.timeline]),
+                    width=utils.N(constants.DEFAULT_SIZE),
+                    height=utils.N(constants.DEFAULT_SIZE),
+                    fill="none",
+                    stroke=color,
+                )
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.BAR:
+                elem = Element(
+                    "rect",
+                    x=utils.N(x - constants.DEFAULT_SIZE / 8),
+                    y=utils.N(timelines[self.timeline]),
+                    width=utils.N(constants.DEFAULT_SIZE / 4),
+                    height=utils.N(constants.DEFAULT_SIZE),
+                    fill=color,
+                    stroke="none",
+                )
+                self.label_x_offset = constants.DEFAULT_SIZE / 8
+
+            case constants.PYRAMID:
                 path = (
                     Path(x, timelines[self.timeline])
                     .L(
@@ -498,9 +556,10 @@ class Event(_Entry):
                     .h(constants.DEFAULT_SIZE)
                     .Z()
                 )
-                elem = Element("path", d=path)
-            case constants.TRIANGLE:
+                elem = Element("path", d=path, fill=color, stroke="none")
                 self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.TRIANGLE:
                 path = (
                     Path(x, timelines[self.timeline] + constants.DEFAULT_SIZE)
                     .L(
@@ -510,12 +569,35 @@ class Event(_Entry):
                     .h(constants.DEFAULT_SIZE)
                     .Z()
                 )
-                elem = Element("path", d=path)
+                elem = Element("path", d=path, fill=color, stroke="none")
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+
+            case constants.STAR:
+                center = Vector2(
+                    x, timelines[self.timeline] + constants.DEFAULT_SIZE / 2
+                )
+                length = constants.DEFAULT_SIZE * math.sqrt(2) / 4
+                path = (
+                    Path(
+                        x - constants.DEFAULT_SIZE / 2,
+                        timelines[self.timeline] + constants.DEFAULT_SIZE / 2,
+                    )
+                    .h(constants.DEFAULT_SIZE)
+                    .M(x, timelines[self.timeline])
+                    .v(constants.DEFAULT_SIZE)
+                    .M(center.x - length, center.y - length)
+                    .L(center.x + length, center.y + length)
+                    .M(center.x + length, center.y - length)
+                    .L(center.x - length, center.y + length)
+                )
+                elem = Element("path", d=path, fill="none", stroke=color)
+                self.label_x_offset = constants.DEFAULT_SIZE / 2
+
             case constants.NONE:
+                elem = Element("g", fill=color, stroke="none")
                 self.label_x_offset = 0
-                elem = Element("g")
-        elem["stroke"] = "none"
-        elem["fill"] = self.color or "black"
+
+        elem["stroke-width"] = 2
 
         # Get error bars if fuzzy value; place below marker itself.
         if self.fuzzy and isinstance(self.instant, dict):
@@ -527,8 +609,6 @@ class Event(_Entry):
     def render_label(self, timelines, dimension):
         if not self.label:
             return None
-        if not isinstance(self.instant, dict):
-            x = dimension.get_pixel(self.instant)
 
         match self.placement:
 
@@ -539,11 +619,15 @@ class Event(_Entry):
                         value = self.instant["low"]
                     except KeyError:
                         value = self.instant["value"] - self.instant.get("error", 0)
-                        x = dimension.get_pixel(value)
-                x -= self.label_x_offset + constants.DEFAULT_PADDING
+                    x = dimension.get_pixel(value)
+                    x -= constants.DEFAULT_PADDING
+                else:
+                    x = dimension.get_pixel(self.instant)
+                    x -= self.label_x_offset + constants.DEFAULT_PADDING
                 anchor = "end"
 
             case constants.CENTER:
+                x = dimension.get_pixel(self.instant)
                 anchor = "middle"
 
             case constants.RIGHT:
@@ -553,8 +637,11 @@ class Event(_Entry):
                         value = self.instant["high"]
                     except KeyError:
                         value = self.instant["value"] + self.instant.get("error", 0)
-                        x = dimension.get_pixel(value)
-                x += self.label_x_offset + constants.DEFAULT_PADDING
+                    x = dimension.get_pixel(value)
+                    x += constants.DEFAULT_PADDING
+                else:
+                    x = dimension.get_pixel(self.instant)
+                    x += self.label_x_offset + constants.DEFAULT_PADDING
                 if self.marker == constants.NONE:
                     anchor = "middle"
                 else:

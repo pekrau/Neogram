@@ -44,7 +44,7 @@ class Row(Container):
 
     # Load the allowed diagram properties.
     SCHEMA["properties"]["entries"]["items"]["properties"].update(
-        dict([(k, {"$ref": f"#{k}_ref"}) for k in constants.DIAGRAMS])
+        dict([(k, {"$ref": f"#{k}_ref"}) for k in constants.COMPOSABLE_DIAGRAMS])
     )
 
     def build(self):
