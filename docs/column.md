@@ -4,7 +4,8 @@
 - [Examples](#examples)
   - [universe_earth](#universe_earth)
   - [cpies](#cpies)
-  - [declaration](#declaration)
+  - [cnotes](#cnotes)
+  - [notes](#notes)
 
 ## Specification
 Diagrams stacked in a column.
@@ -20,15 +21,31 @@ Diagrams stacked in a column.
   - *items*:
     - *type*: mapping
     - **timelines**:
-        - *definition*: See [here](timelines.md)
+      - Alternative 1: Specification
+          - *definition*: See [here](timelines.md)
+      - Alternative 2: URI reference for specification.
+        - *type*: string
+        - *format*: uri-reference
     - **piechart**:
-        - *definition*: See [here](piechart.md)
+      - Alternative 1: Specification
+          - *definition*: See [here](piechart.md)
+      - Alternative 2: URI reference for specification.
+          - *definition*: See [here](column.md)
     - **note**:
-      - *definition*: See elsewhere.
+      - Alternative 1: Specification
+        - *definition*: See elsewhere.
+      - Alternative 2: URI reference for specification.
+          - *definition*: See [here](column.md)
     - **column**:
-        - *definition*: See [here](column.md)
+      - Alternative 1: Specification
+          - *definition*: See [here](column.md)
+      - Alternative 2: URI reference for specification.
+          - *definition*: See [here](column.md)
     - **row**:
-      - *definition*: See elsewhere.
+      - Alternative 1: Specification
+        - *definition*: See elsewhere.
+      - Alternative 2: URI reference for specification.
+          - *definition*: See [here](column.md)
 ## Examples
 
 ### universe_earth
@@ -36,7 +53,7 @@ Diagrams stacked in a column.
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 column:
   title: Universe and Earth
   entries:
@@ -169,7 +186,7 @@ column:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 column:
   title: Pies in column
   entries:
@@ -219,12 +236,55 @@ column:
         text: Copyright 2025 Per Kraulis
         italic: true
 ```
-### declaration
+### cnotes
 
-![declaration SVG](declaration.svg)
+![cnotes SVG](cnotes.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
+column:
+  entries:
+  - note:
+      header: Header
+      body: Body
+      footer: Footer
+  - note:
+      header: Header
+      body: Body
+  - note:
+      body: Body
+      footer: Footer
+  - note:
+      header: Header
+  - note:
+      body: Body
+  - note:
+      footer: Footer
+  - note:
+      header: Header
+      body: Body
+      footer: Footer
+      line: 0
+  - note:
+      header:
+        text: Declaration
+        placement: left
+        bold: true
+      body:
+        text: 'This software was
+
+          written by me.'
+        placement: right
+      footer:
+        text: Copyright 2025 Per Kraulis
+        italic: true
+```
+### notes
+
+![notes SVG](notes.svg)
+
+```yaml
+neogram: 0.8.2
 board:
   entries:
   - x: 0
@@ -232,19 +292,6 @@ board:
     scale: 1.5
     column:
       entries:
-      - note:
-          header:
-            text: Declaration
-            placement: left
-            bold: true
-          body:
-            text: 'This software was
-
-              written by me.'
-            placement: right
-          footer:
-            text: Copyright 2025 Per Kraulis
-            italic: true
       - note:
           header: Header
           body: Body
@@ -266,5 +313,18 @@ board:
           body: Body
           footer: Footer
           line: 0
+      - note:
+          header:
+            text: Declaration
+            placement: left
+            bold: true
+          body:
+            text: 'This software was
+
+              written by me.'
+            placement: right
+          footer:
+            text: Copyright 2025 Per Kraulis
+            italic: true
 ```
 

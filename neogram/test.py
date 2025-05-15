@@ -10,10 +10,10 @@ from lib import *
 TESTS = {
     "timelines": ["universe", "earth", "universe_earth", "poster"],
     "piechart": ["pyramid", "day", "cpies", "rpies"],
-    "column": ["universe_earth", "cpies", "declaration"],
+    "column": ["universe_earth", "cpies", "cnotes", "notes"],
     "row": ["rpies"],
-    "note": ["declaration", "cpies", "poster"],
-    "board": ["poster"],
+    "note": ["declaration", "cnotes", "notes", "cpies", "poster"],
+    "board": ["poster", "notes"],
 }
 
 
@@ -234,13 +234,18 @@ def test_rpies():
 
 
 def test_declaration():
-    column = Column()
-    column += (decl := Note(
+    decl = Note(
         header={"text": "Declaration", "placement": "left", "bold": True},
         body={"text": "This software was\nwritten by me.", "placement": "right"},
         footer={"text": "Copyright 2025 Per Kraulis", "italic": True},
     )
-               )
+
+    decl.save("declaration.yaml")
+    decl.render("declaration.svg")
+
+
+def test_notes():
+    column = Column()
     column += Note("Header", "Body", "Footer")
     column += Note("Header", "Body")
     column += Note(body="Body", footer="Footer")
@@ -248,16 +253,24 @@ def test_declaration():
     column += Note(body="Body")
     column += Note(footer="Footer")
     column += Note("Header", "Body", "Footer", line=0)
+    column += {"note": "declaration.yaml"}
+
+    column.save("cnotes.yaml")
+    column.render("cnotes.svg")
 
     board = Board()
     board.append(x=0, y=0, scale=1.5, column=column)
+    board.save("notes.yaml")
+    board.render("notes.svg")
 
-    board.save("declaration.yaml")
-    board.render("declaration.svg")
 
 def test_poster():
     poster = Board("Poster")
-    poster.append(x=250, y=10, note=Note("By Per Kraulis", body="Ph.D.", footer="Stockholm University"))
+    poster.append(
+        x=250,
+        y=10,
+        note=Note("By Per Kraulis", body="Ph.D.", footer="Stockholm University"),
+    )
     poster.append(dict(x=0, y=100, timelines=get_universe()))
     poster.append(dict(x=50, y=230, timelines=get_earth()))
     poster.render("poster.svg")
@@ -276,6 +289,7 @@ def run_tests():
         test_cpies()
         test_rpies()
         test_declaration()
+        test_notes()
         test_poster()
     finally:
         os.chdir(origdir)

@@ -92,6 +92,82 @@
           "exclusiveMinimum": 0
         }
       }
+    },
+    "include": {
+      "$anchor": "include",
+      "title": "Include another YAML file from the URI reference.",
+      "type": "string",
+      "format": "uri-reference"
+    },
+    "timelines_ref": {
+      "$anchor": "timelines_ref",
+      "title": "Timelines",
+      "oneOf": [
+        {
+          "title": "Specification",
+          "$ref": "#timelines"
+        },
+        {
+          "title": "URI reference for specification.",
+          "$ref": "#include"
+        }
+      ]
+    },
+    "piechart_ref": {
+      "$anchor": "piechart_ref",
+      "title": "Piechart",
+      "oneOf": [
+        {
+          "title": "Specification",
+          "$ref": "#piechart"
+        },
+        {
+          "title": "URI reference for specification.",
+          "$ref": "#include"
+        }
+      ]
+    },
+    "note_ref": {
+      "$anchor": "note_ref",
+      "title": "Note",
+      "oneOf": [
+        {
+          "title": "Specification",
+          "$ref": "#note"
+        },
+        {
+          "title": "URI reference for specification.",
+          "$ref": "#include"
+        }
+      ]
+    },
+    "column_ref": {
+      "$anchor": "column_ref",
+      "title": "Column",
+      "oneOf": [
+        {
+          "title": "Specification",
+          "$ref": "#column"
+        },
+        {
+          "title": "URI reference for specification.",
+          "$ref": "#include"
+        }
+      ]
+    },
+    "row_ref": {
+      "$anchor": "row_ref",
+      "title": "Row",
+      "oneOf": [
+        {
+          "title": "Specification",
+          "$ref": "#row"
+        },
+        {
+          "title": "URI reference for specification.",
+          "$ref": "#include"
+        }
+      ]
     }
   },
   "type": "object",
@@ -443,19 +519,19 @@
             "additionalProperties": false,
             "properties": {
               "timelines": {
-                "$ref": "#timelines"
+                "$ref": "#timelines_ref"
               },
               "piechart": {
-                "$ref": "#piechart"
+                "$ref": "#piechart_ref"
               },
               "note": {
-                "$ref": "#note"
+                "$ref": "#note_ref"
               },
               "column": {
-                "$ref": "#column"
+                "$ref": "#column_ref"
               },
               "row": {
-                "$ref": "#row"
+                "$ref": "#row_ref"
               }
             }
           }
@@ -492,19 +568,19 @@
             "additionalProperties": false,
             "properties": {
               "timelines": {
-                "$ref": "#timelines"
+                "$ref": "#timelines_ref"
               },
               "piechart": {
-                "$ref": "#piechart"
+                "$ref": "#piechart_ref"
               },
               "note": {
-                "$ref": "#note"
+                "$ref": "#note_ref"
               },
               "column": {
-                "$ref": "#column"
+                "$ref": "#column_ref"
               },
               "row": {
-                "$ref": "#row"
+                "$ref": "#row_ref"
               }
             }
           }
@@ -569,7 +645,7 @@
       }
     },
     "board": {
-      "title": "Diagram to place diagrams at specified positions.",
+      "title": " \"Diagram to place diagrams at specified positions.\n    Cannot be used in other diagrams.\n    ",
       "$anchor": "board",
       "type": "object",
       "required": [
@@ -611,19 +687,19 @@
                 "default": 1
               },
               "timelines": {
-                "$ref": "#timelines"
+                "$ref": "#timelines_ref"
               },
               "piechart": {
-                "$ref": "#piechart"
+                "$ref": "#piechart_ref"
               },
               "note": {
-                "$ref": "#note"
+                "$ref": "#note_ref"
               },
               "column": {
-                "$ref": "#column"
+                "$ref": "#column_ref"
               },
               "row": {
-                "$ref": "#row"
+                "$ref": "#row_ref"
               }
             }
           }

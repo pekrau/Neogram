@@ -8,6 +8,7 @@ from test import run_tests, TESTS
 
 TERMS = {"array": "sequence", "object": "mapping", "number": "float"}
 
+
 def term(v):
     return TERMS.get(v, v)
 
@@ -152,7 +153,9 @@ def output_schema(schema, level=0, required=False, href=None):
 
     elif oneof := schema.get("oneOf"):
         for number, subschema in enumerate(oneof):
-            result.append(f"{prefix}- Alternative {number+1}: {subschema['title']}\n")
+            result.append(
+                f"{prefix}- Alternative {number+1}: {subschema.get('title') or ''}\n"
+            )
             result.extend(output_schema(subschema, level + 1, href=href))
 
     elif anyof := schema.get("anyOf"):

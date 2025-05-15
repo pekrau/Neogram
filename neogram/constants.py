@@ -1,6 +1,6 @@
 "Constants."
 
-VERSION = (0, 8, 1)
+VERSION = (0, 8, 2)
 __version__ = ".".join([str(n) for n in VERSION])
 
 SVG_XMLNS = "http://www.w3.org/2000/svg"
@@ -10,12 +10,14 @@ YAML_CONTENT_TYPE = "application/yaml"
 JSONSCHEMA_ID = "https://github.com/pekrau/Neogram/blob/main/docs/schema.json"
 JSONSCHEMA_VERSION = "https://json-schema.org/draft/2020-12/schema"
 
+DIAGRAMS = ("timelines", "piechart", "note", "column", "row")
+
 PRECISION = 0.0005
 
 DEFAULT_SIZE = 18
 DEFAULT_PADDING = 2
 DEFAULT_FONT_FAMILY = "sans-serif"
-FONT_DESCEND = 0.2  # Constant throughout.
+FONT_DESCEND = 0.2
 
 START = "start"
 MIDDLE = "middle"

@@ -18,15 +18,15 @@ Diagrams arranged in a row.
   - *items*:
     - *type*: mapping
     - **timelines**:
-        - *definition*: See [here](timelines.md)
+        - *definition*: See [here](column.md)
     - **piechart**:
-        - *definition*: See [here](piechart.md)
+        - *definition*: See [here](column.md)
     - **note**:
-      - *definition*: See elsewhere.
+        - *definition*: See [here](column.md)
     - **column**:
         - *definition*: See [here](column.md)
     - **row**:
-        - *definition*: See [here](row.md)
+        - *definition*: See [here](column.md)
 ## Examples
 
 ### rpies
@@ -34,7 +34,7 @@ Diagrams arranged in a row.
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 row:
   title: Pies in row
   entries:

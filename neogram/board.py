@@ -1,12 +1,15 @@
-"Diagram to place diagrams at specified positions."
+"Diagram to place diagrams at specified positions. Cannot be used in other diagrams."
+
+__all__ = ["Board"]
 
 from diagram import *
 
 
 class Board(Diagram):
-    "Diagram to place diagrams at specified positions."
+    """ "Diagram to place diagrams at specified positions.
+    Cannot be used in other diagrams.
+    """
 
-    ENTRY_KEYS = ("timelines", "piechart", "note", "column", "row")
     DEFAULT_TITLE_FONT_SIZE = 36
 
     SCHEMA = {
@@ -53,12 +56,10 @@ class Board(Diagram):
         },
     }
 
+    # Load the allowed diagram properties.
     SCHEMA["properties"]["entries"]["items"]["properties"].update(
-        dict([(k, {"$ref": f"#{k}"}) for k in ENTRY_KEYS])
+        dict([(k, {"$ref": f"#{k}_ref"}) for k in constants.DIAGRAMS])
     )
-
-    def __init__(self, title=None, entries=None):
-        super().__init__(title=title, entries=entries)
 
     def append(self, *entry, **fields):
         "Append the entry to the diagram."
@@ -74,9 +75,12 @@ class Board(Diagram):
     def check_entry(self, entry):
         if not isinstance(entry, dict):
             raise ValueError(f"invalid entry for board: {entry}; not a dict")
-        for key in self.ENTRY_KEYS:
-            if key in entry:
-                entry["diagram"] = entry[key]
+        for key in constants.DIAGRAMS:
+            data = entry.get(key)
+            if data:
+                if isinstance(data, dict):
+                    data = parse(key, entry[key])
+                entry["diagram"] = data
                 break
         else:
             raise ValueError(f"invalid entry for board: {entry}; no diagram")
@@ -85,7 +89,7 @@ class Board(Diagram):
         result = []
         for entry in self.entries:
             entry2 = {"x": entry["x"], "y": entry["y"]}
-            if (scale := entry.get("scale")):
+            if scale := entry.get("scale"):
                 entry2["scale"] = scale
             entry2.update(entry["diagram"].as_dict())
             result.append(entry2)
@@ -121,3 +125,6 @@ class Board(Diagram):
             g.append(diagram.svg)
             self.svg += g
             self.height = max(self.height, entry["y"] + offset + scale * diagram.height)
+
+
+register(Board)

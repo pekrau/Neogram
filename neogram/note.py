@@ -203,9 +203,8 @@ class Note(Diagram):
                 self.height += self.line
 
             self.svg += footer
-            self.height += height + constants.DEFAULT_PADDING
+            self.height += height + 2 * constants.DEFAULT_PADDING
 
-        # self.height += constants.DEFAULT_PADDING
         rect["height"] = utils.N(self.height)
         self.height += self.frame
 

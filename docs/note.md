@@ -3,6 +3,8 @@
 - [Specification](#specification)
 - [Examples](#examples)
   - [declaration](#declaration)
+  - [cnotes](#cnotes)
+  - [notes](#notes)
   - [cpies](#cpies)
   - [poster](#poster)
 
@@ -46,7 +48,70 @@ Textual note with header, body and footer text.
 ![declaration SVG](declaration.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
+note:
+  header:
+    text: Declaration
+    placement: left
+    bold: true
+  body:
+    text: 'This software was
+
+      written by me.'
+    placement: right
+  footer:
+    text: Copyright 2025 Per Kraulis
+    italic: true
+```
+### cnotes
+
+![cnotes SVG](cnotes.svg)
+
+```yaml
+neogram: 0.8.2
+column:
+  entries:
+  - note:
+      header: Header
+      body: Body
+      footer: Footer
+  - note:
+      header: Header
+      body: Body
+  - note:
+      body: Body
+      footer: Footer
+  - note:
+      header: Header
+  - note:
+      body: Body
+  - note:
+      footer: Footer
+  - note:
+      header: Header
+      body: Body
+      footer: Footer
+      line: 0
+  - note:
+      header:
+        text: Declaration
+        placement: left
+        bold: true
+      body:
+        text: 'This software was
+
+          written by me.'
+        placement: right
+      footer:
+        text: Copyright 2025 Per Kraulis
+        italic: true
+```
+### notes
+
+![notes SVG](notes.svg)
+
+```yaml
+neogram: 0.8.2
 board:
   entries:
   - x: 0
@@ -54,19 +119,6 @@ board:
     scale: 1.5
     column:
       entries:
-      - note:
-          header:
-            text: Declaration
-            placement: left
-            bold: true
-          body:
-            text: 'This software was
-
-              written by me.'
-            placement: right
-          footer:
-            text: Copyright 2025 Per Kraulis
-            italic: true
       - note:
           header: Header
           body: Body
@@ -88,13 +140,26 @@ board:
           body: Body
           footer: Footer
           line: 0
+      - note:
+          header:
+            text: Declaration
+            placement: left
+            bold: true
+          body:
+            text: 'This software was
+
+              written by me.'
+            placement: right
+          footer:
+            text: Copyright 2025 Per Kraulis
+            italic: true
 ```
 ### cpies
 
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 column:
   title: Pies in column
   entries:
@@ -149,7 +214,7 @@ column:
 ![poster SVG](poster.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 board:
   title: Poster
   entries:

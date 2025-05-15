@@ -139,7 +139,7 @@ Timelines having events and periods.
 ![universe SVG](universe.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 timelines:
   title:
     text: Universe
@@ -213,7 +213,7 @@ timelines:
 ![earth SVG](earth.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 timelines:
   title: Earth
   entries:
@@ -274,7 +274,7 @@ timelines:
 ![universe_earth SVG](universe_earth.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 column:
   title: Universe and Earth
   entries:
@@ -407,7 +407,7 @@ column:
 ![poster SVG](poster.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 board:
   title: Poster
   entries:

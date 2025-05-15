@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="601" height="360.200" viewBox="0 0 601 360.200" transform="translate(0.5, 0.5)">
+<svg xmlns="http://www.w3.org/2000/svg" width="601" height="350.200" viewBox="0 0 601 350.200" transform="translate(0.5, 0.5)">
   <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
     <text x="300" y="22" stroke="none" fill="black" font-size="22" text-anchor="middle">Universe and Earth</text>
-    <g transform="translate(0.0, 38.4)">
+    <g transform="translate(0.0, 28.4)">
       <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
         <text x="300" y="18" stroke="none" fill="blue" font-size="18" text-anchor="middle" font-weight="bold">Universe</text>
         <g>
@@ -72,7 +72,7 @@
         </g>
       </g>
     </g>
-    <g transform="translate(0.0, 170.79999999999998)">
+    <g transform="translate(0.0, 160.79999999999998)">
       <g stroke="black" fill="white" font-family="sans-serif" font-size="14">
         <text x="300" y="18" stroke="none" fill="black" font-size="18" text-anchor="middle">Earth</text>
         <g>

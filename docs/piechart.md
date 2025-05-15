@@ -51,7 +51,7 @@ Pie chart containing slices.
 ![pyramid SVG](pyramid.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 piechart:
   title: Pyramid
   entries:
@@ -75,7 +75,7 @@ piechart:
 ![day SVG](day.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 piechart:
   title:
     text: Day
@@ -129,7 +129,7 @@ piechart:
 ![cpies SVG](cpies.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 column:
   title: Pies in column
   entries:
@@ -184,7 +184,7 @@ column:
 ![rpies SVG](rpies.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 row:
   title: Pies in row
   entries:

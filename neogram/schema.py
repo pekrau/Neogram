@@ -3,7 +3,8 @@
 import json
 
 import jsonschema
-import webcolors
+
+# import webcolors
 
 import constants
 import lib
@@ -93,6 +94,82 @@ SCHEMA = {
                 },
             },
         },
+        "include": {
+            "$anchor": "include",
+            "title": "Include another YAML file from the URI reference.",
+            "type": "string",
+            "format": "uri-reference",
+        },
+        "timelines_ref": {
+            "$anchor": "timelines_ref",
+            "title": "Timelines",
+            "oneOf": [
+                {
+                    "title": "Specification",
+                    "$ref": "#timelines",
+                },
+                {
+                    "title": "URI reference for specification.",
+                    "$ref": "#include",
+                },
+            ],
+        },
+        "piechart_ref": {
+            "$anchor": "piechart_ref",
+            "title": "Piechart",
+            "oneOf": [
+                {
+                    "title": "Specification",
+                    "$ref": "#piechart",
+                },
+                {
+                    "title": "URI reference for specification.",
+                    "$ref": "#include",
+                },
+            ],
+        },
+        "note_ref": {
+            "$anchor": "note_ref",
+            "title": "Note",
+            "oneOf": [
+                {
+                    "title": "Specification",
+                    "$ref": "#note",
+                },
+                {
+                    "title": "URI reference for specification.",
+                    "$ref": "#include",
+                },
+            ],
+        },
+        "column_ref": {
+            "$anchor": "column_ref",
+            "title": "Column",
+            "oneOf": [
+                {
+                    "title": "Specification",
+                    "$ref": "#column",
+                },
+                {
+                    "title": "URI reference for specification.",
+                    "$ref": "#include",
+                },
+            ],
+        },
+        "row_ref": {
+            "$anchor": "row_ref",
+            "title": "Row",
+            "oneOf": [
+                {
+                    "title": "Specification",
+                    "$ref": "#row",
+                },
+                {
+                    "title": "URI reference for specification.",
+                    "$ref": "#include",
+                },
+            ],
+        },
     },
     "type": "object",
     "required": ["neogram"],
@@ -125,18 +202,19 @@ SCHEMA = {
 
 
 def get_validator(schema):
-    format_checker = jsonschema.FormatChecker()
+    format_checker = jsonschema.FormatChecker(["color", "uri-reference"])
 
-    @format_checker.checks("color")
-    def color_format(value):
-        try:
-            webcolors.normalize_hex(value)
-        except ValueError:
-            try:
-                webcolors.name_to_hex(value)
-            except ValueError:
-                return False
-        return True
+    # How to add more checkers:
+    # @format_checker.checks("color")
+    # def color_format(value):
+    #     try:
+    #         webcolors.normalize_hex(value)
+    #     except ValueError:
+    #         try:
+    #             webcolors.name_to_hex(value)
+    #         except ValueError:
+    #             return False
+    #     return True
 
     return jsonschema.Draft202012Validator(schema=schema, format_checker=format_checker)
 

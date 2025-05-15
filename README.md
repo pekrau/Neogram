@@ -1,4 +1,4 @@
-# Neogram 0.8.1
+# Neogram 0.8.2
 
 Generate SVG for diagrams of different kinds from YAML specification.
 
@@ -22,5 +22,7 @@ The full JSON Schema is [here](docs/schema.json).
 
 - [note](docs/note.md): Textual note with header, body and footer text.
 
-- [board](docs/board.md): Diagram to place diagrams at specified positions.
+- [board](docs/board.md):  "Diagram to place diagrams at specified positions.
+    Cannot be used in other diagrams.
+    
 

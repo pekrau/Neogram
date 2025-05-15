@@ -221,7 +221,9 @@ class Timelines(Diagram):
 
     def check_entry(self, entry):
         if not isinstance(entry, (Event, Period)):
-            raise ValueError(f"invalid entry for board: {entry}; not an Event or Period")
+            raise ValueError(
+                f"invalid entry for board: {entry}; not an Event or Period"
+            )
 
     def data_as_dict(self):
         result = super().data_as_dict()

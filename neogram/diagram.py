@@ -4,10 +4,14 @@ from icecream import ic
 
 import json
 import pathlib
+import urllib.parse
 
+import requests
+import requests.exceptions
 import yaml
 
 import constants
+import memo
 from minixml import Element
 from vector2 import *
 import utils
@@ -88,7 +92,13 @@ class Diagram(Entity):
         return result
 
     def data_as_dict_entries(self):
-        return {"entries": [e.as_dict() for e in self.entries]}
+        result = []
+        for entry in self.entries:
+            if isinstance(entry, str):
+                result.append(entry)
+            else:
+                result.append(entry.as_dict())
+        return {"entries": result}
 
     def render(self, target=None, antialias=True, indent=2):
         """Render diagram and return SVG.
@@ -185,7 +195,46 @@ class Diagram(Entity):
             yaml.dump(data, outfile, allow_unicode=True, sort_keys=False)
 
 
-# Key: name of class (lower case); value: class
+class Container(Diagram):
+    "Diagram containing other diagrams, which may also be part of other diagrams."
+
+    ALIGN_VALUES = None  # Must be set in inheriting class.
+
+    def __init__(
+        self,
+        title=None,
+        entries=None,
+        align=None,
+    ):
+        super().__init__(title=title, entries=entries)
+        assert align is None or align in self.ALIGN_VALUES
+
+        self.align = align or self.DEFAULT_ALIGN
+
+    def check_entry(self, entry):
+        if isinstance(entry, str):
+            reader = Reader(entry)
+            memo.check_add(reader)
+            try:
+                reader.read()
+                reader.read()
+                reader.parse_yaml()
+                reader.check_diagram_yaml()
+                entry = reader.get_diagram()
+            except ValueError as error:
+                raise ValueError(f"error reading from '{reader}': {error}")
+            memo.remove(reader)
+        if not isinstance(entry, Diagram):
+            raise ValueError(f"invalid entry for board: {entry}; not a Diagram")
+
+    def data_as_dict(self):
+        result = super().data_as_dict()
+        if self.align != self.DEFAULT_ALIGN:
+            result["align"] = self.align
+        return result
+
+
+# Lookup for end-use classes. Key: name of class (lower case); value: class
 _entity_lookup = {}
 
 
@@ -204,37 +253,96 @@ def parse(key, data):
         cls = _entity_lookup[key]
     except KeyError:
         raise ValueError(f"no such entity '{key}'")
-    return cls(**data)
+    if isinstance(data, dict):
+        return cls(**data)
+    elif isinstance(data, str):  # Get and parse YAML from the location.
+        reader = Reader(data)
+        try:
+            reader.read()
+            reader.read()
+            reader.parse_yaml()
+            reader.check_diagram_yaml()
+            return reader.get_diagram()
+        except ValueError as error:
+            raise ValueError(f"error reading from '{reader}': {error}")
 
 
-def retrieve(source):
-    """Read and parse the YAML file given by its path or open file object.
+def retrieve(location):
+    """Read and parse the YAML file given by its path or URI.
     Return a Diagram instance.
     """
-    import schema
+    reader = Reader(location)
+    reader.read()
+    reader.parse_yaml()
+    reader.check_diagram_yaml()
+    return reader.get_diagram()
 
-    if isinstance(source, (str, pathlib.Path)):
-        with open(source) as infile:
-            original_data = yaml.safe_load(infile)
-    else:
-        original: data = yaml.safe_load(source)
-    # Perform some basic tests on a copy of the data.
-    data = original_data.copy()
-    try:
-        version = data.pop("neogram")
-    except KeyError:
-        raise ValueError(
-            f"YAML file lacks marker for software: 'neogram: {constants.__version__}' "
-        )
-    # Check version compatibility.
-    if version:
-        major, minor, micro = version.split(".")
-        if int(major) != constants.VERSION[0]:
-            raise ValueError(f"YAML file incompatible version {version}")
-    # Require one and only one diagram in a file.
-    if len(data) != 1:
-        raise ValueError("YAML file must contain exactly one diagram")
-    # Schema validation must be done on the original data.
-    schema.validate(original_data)
-    # The copy of the original data now contains only the item to be parsed.
-    return parse(*data.popitem())
+
+class Reader:
+    "Read data from a location; URI or file path."
+
+    def __init__(self, location):
+        self.location = str(location)
+        parts = urllib.parse.urlparse(self.location)
+        self.scheme = parts.scheme
+        if self.scheme:
+            self.location = self.location
+        elif pathlib.Path(self.location).is_absolute():
+            self.scheme = "file"
+        else:
+            self.location = str(pathlib.Path.cwd().joinpath(self.location).resolve())
+            self.scheme = "file"
+
+    def __repr__(self):
+        return f"Reader('{self.location}')"
+
+    def read(self):
+        "Read the data from the location. Raise ValueError if any problem."
+        if self.scheme == "file":
+            try:
+                with open(self.location) as infile:
+                    self.data = infile.read()
+            except OSError as error:
+                raise ValueError(str(error))
+        else:
+            try:
+                response = requests.get(self.location)
+                response.raise_for_status()
+                self.data = response.text
+            except requests.exceptions.RequestException as error:
+                raise ValueError(str(error))
+
+    def parse_yaml(self):
+        "Parse the YAML data. Raise ValueError if any problem."
+        try:
+            self.yaml = yaml.safe_load(self.data)
+        except yaml.YAMLError as error:
+            raise ValueError(f"cannot interpret data as YAML: {error}")
+
+    def check_diagram_yaml(self):
+        """Check that the YAML data is valid and prepare it for diagram parsing.
+        - The software marker is present, which is removed.
+        - The given version is compatible with the current version.
+        - There is one and only one diagram instance in it.
+        - Check against the schema.
+        Raise ValueError if any problem.
+        """
+        import schema
+
+        copy = self.yaml.copy()
+        try:
+            version = copy.pop("neogram")
+        except KeyError:
+            raise ValueError("YAML data lacks the software marker")
+        if version:
+            # XXX Currently strict check.
+            if version != constants.__version__:
+                raise ValueError(f"YAML data incompatible version {version}")
+        if len(copy) != 1:
+            raise ValueError("YAML data contains more than one instance")
+        # Schema validation must be done on the original data.
+        schema.validate(self.yaml)
+        self.prepared = copy
+
+    def get_diagram(self):
+        return parse(*self.prepared.popitem())

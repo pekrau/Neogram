@@ -3,9 +3,12 @@
 - [Specification](#specification)
 - [Examples](#examples)
   - [poster](#poster)
+  - [notes](#notes)
 
 ## Specification
-Diagram to place diagrams at specified positions.
+ "Diagram to place diagrams at specified positions.
+    Cannot be used in other diagrams.
+    
 
 - **title**: Title of the board.
     - *definition*: See [here](timelines.md)
@@ -27,15 +30,15 @@ Diagram to place diagrams at specified positions.
       - *exclusiveMinimum*: 0
       - *default*: 1
     - **timelines**:
-        - *definition*: See [here](timelines.md)
+        - *definition*: See [here](column.md)
     - **piechart**:
-        - *definition*: See [here](piechart.md)
+        - *definition*: See [here](column.md)
     - **note**:
-        - *definition*: See [here](note.md)
+        - *definition*: See [here](column.md)
     - **column**:
         - *definition*: See [here](column.md)
     - **row**:
-        - *definition*: See [here](row.md)
+        - *definition*: See [here](column.md)
 ## Examples
 
 ### poster
@@ -43,7 +46,7 @@ Diagram to place diagrams at specified positions.
 ![poster SVG](poster.svg)
 
 ```yaml
-neogram: 0.8.1
+neogram: 0.8.2
 board:
   title: Poster
   entries:
@@ -178,5 +181,53 @@ board:
           begin: -470000000
           end: 0
           placement: left
+```
+### notes
+
+![notes SVG](notes.svg)
+
+```yaml
+neogram: 0.8.2
+board:
+  entries:
+  - x: 0
+    y: 0
+    scale: 1.5
+    column:
+      entries:
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+      - note:
+          body: Body
+          footer: Footer
+      - note:
+          header: Header
+      - note:
+          body: Body
+      - note:
+          footer: Footer
+      - note:
+          header: Header
+          body: Body
+          footer: Footer
+          line: 0
+      - note:
+          header:
+            text: Declaration
+            placement: left
+            bold: true
+          body:
+            text: 'This software was
+
+              written by me.'
+            placement: right
+          footer:
+            text: Copyright 2025 Per Kraulis
+            italic: true
 ```
 

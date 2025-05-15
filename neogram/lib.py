@@ -1,5 +1,6 @@
 "All currently defined diagram classes."
 
+# Imported for convenience.
 from diagram import retrieve
 
 from timelines import *

@@ -5,7 +5,9 @@ __all__ = ["Row"]
 from diagram import *
 
 
-class Row(Diagram):
+class Row(Container):
+
+    ALIGN_VALUES = constants.VERTICAL
 
     DEFAULT_TITLE_FONT_SIZE = 22
     DEFAULT_ALIGN = constants.MIDDLE
@@ -24,7 +26,7 @@ class Row(Diagram):
             },
             "align": {
                 "title": "Align diagrams vertically within the row.",
-                "enum": constants.VERTICAL,
+                "enum": ALIGN_VALUES,
                 "default": DEFAULT_ALIGN,
             },
             "entries": {
@@ -33,38 +35,17 @@ class Row(Diagram):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
-                    "properties": {
-                        "timelines": {"$ref": "#timelines"},
-                        "piechart": {"$ref": "#piechart"},
-                        "note": {"$ref": "#note"},
-                        "column": {"$ref": "#column"},
-                        "row": {"$ref": "#row"},
-                    },
+                    # The allowed diagram properties are loaded below.
+                    "properties": {},
                 },
             },
         },
     }
 
-    def __init__(
-        self,
-        title=None,
-        entries=None,
-        align=None,
-    ):
-        super().__init__(title=title, entries=entries)
-        assert align is None or (isinstance(align, str) and align in constants.VERTICAL)
-
-        self.align = align or self.DEFAULT_ALIGN
-
-    def check_entry(self, entry):
-        if not isinstance(entry, Diagram):
-            raise ValueError(f"invalid entry for board: {entry}; not a Diagram")
-
-    def data_as_dict(self):
-        result = super().data_as_dict()
-        if self.align != self.DEFAULT_ALIGN:
-            result["align"] = self.align
-        return result
+    # Load the allowed diagram properties.
+    SCHEMA["properties"]["entries"]["items"]["properties"].update(
+        dict([(k, {"$ref": f"#{k}_ref"}) for k in constants.DIAGRAMS])
+    )
 
     def build(self):
         """Create the SVG elements in the 'svg' attribute. Adds the title, if given.

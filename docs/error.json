@@ -1,1 +1,1 @@
-{"neogram": "0.8.1", "board": {"title": "Poster", "entries": [{"x": 250, "y": 10}, {"x": 0, "y": 100}, {"x": 50, "y": 230}]}}
+{"neogram": "0.8.2", "column": {"entries": [{"note": {"header": "Header", "body": "Body", "footer": "Footer"}}, {"note": {"header": "Header", "body": "Body"}}, {"note": {"body": "Body", "footer": "Footer"}}, {"note": {"header": "Header"}}, {"note": {"body": "Body"}}, {"note": {"footer": "Footer"}}, {"note": {"header": "Header", "body": "Body", "footer": "Footer", "line": 0}}, "declaration.yaml"]}}
